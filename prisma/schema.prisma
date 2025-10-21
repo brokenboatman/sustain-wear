@@ -1,0 +1,144 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  userId    Int     @id @default(autoincrement())
+  username  String
+  email     String  @unique
+  password  String
+  roleId    Int
+  charityId Int? // Assumed nullable (e.g., for donor users)
+
+  // --- Relations ---
+  role      Role       @relation(fields: [roleId], references: [roleId])
+  charity   Charity?   @relation(fields: [charityId], references: [charityId])
+  donations Donation[]
+}
+
+model Role {
+  roleId   Int    @id @default(autoincrement())
+  roleName String @unique
+
+  // --- Relations ---
+  users User[]
+}
+
+model Charity {
+  charityId Int    @id @default(autoincrement())
+  name      String
+  city      String
+  address   String
+
+  // --- Relations ---
+  users     User[]
+  donations Donation[]
+}
+
+model Donation {
+  donationId Int      @id @default(autoincrement())
+  userId     Int
+  charityId  Int
+  statusId   Int
+  date       DateTime @default(now())
+
+  // --- Relations ---
+  user    User           @relation(fields: [userId], references: [userId])
+  charity Charity        @relation(fields: [charityId], references: [charityId])
+  status  Status         @relation(fields: [statusId], references: [statusId])
+  items   DonationItem[]
+}
+
+model Status {
+  statusId Int    @id @default(autoincrement())
+  status   String @unique
+
+  // --- Relations ---
+  donations     Donation[]
+  donationItems DonationItem[]
+}
+
+model DonationItem {
+  donationItemId Int     @id @default(autoincrement())
+  donationId     Int
+  statusId       Int
+  photoUrl       String?
+  description    String?
+  quantity       Int     @default(1)
+  weight         Float?
+  co2            Float?
+  colourId       Int
+  conditionId    Int
+  genderId       Int
+  categoryId     Int
+  materialId     Int
+  sizeId         Int
+
+  // --- Relations ---
+  donation  Donation  @relation(fields: [donationId], references: [donationId])
+  status    Status    @relation(fields: [statusId], references: [statusId])
+  colour    Colour    @relation(fields: [colourId], references: [colourId])
+  condition Condition @relation(fields: [conditionId], references: [conditionId])
+  gender    Gender    @relation(fields: [genderId], references: [genderId])
+  category  Category  @relation(fields: [categoryId], references: [categoryId])
+  material  Material  @relation(fields: [materialId], references: [materialId])
+  size      Size      @relation(fields: [sizeId], references: [sizeId])
+}
+
+// --- Lookup Tables ---
+
+model Colour {
+  colourId Int    @id @default(autoincrement())
+  colour   String @unique
+
+  // --- Relations ---
+  donationItems DonationItem[]
+}
+
+model Condition {
+  conditionId Int    @id @default(autoincrement())
+  condition   String @unique
+
+  // --- Relations ---
+  donationItems DonationItem[]
+}
+
+model Gender {
+  genderId Int    @id @default(autoincrement())
+  gender   String @unique
+
+  // --- Relations ---
+  donationItems DonationItem[]
+}
+
+model Category {
+  categoryId Int    @id @default(autoincrement())
+  category   String @unique
+
+  // --- Relations ---
+  donationItems DonationItem[]
+}
+
+model Material {
+  materialId Int    @id @default(autoincrement())
+  material   String @unique
+
+  // --- Relations ---
+  donationItems DonationItem[]
+}
+
+model Size {
+  sizeId Int    @id @default(autoincrement())
+  size   String @unique
+
+  // --- Relations ---
+  donationItems DonationItem[]
+}
