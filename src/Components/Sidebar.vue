@@ -4,15 +4,15 @@
 
     <template #body>
         <!-- <Placeholder class="h-full" /> -->
-        <ULink to="src\views\HomeView.vue" class="text-2xl">My Donations</ULink>
+        <ULink to="/" class="text-2xl">My Donations</ULink>
         <br></br><br></br>
-        <ULink to="src\views\AccountView.vue" class="text-2xl">Account</ULink>
+        <ULink to="/account" class="text-2xl">Account</ULink>
         <br></br><br></br>
-        <ULink to="src\views\SettingsView.vue" class="text-2xl">Settings</ULink>
+        <ULink to="/settings" class="text-2xl">Settings</ULink>
         <br></br><br></br>
-        <ULink to="src\views\RewardsView.vue" class="text-2xl">Rewards & Badges</ULink>
+        <ULink to="/rewards" class="text-2xl">Rewards & Badges</ULink>
         <br></br><br></br>
-        <ULink to="/docs/components/link" class="text-2xl">Log out</ULink>
+        <ULink to="/" class="text-2xl">Log out</ULink>
     </template>
   </USlideover>
 </template>
