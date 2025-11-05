@@ -20,6 +20,13 @@ const fields: AuthFormField[] = [
     required: true,
   },
   {
+    name: "repeat password",
+    label: "Repeat Password",
+    type: "password",
+    placeholder: "Repeat your password",
+    required: true,
+  },
+  {
     name: "remember",
     label: "Remember me",
     type: "checkbox",
@@ -55,12 +62,12 @@ function onSubmit(payload: FormSubmitEvent<Schema>) {
     <UPageCard class="w-full max-w-md">
       <UAuthForm
         :schema="schema"
-        title="Login"
+        title="Register"
         description="Enter your credentials to access your account."
         icon="i-lucide-user"
         :fields="fields"
         :providers="providers"
-        :submit="{ label: 'Log In' }"
+        :submit="{ label: 'Register' }"
         @submit="onSubmit"
       />
     </UPageCard>
