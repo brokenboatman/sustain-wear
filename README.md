@@ -1,19 +1,9 @@
-# Sustain Wear
+Steps to run Backend and Frontend
 
-This is Group 14's Applied Software Engineering assessment project.
+1. Go to the terminal
+2. cd backend
+3. node index.js
+4. cd frontend
+5. npm run dev
 
-## Customize configuration
-
-See [Vite Configuration Reference](https://vite.dev/config/).
-
-## Project Setup
-
-```sh
-npm install
-```
-
-### Compile and Hot-Reload for Development
-
-```sh
-npm run dev
-```
+Should work!
