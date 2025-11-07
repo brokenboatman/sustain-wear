@@ -3,6 +3,7 @@
     id="my-chart-id"
     :options="chartOptions"
     :data="chartData"
+    class="bar"
   />
 </template>
 
@@ -22,12 +23,12 @@ export default {
   data() {
     return {
       chartData: {
-        labels: [ 'January', 'February', 'March' ],
+        labels: [ 'January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December' ],
         datasets: [ {
-            data: [40, 20, 12],
-            backgroundColor: "#00c16a",
-            borderColor: "#446699",
-            color: "#000",
+            label: 'CO2 Savings',
+            data: [40, 20, 12, 35, 50, 14, 26, 52, 41, 35, 7, 22],
+            backgroundColor: "#00c15f",
+            
         } ]
       },
       chartOptions: {
@@ -37,3 +38,9 @@ export default {
   }
 }
 </script>
+
+<style>
+    .bar {
+        background-color: white;
+    }
+</style>

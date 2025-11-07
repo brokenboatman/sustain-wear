@@ -16,6 +16,9 @@ declare module 'vue' {
     RouterView: typeof import('vue-router')['RouterView']
     UApp: typeof import('./node_modules/@nuxt/ui/dist/runtime/components/App.vue')['default']
     UAuthForm: typeof import('./node_modules/@nuxt/ui/dist/runtime/components/AuthForm.vue')['default']
+    UButton: typeof import('./node_modules/@nuxt/ui/dist/runtime/components/Button.vue')['default']
+    ULink: typeof import('./node_modules/@nuxt/ui/dist/runtime/vue/components/Link.vue')['default']
     UPageCard: typeof import('./node_modules/@nuxt/ui/dist/runtime/components/PageCard.vue')['default']
+    USlideover: typeof import('./node_modules/@nuxt/ui/dist/runtime/components/Slideover.vue')['default']
   }
 }

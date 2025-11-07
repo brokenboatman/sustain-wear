@@ -6,7 +6,7 @@ import BarChart from '../components/BarChart.vue'
   <main>
     <h1>Hello</h1>
   </main>
-  <BarChart />
+    <BarChart />
 </template>
 
 <style scoped>
