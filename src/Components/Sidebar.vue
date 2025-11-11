@@ -1,6 +1,6 @@
 <template>
   <USlideover title="" close-icon="i-lucide-arrow-right">
-    <UButton label="Open" color="neutral" variant="subtle" />
+    <UButton icon="line-md:menu" color="neutral" variant="ghost"/>
 
     <template #body>
          <div class="flex items-center gap-4 mb-4 animate-slide-in" style="animation-delay: 0s">
