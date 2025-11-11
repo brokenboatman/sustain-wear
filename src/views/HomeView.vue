@@ -1,6 +1,6 @@
 <script setup>
 import Sidebar from '../Components/Sidebar.vue';
-import BarChart from '../components/BarChart.vue'
+import BarChart from '../Components/BarChart.vue'
 </script>
 
 <template>
