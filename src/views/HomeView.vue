@@ -1,5 +1,6 @@
 <script setup>
-  import Sidebar from '../Components/Sidebar.vue';
+import Sidebar from '../Components/Sidebar.vue';
+import BarChart from '../components/BarChart.vue'
 </script>
 
 <template>
@@ -7,6 +8,7 @@
     <h1>Hello</h1>
     <sidebar />
   </main>
+    <BarChart />
 </template>
 
 <style scoped>
