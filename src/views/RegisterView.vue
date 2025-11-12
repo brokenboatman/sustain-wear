@@ -1,10 +1,19 @@
 <script setup lang="ts">
 import * as z from "zod";
 import type { FormSubmitEvent, AuthFormField } from "@nuxt/ui";
+import { useRouter } from "vue-router";
 
 const toast = useToast();
+const router = useRouter();
 
 const fields: AuthFormField[] = [
+  {
+    name: "username",
+    label: "Username",
+    type: "text",
+    placeholder: "Enter your username",
+    required: true,
+  },
   {
     name: "email",
     type: "email",
@@ -43,17 +52,52 @@ const providers = [
   },
 ];
 
-const schema = z.object({
-  email: z.email("Invalid email"),
-  password: z
-    .string("Password is required")
-    .min(8, "Must be at least 8 characters"),
-});
+const schema = z
+  .object({
+    email: z.email("Invalid email"),
+    password: z
+      .string("Password is required")
+      .min(8, "Must be at least 8 characters"),
+    username: z
+      .string("Username is required")
+      .min(3, "Must be at least 3 characters"),
+    "repeat password": z.string("Please repeat your password"),
+  })
+  .refine((data) => data.password === data["repeat password"], {
+    message: "Passwords do not match",
+  });
 
 type Schema = z.output<typeof schema>;
 
-function onSubmit(payload: FormSubmitEvent<Schema>) {
-  console.log("Submitted", payload);
+async function onSubmit(payload: FormSubmitEvent<Schema>) {
+  try {
+    const res = await fetch("/api/auth/register", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        email: payload.data.email,
+        password: payload.data.password,
+        username: payload.data.username,
+        roleId: 1,
+      }),
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      toast.add({ title: "Error", description: data.error, color: "red" });
+      return;
+    }
+
+    toast.add({
+      title: "Success",
+      description: "Account created!",
+      color: "green",
+    });
+    router.push("/login");
+  } catch (err) {
+    toast.add({ title: "Error", description: "Something went wrong" });
+  }
 }
 </script>
 

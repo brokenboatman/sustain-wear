@@ -26,3 +26,23 @@
     </template>
   </USlideover>
 </template>
+
+<script>
+
+async function logout() {
+  const token = localStorage.getItem("token");
+  if (!token) return;
+
+  await fetch("http://localhost:3000/api/auth/logout", {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  localStorage.removeItem("token");
+  toast.add({ title: "Goodbye!", description: "You have been logged out." });
+  router.push("/login");
+}
+
+</script>
