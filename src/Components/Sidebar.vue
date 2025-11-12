@@ -1,39 +1,14 @@
-<template>
-  <USlideover title="" close-icon="i-lucide-arrow-right">
-    <UButton icon="line-md:menu" color="neutral" variant="ghost"/>
+<script setup>
+import { useRouter } from "vue-router";
 
-    <template #body>
-         <div class="flex items-center gap-4 mb-4 animate-slide-in" style="animation-delay: 0s">
-            <UIcon name="line-md:heart" class="size-8" />
-            <ULink to="/" class="text-2xl">My Donations</ULink>
-         </div>
-         <div class="flex items-center gap-4 mb-4 animate-slide-in" style="animation-delay: 0.2s">
-            <UIcon name="line-md:account" class="size-8" />
-            <ULink to="/account" class="text-2xl">Account</ULink>
-          </div>
-          <div class="flex items-center gap-4 mb-4 animate-slide-in" style="animation-delay: 0.4s">
-            <UIcon name="line-md:cog" class="size-8" />
-            <ULink to="/settings" class="text-2xl">Settings</ULink>
-          </div>
-          <div class="flex items-center gap-4 mb-4 animate-slide-in" style="animation-delay: 0.6s">
-            <UIcon name="line-md:star" class="size-8" />
-            <ULink to="/rewards" class="text-2xl">Rewards & Badges</ULink>
-          </div>
-          <div class="flex items-center gap-4 mb-4 animate-slide-in" style="animation-delay: 0.8s">
-            <UIcon name="line-md:log-out" class="size-8" />
-            <ULink to="/" class="text-2xl">Log out</ULink>
-          </div>
-    </template>
-  </USlideover>
-</template>
-
-<script>
+const toast = useToast();
+const router = useRouter();
 
 async function logout() {
   const token = localStorage.getItem("token");
   if (!token) return;
 
-  await fetch("http://localhost:3000/api/auth/logout", {
+  await fetch("/api/auth/logout", {
     method: "POST",
     headers: {
       Authorization: `Bearer ${token}`,
@@ -42,7 +17,53 @@ async function logout() {
 
   localStorage.removeItem("token");
   toast.add({ title: "Goodbye!", description: "You have been logged out." });
+  console.log("LOGOUT CALLED");
   router.push("/login");
 }
-
 </script>
+
+<template>
+  <USlideover title="" close-icon="i-lucide-arrow-right">
+    <UButton icon="line-md:menu" color="neutral" variant="ghost" />
+
+    <template #body>
+      <div
+        class="flex items-center gap-4 mb-4 animate-slide-in"
+        style="animation-delay: 0s"
+      >
+        <UIcon name="line-md:heart" class="size-8" />
+        <ULink to="/" class="text-2xl">My Donations</ULink>
+      </div>
+      <div
+        class="flex items-center gap-4 mb-4 animate-slide-in"
+        style="animation-delay: 0.2s"
+      >
+        <UIcon name="line-md:account" class="size-8" />
+        <ULink to="/account" class="text-2xl">Account</ULink>
+      </div>
+      <div
+        class="flex items-center gap-4 mb-4 animate-slide-in"
+        style="animation-delay: 0.4s"
+      >
+        <UIcon name="line-md:cog" class="size-8" />
+        <ULink to="/settings" class="text-2xl">Settings</ULink>
+      </div>
+      <div
+        class="flex items-center gap-4 mb-4 animate-slide-in"
+        style="animation-delay: 0.6s"
+      >
+        <UIcon name="line-md:star" class="size-8" />
+        <ULink to="/rewards" class="text-2xl">Rewards & Badges</ULink>
+      </div>
+      <div
+        class="flex items-center gap-4 mb-4 animate-slide-in"
+        style="animation-delay: 0.8s"
+      >
+        <UIcon name="line-md:log-out" class="size-8" />
+        <UButton variant="link" class="text-2xl p-0" @click="logout"
+          >Log Out</UButton
+        >
+      </div>
+    </template>
+  </USlideover>
+</template>

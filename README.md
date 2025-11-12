@@ -20,8 +20,6 @@ create a .env file in the root with a
 DATABASE_URL="postgresql://postgres:PASSWORDFROMTHEPOSTGRESQLDATABASE@localhost:5432/sustain-wear"
 JWT_SECRET="key"
 
-
-
 cd server
 node index.js
 

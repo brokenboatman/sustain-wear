@@ -2,6 +2,7 @@ import { Router } from "express";
 import bcrypt from "bcrypt";
 import prisma from "../utils/prisma.js";
 import jwt from "jsonwebtoken";
+import { auth } from "../middleware/auth.js";
 
 const router = Router();
 
@@ -46,31 +47,26 @@ router.post("/login", async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    // ✅ Basic validation
     if (!email || !password) {
       return res.status(400).json({ error: "Missing required fields" });
     }
 
-    // ✅ Check if user exists
     const user = await prisma.user.findUnique({ where: { email } });
     if (!user) {
       return res.status(401).json({ error: "Invalid credentials" });
     }
 
-    // ✅ Validate password (do this BEFORE issuing token)
     const isValid = await bcrypt.compare(password, user.password);
     if (!isValid) {
       return res.status(401).json({ error: "Invalid credentials" });
     }
 
-    // ✅ Create JWT *after* verifying credentials
     const token = jwt.sign(
       { userId: user.id },
       process.env.JWT_SECRET || "dev-secret",
       { expiresIn: "12h" }
     );
 
-    // ✅ Return token to frontend
     res.json({
       message: "Logged in!",
       token,
