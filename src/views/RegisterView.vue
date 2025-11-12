@@ -94,7 +94,7 @@ async function onSubmit(payload: FormSubmitEvent<Schema>) {
       description: "Account created!",
       color: "green",
     });
-    router.push("/");
+    router.push("/login");
   } catch (err) {
     toast.add({ title: "Error", description: "Something went wrong" });
   }

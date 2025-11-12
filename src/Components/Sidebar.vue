@@ -12,7 +12,33 @@
         <br></br><br></br>
         <ULink to="/rewards" class="text-2xl">Rewards & Badges</ULink>
         <br></br><br></br>
-        <ULink to="/" class="text-2xl">Log out</ULink>
+        <UButton
+          variant = "link"
+          class = "text-2xl"
+          @onClick = logout()
+        >
+        Log out
+      </UButton>
     </template>
   </USlideover>
 </template>
+
+<script>
+
+async function logout() {
+  const token = localStorage.getItem("token");
+  if (!token) return;
+
+  await fetch("http://localhost:3000/api/auth/logout", {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  localStorage.removeItem("token");
+  toast.add({ title: "Goodbye!", description: "You have been logged out." });
+  router.push("/login");
+}
+
+</script>
