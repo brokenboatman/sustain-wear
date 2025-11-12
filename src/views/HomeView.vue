@@ -6,6 +6,7 @@ import BarChart from '../Components/BarChart.vue'
 <template>
   <main>
     <h1>Hello</h1>
+    <img src="/src/assets/logo.png" alt="Logo" width="200" />
     <sidebar />
   </main>
     <BarChart />
