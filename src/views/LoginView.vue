@@ -33,10 +33,17 @@ const providers = [
     label: "Google",
     icon: "i-mdi-google",
     onClick: () => {
-      toast.add({ title: "Google", description: "Login with Google" });
+      window.location.href = "http://localhost:5173/api/auth/google";
     },
   },
 ];
+
+const links = [
+  {
+    label: "Don't have an account?",
+    to: "/register",
+  }
+]
 
 const schema = z.object({
   email: z.email("Invalid email"),
@@ -92,7 +99,7 @@ async function onSubmit(payload: FormSubmitEvent<Schema>) {
         icon="i-lucide-user"
         :fields="fields"
         :providers="providers"
-        :submit="{ label: 'Log In' }"
+        :links="links" :submit="{ label: 'Log In' }"
         @submit="onSubmit"
       />
     </UPageCard>

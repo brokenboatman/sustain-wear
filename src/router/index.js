@@ -47,6 +47,11 @@ const routes = [
     name: "unauthorized",
     component: UnauthorisedView,
   },
+  {
+    path: "/auth/google/callback",
+    name: "google-callback",
+    component: () => import("../views/GoogleCallbackView.vue"),
+  },
 ];
 
 const router = createRouter({
