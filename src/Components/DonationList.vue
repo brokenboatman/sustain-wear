@@ -1,9 +1,5 @@
 <script setup lang="ts">
-import { h, resolveComponent } from 'vue'
-import type { TableColumn } from '@nuxt/ui'
 import { ref } from 'vue'
-
-const UBadge = resolveComponent('UBadge')
 
 type Donation = {
   id: string
@@ -32,61 +28,23 @@ const data = ref<Donation[]>([
     status: 'On its way',
   }
 ])
-
-const columns: TableColumn<Donation>[] = [
-  {
-    accessorKey: 'id',
-    header: 'ID',
-    cell: ({ row }) => `#${row.getValue('id')}`,
-    meta: {
-      class: {
-        th: 'text-left font-bold',
-        td: 'text-left text-s'
-      }
-    },
-  },
-  {
-    accessorKey: 'imageRef',
-    header: 'Image',
-    cell: ({ row }) => `${row.getValue('imageRef')}`,
-    meta: {
-      class: {
-        th: 'text-left font-bold',
-        td: 'text-left text-s'
-      }
-    },
-  },
-  {
-    accessorKey: 'name',
-    header: 'Name',
-    cell: ({ row }) => `${row.getValue('name')}`,
-    meta: {
-      class: {
-        th: 'text-left font-bold',
-        td: 'text-left text-s'
-      }
-    },
-  },
-  {
-    accessorKey: 'status',
-    header: 'Status',
-    cell: ({ row }) => {
-
-      return h(UBadge, { class: 'capitalize', variant: 'subtle' }, () =>
-        row.getValue('status')
-      )
-    },
-    meta: {
-      class: {
-        th: 'text-right font-bold',
-        td: 'text-right'
-      }
-    },
-  }
-]
 </script>
 
-<template>
-  <UTable :data="data" :columns="columns" class="flex-1, color-default" />
-</template>
+<!-- We could remove the imageRef data and just use the ID if our images have a link containing the ID -->
 
+<template>
+  <div class="flex-1 flex-direction-column">
+    <div v-for="donation in data" :key="donation.id" class="flex items-center justify-between h-20 border border-secondary mb-2 p-2 rounded-lg gap-x-1">
+      <!-- comment code below is for when images are added -->
+      <!-- <img :src="donation.imageRef" /> -->
+      <p class="text-left w-3/10">{{ donation.imageRef }}</p>
+      <p class="text-left w-3/10 font-bold">{{ donation.name }}</p>
+      <div class="text-left flex items-center gap-x-2 w-4/10">
+        <UIcon class="size-5" v-if="donation.status === 'In transit'" name="lucide:truck" />
+        <UIcon class="size-5" v-if="donation.status === 'Arrived at final depot'" name="lucide:warehouse" />
+        <UIcon class="size-5" v-if="donation.status === 'On its way'" name="lucide:package" />
+        <p>{{ donation.status }}</p>
+      </div>
+    </div>
+  </div>
+</template>

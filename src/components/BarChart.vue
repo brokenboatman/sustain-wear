@@ -1,5 +1,7 @@
+<!-- Good luck trying to change any styling in this :) -->
+
 <template>
-  <div class="bar">
+  <div class="bg-white text-black font-bold">
     <h2>Your Monthly CO2 Savings (kg)</h2>
     <Bar
       id="my-chart-id"
@@ -41,13 +43,3 @@ export default {
   }
 }
 </script>
-
-<style>
-    .bar {
-        background-color: white;
-        color: black;
-        text-align: center;
-        font-weight: 700;
-        font-size: 25px;
-    }
-</style>

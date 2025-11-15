@@ -16,7 +16,7 @@ import DonationList from '../Components/DonationList.vue';
 
 <style scoped>
 main {
-  padding: 2rem;
+  padding: 1rem;
   text-align: center;
   color: default;
 }
