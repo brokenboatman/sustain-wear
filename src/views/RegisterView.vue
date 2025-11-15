@@ -47,8 +47,15 @@ const providers = [
     label: "Google",
     icon: "i-mdi-google",
     onClick: () => {
-      toast.add({ title: "Google", description: "Login with Google" });
+      window.location.href = "http://localhost:3000/api/auth/google";
     },
+  },
+];
+
+const links = [
+  {
+    label: "Already have an account?",
+    to: "/login",
   },
 ];
 
@@ -111,6 +118,7 @@ async function onSubmit(payload: FormSubmitEvent<Schema>) {
         icon="i-lucide-user"
         :fields="fields"
         :providers="providers"
+        :links="links"
         :submit="{ label: 'Register' }"
         @submit="onSubmit"
       />
