@@ -1,8 +1,10 @@
 <script setup lang="ts">
 import * as z from "zod";
-import type { FormSubmitEvent, AuthFormField } from "@nuxt/ui";
+import type { FormSubmitEvent, AuthFormField, Form } from "@nuxt/ui";
+import { useRouter } from "vue-router";
 
 const toast = useToast();
+const router = useRouter();
 
 const fields: AuthFormField[] = [
   {
@@ -31,10 +33,17 @@ const providers = [
     label: "Google",
     icon: "i-mdi-google",
     onClick: () => {
-      toast.add({ title: "Google", description: "Login with Google" });
+      window.location.href = "http://localhost:5173/api/auth/google";
     },
   },
 ];
+
+const links = [
+  {
+    label: "Don't have an account?",
+    to: "/register",
+  }
+]
 
 const schema = z.object({
   email: z.email("Invalid email"),
@@ -45,8 +54,38 @@ const schema = z.object({
 
 type Schema = z.output<typeof schema>;
 
-function onSubmit(payload: FormSubmitEvent<Schema>) {
-  console.log("Submitted", payload);
+async function onSubmit(payload: FormSubmitEvent<Schema>) {
+  try {
+    const res = await fetch("/api/auth/login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        email: payload.data.email,
+        password: payload.data.password,
+      }),
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      toast.add({
+        title: "Login Failed",
+        description: data.error,
+        color: "red",
+      });
+      return;
+    }
+
+    localStorage.setItem("token", data.token);
+    toast.add({
+      title: "Success",
+      description: "Account logged in successfully",
+      color: "green",
+    });
+    router.push("/");
+  } catch (err) {
+    toast.add({ title: "Error", description: "Something went wrong" });
+  }
 }
 </script>
 
@@ -60,7 +99,7 @@ function onSubmit(payload: FormSubmitEvent<Schema>) {
         icon="i-lucide-user"
         :fields="fields"
         :providers="providers"
-        :submit="{ label: 'Log In' }"
+        :links="links" :submit="{ label: 'Log In' }"
         @submit="onSubmit"
       />
     </UPageCard>

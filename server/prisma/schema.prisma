@@ -11,17 +11,18 @@ datasource db {
 }
 
 model User {
-  userId    Int     @id @default(autoincrement())
-  username  String
-  email     String  @unique
-  password  String
-  roleId    Int
-  charityId Int? // Assumed nullable (e.g., for donor users)
-
+  userId     Int      @id @default(autoincrement())
+  email      String   @unique
+  username   String?  // Can be null if they sign up with Google
+  password   String?  // Can be null if they sign up with Google
+  googleId   String?  @unique //this links to google id now
+  roleId     Int
+  charityId  Int? 
+  
   // --- Relations ---
-  role      Role       @relation(fields: [roleId], references: [roleId])
-  charity   Charity?   @relation(fields: [charityId], references: [charityId])
-  donations Donation[]
+  role       Role       @relation(fields: [roleId], references: [roleId])
+  charity    Charity?   @relation(fields: [charityId], references: [charityId])
+  donations  Donation[]
 }
 
 model Role {

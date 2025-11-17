@@ -6,6 +6,7 @@ import ui from "@nuxt/ui/vite";
 
 // https://vite.dev/config/
 export default defineConfig({
+<<<<<<< HEAD
   plugins: [
     vue(), 
     ui(
@@ -20,6 +21,17 @@ export default defineConfig({
       }
     ),
     vueDevTools()],
+=======
+  plugins: [vue(), ui(), vueDevTools()],
+  server: {
+    proxy: {
+      "/api": {
+        target: "http://localhost:3000",
+        changeOrigin: true,
+      },
+    },
+  },
+>>>>>>> origin/main
   resolve: {
     alias: {
       "@": fileURLToPath(new URL("./src", import.meta.url)),
