@@ -1,10 +1,14 @@
 <script setup>
-import Sidebar from "../components/Sidebar.vue";
-import BarChart from "../components/BarChart.vue";
+import Sidebar from '../Components/Sidebar.vue';
+import BarChart from '../Components/BarChart.vue';
+import DonationList from '../Components/DonationList.vue';
 </script>
 
 <template>
   <main>
+    <h1>Hello</h1>
+    <DonationList />
+    
     <header class="border-b border-inverted mb-4 pb-2">
       <div class="flex align-center justify-between p-4">
         <div class="flex items-center">
@@ -23,6 +27,6 @@ import BarChart from "../components/BarChart.vue";
 <style scoped>
 main {
   text-align: center;
-  color: blue;
+  color: default;
 }
 </style>
