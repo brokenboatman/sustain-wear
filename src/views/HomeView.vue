@@ -1,7 +1,8 @@
 <script setup>
 import Sidebar from '../Components/Sidebar.vue';
 import BarChart from '../Components/BarChart.vue';
-import DonationList from '../Components/DonationList.vue';
+import PendingDonationList from '../Components/PendingDonationList.vue';
+import DonationTab from '../Components/DonationTab.vue';
 </script>
 
 <template>
@@ -17,7 +18,8 @@ import DonationList from '../Components/DonationList.vue';
         </div>
       </div>
     </header>
-    <DonationList />
+    <DonationTab />
+    <PendingDonationList />
     <BarChart />
   </main>
 </template>
