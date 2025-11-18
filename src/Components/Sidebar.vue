@@ -50,15 +50,6 @@ async function logout() {
           class="flex items-center gap-4 animate-slide-in"
           style="animation-delay: 0.4s"
         >
-          <UButton to="/settings" class="text-xl w-full py-2 text-toned gap-2" variant="ghost" color="neutral">
-            <UIcon name="line-md:cog" class="size-8" />
-            Settings
-          </UButton>
-        </div>
-        <div
-          class="flex items-center gap-4 animate-slide-in"
-          style="animation-delay: 0.6s"
-        >
         <UButton to="/rewards" class="text-xl w-full py-2 text-toned gap-2" variant="ghost" color="neutral">
             <UIcon name="line-md:star" class="size-8" />
             Rewards & Badges
@@ -66,7 +57,7 @@ async function logout() {
         </div>
         <div
           class="flex items-center gap-4 animate-slide-in"
-          style="animation-delay: 0.8s"
+          style="animation-delay: 0.6s"
         >
           <UButton variant="subtle" color="neutral"
           class="text-xl w-full py-2 cursor-pointer gap-2" 

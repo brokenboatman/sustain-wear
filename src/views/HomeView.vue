@@ -1,7 +1,7 @@
 <script setup>
-import Sidebar from '../Components/Sidebar.vue';
-import BarChart from '../Components/BarChart.vue';
-import DonationList from '../Components/DonationList.vue';
+import Sidebar from '../components/Sidebar.vue';
+import BarChart from '../components/BarChart.vue';
+import DonationList from '../components/DonationList.vue';
 </script>
 
 <template>

@@ -7,7 +7,7 @@ const items = [
   },
   {
     label: 'Change Details',
-    icon: 'lucide:circle-plus',
+    icon: 'i-lucide-settings',
     slot: 'changeDetails'
   }
 ]
@@ -28,7 +28,7 @@ const state = ({
             <div>
                 <UUser
                     name="John Doe"
-                    description="Type of user"
+                    description="Donor"
                     size="3xl"
                     :avatar="{
                     src: 'https://i.pravatar.cc/150?u=john-doe',
@@ -37,7 +37,8 @@ const state = ({
                 />
             </div>
             <div>
-                <!-- section for me to add more details about the user -->
+                <!-- settings section -->
+                
             </div>
         </div>
     </template>
@@ -52,7 +53,7 @@ const state = ({
           <UInput v-model="state.newPassword" type="password" label="New Password" placeholder="Enter your new password" />
           <UInput v-model="state.confirmPassword" type="password" label="Confirm New Password" placeholder="Confirm your new password" />
           <div>
-              <UButton color="primary" variant="solid" size="xl">Save Changes</UButton>
+            <UButton color="primary" variant="solid" size="xl">Save Changes</UButton>
           </div>
         </form>
       </div>
