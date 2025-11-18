@@ -10,7 +10,6 @@ import dotenv from "dotenv";
 dotenv.config({ path: "../.env" });
 
 const router = Router();
-const DEFAULT_ROLE_ID = 1;
 
 passport.use(
   new GoogleStrategy(
@@ -24,7 +23,6 @@ passport.use(
       const googleId = profile.id;
 
       try {
-        // 1. Check if user exists by Google ID
         let user = await prisma.user.findUnique({ where: { googleId } });
         if (user) return done(null, user);
 
@@ -37,33 +35,26 @@ passport.use(
           });
           return done(null, user);
         }
-
-        // 3. GENERATE USERNAME FROM EMAIL
-        // ex: "noelboyd18@gmail.com" -> "noelboyd18"
         let baseUsername = email.split("@")[0];
 
-        // Check if this username is taken
         let uniqueUsername = baseUsername;
         let counter = 1;
 
         while (true) {
           const existingUser = await prisma.user.findUnique({
-            where: { username: uniqueUsername }, // Now using findUnique is safe!
+            where: { username: uniqueUsername },
           });
 
-          if (!existingUser) break; // It's free!
-
-          // If taken, add a number: "noelboyd181", "noelboyd182"
+          if (!existingUser) break;
           uniqueUsername = `${baseUsername}${counter}`;
           counter++;
         }
 
-        // 4. Create the User
         user = await prisma.user.create({
           data: {
             googleId,
             email,
-            username: uniqueUsername, // The clean email prefix
+            username: uniqueUsername,
             roleId: 1,
           },
         });
