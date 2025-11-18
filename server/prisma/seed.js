@@ -1,4 +1,4 @@
-import { PrismaClient } from ("@prisma/client");
+import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
 
 async function main() {
@@ -24,12 +24,34 @@ async function main() {
   console.log("Creating lookup tables...");
 
   // Roles
-  const roleDonor = await prisma.role.create({ data: { roleName: "Donor" } });
-  const roleCharityAdmin = await prisma.role.create({
-    data: { roleName: "Charity Staff" },
+  // 1. Donor
+  const roleDonor = await prisma.role.upsert({
+    where: { roleId: 1 },
+    update: {}, // No changes if it already exists
+    create: {
+      roleId: 1,
+      roleName: "Donor",
+    },
   });
-  const roleSuperAdmin = await prisma.role.create({
-    data: { roleName: "Administrator" },
+
+  // 2. Charity Staff
+  const roleCharityAdmin = await prisma.role.upsert({
+    where: { roleId: 2 },
+    update: {},
+    create: {
+      roleId: 2,
+      roleName: "Charity Staff",
+    },
+  });
+
+  // 3. Administrator
+  const roleSuperAdmin = await prisma.role.upsert({
+    where: { roleId: 3 },
+    update: {},
+    create: {
+      roleId: 3,
+      roleName: "Administrator",
+    },
   });
 
   // Statuses
