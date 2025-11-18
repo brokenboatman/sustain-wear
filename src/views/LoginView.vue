@@ -32,6 +32,7 @@ const providers = [
   {
     label: "Google",
     icon: "i-mdi-google",
+    class: "cursor-pointer",
     onClick: () => {
       window.location.href = "http://localhost:5173/api/auth/google";
     },
@@ -99,9 +100,19 @@ async function onSubmit(payload: FormSubmitEvent<Schema>) {
         icon="i-lucide-user"
         :fields="fields"
         :providers="providers"
-        :links="links" :submit="{ label: 'Log In' }"
+        :submit="{ label: 'Log In', class: 'cursor-pointer' }"
         @submit="onSubmit"
       />
+      <div class="text-center text-sm text-muted">
+        Don't have an account?
+        <ULink
+          to="/register" 
+          variant="link" 
+          class="font-semibold text-primary ml-1"
+        >
+          Sign up
+        </ULink>
+      </div>
     </UPageCard>
   </div>
 </template>

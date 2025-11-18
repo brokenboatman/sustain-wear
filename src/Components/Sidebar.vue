@@ -27,42 +27,54 @@ async function logout() {
     <UButton icon="line-md:menu" color="neutral" variant="ghost" />
 
     <template #body>
+      <div class="flex flex-col gap-0">
       <div
-        class="flex items-center gap-4 mb-4 animate-slide-in"
+        class="flex items-center gap-4 animate-slide-in"
         style="animation-delay: 0s"
       >
-        <UIcon name="line-md:heart" class="size-8" />
-        <ULink to="/" class="text-2xl">My Donations</ULink>
+        <UButton to="/" class="text-xl w-full py-2 text-toned gap-2" variant="ghost" color="neutral">
+          <UIcon name="line-md:heart" class="size-8" />
+          My Donations
+        </UButton>
       </div>
-      <div
-        class="flex items-center gap-4 mb-4 animate-slide-in"
-        style="animation-delay: 0.2s"
-      >
-        <UIcon name="line-md:account" class="size-8" />
-        <ULink to="/account" class="text-2xl">Account</ULink>
-      </div>
-      <div
-        class="flex items-center gap-4 mb-4 animate-slide-in"
-        style="animation-delay: 0.4s"
-      >
-        <UIcon name="line-md:cog" class="size-8" />
-        <ULink to="/settings" class="text-2xl">Settings</ULink>
-      </div>
-      <div
-        class="flex items-center gap-4 mb-4 animate-slide-in"
-        style="animation-delay: 0.6s"
-      >
-        <UIcon name="line-md:star" class="size-8" />
-        <ULink to="/rewards" class="text-2xl">Rewards & Badges</ULink>
-      </div>
-      <div
-        class="flex items-center gap-4 mb-4 animate-slide-in"
-        style="animation-delay: 0.8s"
-      >
-        <UIcon name="line-md:log-out" class="size-8" />
-        <UButton variant="link" class="text-2xl p-0" @click="logout"
-          >Log Out</UButton
+        <div
+          class="flex items-center gap-4 animate-slide-in"
+          style="animation-delay: 0.2s"
         >
+          <UButton to="/account" class="text-xl w-full py-2 text-toned gap-2" variant="ghost" color="neutral">
+            <UIcon name="line-md:account" class="size-8" />
+            Account
+          </UButton>
+        </div>
+        <div
+          class="flex items-center gap-4 animate-slide-in"
+          style="animation-delay: 0.4s"
+        >
+          <UButton to="/settings" class="text-xl w-full py-2 text-toned gap-2" variant="ghost" color="neutral">
+            <UIcon name="line-md:cog" class="size-8" />
+            Settings
+          </UButton>
+        </div>
+        <div
+          class="flex items-center gap-4 animate-slide-in"
+          style="animation-delay: 0.6s"
+        >
+        <UButton to="/rewards" class="text-xl w-full py-2 text-toned gap-2" variant="ghost" color="neutral">
+            <UIcon name="line-md:star" class="size-8" />
+            Rewards & Badges
+          </UButton>
+        </div>
+        <div
+          class="flex items-center gap-4 animate-slide-in"
+          style="animation-delay: 0.8s"
+        >
+          <UButton variant="subtle" color="neutral"
+          class="text-xl w-full py-2 cursor-pointer gap-2" 
+          @click="logout">
+          <UIcon name="line-md:log-out" class="size-8" />
+            Log Out
+          </UButton>
+        </div>
       </div>
     </template>
   </USlideover>
