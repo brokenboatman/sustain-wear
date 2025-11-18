@@ -22,35 +22,49 @@ passport.use(
     async (accessToken, refreshToken, profile, done) => {
       const email = profile.emails[0].value;
       const googleId = profile.id;
-      const displayName = profile.displayName;
 
       try {
-        let user = await prisma.user.findUnique({
-          where: { googleId: googleId },
-        });
+        // 1. Check if user exists by Google ID
+        let user = await prisma.user.findUnique({ where: { googleId } });
+        if (user) return done(null, user);
 
-        if (user) {
-          return done(null, user);
-        }
-
-        user = await prisma.user.findUnique({
-          where: { email: email },
-        });
-
+        // 2. Check if user exists by Email (link accounts)
+        user = await prisma.user.findUnique({ where: { email } });
         if (user) {
           user = await prisma.user.update({
-            where: { email: email },
-            data: { googleId: googleId },
+            where: { email },
+            data: { googleId },
           });
           return done(null, user);
         }
 
+        // 3. GENERATE USERNAME FROM EMAIL
+        // ex: "noelboyd18@gmail.com" -> "noelboyd18"
+        let baseUsername = email.split("@")[0];
+
+        // Check if this username is taken
+        let uniqueUsername = baseUsername;
+        let counter = 1;
+
+        while (true) {
+          const existingUser = await prisma.user.findUnique({
+            where: { username: uniqueUsername }, // Now using findUnique is safe!
+          });
+
+          if (!existingUser) break; // It's free!
+
+          // If taken, add a number: "noelboyd181", "noelboyd182"
+          uniqueUsername = `${baseUsername}${counter}`;
+          counter++;
+        }
+
+        // 4. Create the User
         user = await prisma.user.create({
           data: {
-            googleId: googleId,
-            email: email,
-            username: displayName,
-            roleId: DEFAULT_ROLE_ID,
+            googleId,
+            email,
+            username: uniqueUsername, // The clean email prefix
+            roleId: 1,
           },
         });
         return done(null, user);
@@ -90,7 +104,7 @@ router.post("/register", async (req, res) => {
 
     res.json({
       message: "Registered!",
-      user: { id: user.id, email: user.email, username: user.username },
+      user: { id: user.userId, email: user.email, username: user.username },
     });
   } catch (e) {
     console.error(e);

@@ -13,7 +13,7 @@ datasource db {
 model User {
   userId     Int      @id @default(autoincrement())
   email      String   @unique
-  username   String?  // Can be null if they sign up with Google
+  username   String  @unique
   password   String?  // Can be null if they sign up with Google
   googleId   String?  @unique //this links to google id now
   roleId     Int
