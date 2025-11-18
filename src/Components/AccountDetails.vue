@@ -28,7 +28,7 @@ const state = ({
             <div>
                 <UUser
                     name="John Doe"
-                    description="Software Engineer"
+                    description="Type of user"
                     size="3xl"
                     :avatar="{
                     src: 'https://i.pravatar.cc/150?u=john-doe',
@@ -37,7 +37,7 @@ const state = ({
                 />
             </div>
             <div>
-                
+                <!-- section for me to add more details about the user -->
             </div>
         </div>
     </template>
