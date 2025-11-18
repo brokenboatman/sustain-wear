@@ -16,11 +16,20 @@ npm install
 
 Download and install and remember the password for postgresssql server
 
-create a .env file in the root with a 
-DATABASE_URL="postgresql://postgres:PASSWORDFROMTHEPOSTGRESQLDATABASE@localhost:5432/sustain-wear"
+npm install
+
+create a .env file in the root with a
+DATABASE_URL="postgresql://postgres:PASSWORDFROMYOURPOSTGRESSQLSERVER@localhost:5432/sustain-wear"
 JWT_SECRET="key"
+GOOGLE_CLIENT_ID="334970749720-aia1uo57j1b6i24m92s23dc3mgdmpjv5.apps.googleusercontent.com"
+GOOGLE_CLIENT_SECRET="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"
+BACKEND_SERVER_URL="http://localhost:3000"
+FRONTEND_SERVER_URL="http://localhost:5173"
 
 cd server
+npx prisma migrate dev
+cd ..
+npx prisma db seed
 node index.js
 
 cd ..

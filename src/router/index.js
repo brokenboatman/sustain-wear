@@ -4,7 +4,6 @@ import LoginView from "../views/LoginView.vue";
 import RegisterView from "../views/RegisterView.vue";
 import AccountView from "../views/AccountView.vue";
 import RewardsView from "../views/RewardsView.vue";
-import SettingsView from "../views/SettingsView.vue";
 import UnauthorisedView from "@/views/UnauthorisedView.vue";
 
 const routes = [
@@ -34,12 +33,6 @@ const routes = [
     path: "/rewards",
     name: "rewards",
     component: RewardsView,
-    meta: { requiresAuth: true },
-  },
-  {
-    path: "/settings",
-    name: "settings",
-    component: SettingsView,
     meta: { requiresAuth: true },
   },
   {
