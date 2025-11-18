@@ -1,4 +1,5 @@
 <script setup>
+  import AccountDetails from '@/Components/AccountDetails.vue';
   import Sidebar from '../components/Sidebar.vue';
 </script>
 
@@ -15,15 +16,16 @@
           </div>
         </div>
     </header>
+    <div class="px-4">
+      <AccountDetails/>
 
-    <h1>Welcome to your account page</h1>
-    
+    </div>
   </main>
 </template>
 
 <style scoped>
 main {
   text-align: center;
-  color: blue;
+  /* color: blue; */
 }
 </style>
