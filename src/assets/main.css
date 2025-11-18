@@ -1,5 +1,10 @@
+@import url('https://fonts.googleapis.com/css2?family=Nunito+Sans:ital,opsz,wght@0,6..12,200..1000;1,6..12,200..1000&family=Stack+Sans+Headline:wght@200..700&display=swap');
 @import "tailwindcss";
 @import "@nuxt/ui";
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
 @keyframes slideInUp {
   from {
@@ -17,3 +22,7 @@
   opacity: 0;
 }
 
+@theme {
+  --font-sans: 'Nunito Sans', system-ui, sans-serif;
+  --font-brand: 'Stack Sans Headline', system-ui, sans-serif;
+}
