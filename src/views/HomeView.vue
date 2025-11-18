@@ -6,9 +6,6 @@ import DonationList from '../Components/DonationList.vue';
 
 <template>
   <main>
-    <h1>Hello</h1>
-    <DonationList />
-    
     <header class="border-b border-inverted mb-4 pb-2">
       <div class="flex align-center justify-between p-4">
         <div class="flex items-center">
@@ -20,6 +17,7 @@ import DonationList from '../Components/DonationList.vue';
         </div>
       </div>
     </header>
+    <DonationList />
     <BarChart />
   </main>
 </template>
