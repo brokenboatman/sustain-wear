@@ -5,13 +5,32 @@ import RegisterView from "../views/RegisterView.vue";
 import AccountView from "../views/AccountView.vue";
 import RewardsView from "../views/RewardsView.vue";
 import UnauthorisedView from "@/views/UnauthorisedView.vue";
+import DashboardLayout from "@/components/DashboardLayout.vue";
 
 const routes = [
   {
     path: "/",
-    name: "home",
-    component: HomeView,
-    meta: { requiresAuth: true },
+    component: DashboardLayout,
+    children: [
+      {
+        path: "",
+        name: "home",
+        component: HomeView,
+        meta: { requiresAuth: true },
+      },
+      {
+        path: "account",
+        name: "account",
+        component: AccountView,
+        meta: { requiresAuth: true },
+      },
+      {
+        path: "rewards",
+        name: "rewards",
+        component: RewardsView,
+        meta: { requiresAuth: true },
+      },
+    ]
   },
   {
     path: "/login",
@@ -23,18 +42,7 @@ const routes = [
     name: "register",
     component: RegisterView,
   },
-  {
-    path: "/account",
-    name: "account",
-    component: AccountView,
-    meta: { requiresAuth: true },
-  },
-  {
-    path: "/rewards",
-    name: "rewards",
-    component: RewardsView,
-    meta: { requiresAuth: true },
-  },
+  
   {
     path: "/Unauthorized",
     name: "unauthorized",
@@ -46,6 +54,48 @@ const routes = [
     component: () => import("../views/GoogleCallbackView.vue"),
   },
 ];
+
+
+// const routes = [
+//   {
+//     path: "/",
+//     name: "home",
+//     component: HomeView,
+//     meta: { requiresAuth: true },
+//   },
+//   {
+//     path: "/login",
+//     name: "login",
+//     component: LoginView,
+//   },
+//   {
+//     path: "/register",
+//     name: "register",
+//     component: RegisterView,
+//   },
+//   {
+//     path: "/account",
+//     name: "account",
+//     component: AccountView,
+//     meta: { requiresAuth: true },
+//   },
+//   {
+//     path: "/rewards",
+//     name: "rewards",
+//     component: RewardsView,
+//     meta: { requiresAuth: true },
+//   },
+//   {
+//     path: "/Unauthorized",
+//     name: "unauthorized",
+//     component: UnauthorisedView,
+//   },
+//   {
+//     path: "/auth/google/callback",
+//     name: "google-callback",
+//     component: () => import("../views/GoogleCallbackView.vue"),
+//   },
+// ];
 
 const router = createRouter({
   history: createWebHistory(),

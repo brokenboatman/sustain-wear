@@ -13,6 +13,7 @@ declare module 'vue' {
   export interface GlobalComponents {
     AccountDetails: typeof import('./src/components/AccountDetails.vue')['default']
     BarChart: typeof import('./src/components/BarChart.vue')['default']
+    DashboardLayout: typeof import('./src/components/DashboardLayout.vue')['default']
     DonationList: typeof import('./src/components/DonationList.vue')['default']
     Header: typeof import('./src/components/Header.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']

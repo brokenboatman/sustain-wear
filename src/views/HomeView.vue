@@ -7,7 +7,6 @@ import NewDonationDialog from "./NewDonationDialog.vue";
 </script>
 
 <template>
-  <Header />
   <main>
     <DonationList />
     <BarChart />

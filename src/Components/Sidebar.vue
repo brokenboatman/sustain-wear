@@ -1,8 +1,14 @@
 <script setup>
+import { ref } from "vue";
 import { useRouter } from "vue-router";
 
+const isOpen = ref(false);
 const toast = useToast();
 const router = useRouter();
+
+function closeSidebar() {
+  isOpen.value = false;
+}
 
 async function logout() {
   const token = localStorage.getItem("token");
@@ -18,13 +24,25 @@ async function logout() {
   localStorage.removeItem("token");
   toast.add({ title: "Goodbye!", description: "You have been logged out." });
   console.log("LOGOUT CALLED");
+  closeSidebar();
   router.push("/login");
 }
 </script>
 
 <template>
-  <USlideover title="" close-icon="i-lucide-arrow-right">
-    <UButton icon="line-md:menu" color="neutral" variant="ghost" />
+  <USlideover 
+   v-model:open="isOpen"
+   title="" 
+   close-icon="i-lucide-arrow-right"
+   :close="{
+    size: 'xl',
+    class: 'mt-0'
+   }"
+   :ui="{
+    wrapper: 'mb-10'
+   }"
+   >
+    <UButton icon="line-md:menu" color="neutral" variant="ghost" class="cursor-pointer" size="xl"/>
 
     <template #body>
       <div class="flex flex-col gap-0">
@@ -32,7 +50,7 @@ async function logout() {
         class="flex items-center gap-4 animate-slide-in"
         style="animation-delay: 0s"
       >
-        <UButton to="/" class="text-xl w-full py-2 text-toned gap-2" variant="ghost" color="neutral">
+        <UButton to="/" class="text-xl w-full py-2 text-toned gap-2" variant="ghost" color="neutral" @click="closeSidebar">
           <UIcon name="line-md:heart" class="size-8" />
           My Donations
         </UButton>
@@ -41,7 +59,7 @@ async function logout() {
           class="flex items-center gap-4 animate-slide-in"
           style="animation-delay: 0.2s"
         >
-          <UButton to="/account" class="text-xl w-full py-2 text-toned gap-2" variant="ghost" color="neutral">
+          <UButton to="/account" class="text-xl w-full py-2 text-toned gap-2" variant="ghost" color="neutral" @click="closeSidebar">
             <UIcon name="line-md:account" class="size-8" />
             Account
           </UButton>
@@ -50,7 +68,7 @@ async function logout() {
           class="flex items-center gap-4 animate-slide-in"
           style="animation-delay: 0.4s"
         >
-        <UButton to="/rewards" class="text-xl w-full py-2 text-toned gap-2" variant="ghost" color="neutral">
+        <UButton to="/rewards" class="text-xl w-full py-2 text-toned gap-2" variant="ghost" color="neutral" @click="closeSidebar">
             <UIcon name="line-md:star" class="size-8" />
             Rewards & Badges
           </UButton>
