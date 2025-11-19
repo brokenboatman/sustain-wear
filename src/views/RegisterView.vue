@@ -35,11 +35,6 @@ const fields: AuthFormField[] = [
     placeholder: "Repeat your password",
     required: true,
   },
-  {
-    name: "remember",
-    label: "Remember me",
-    type: "checkbox",
-  },
 ];
 
 const providers = [
@@ -126,8 +121,8 @@ async function onSubmit(payload: FormSubmitEvent<Schema>) {
       <div class="text-center text-sm text-muted">
         Already have an account?
         <ULink
-          to="/login" 
-          variant="link" 
+          to="/login"
+          variant="link"
           class="font-semibold text-primary ml-1"
         >
           Log in

@@ -43,14 +43,15 @@ const links = [
   {
     label: "Don't have an account?",
     to: "/register",
-  }
-]
+  },
+];
 
 const schema = z.object({
   email: z.email("Invalid email"),
   password: z
     .string("Password is required")
     .min(8, "Must be at least 8 characters"),
+  remember: z.boolean().optional(),
 });
 
 type Schema = z.output<typeof schema>;
@@ -63,6 +64,7 @@ async function onSubmit(payload: FormSubmitEvent<Schema>) {
       body: JSON.stringify({
         email: payload.data.email,
         password: payload.data.password,
+        remember: payload.data.remember,
       }),
     });
 
@@ -106,8 +108,8 @@ async function onSubmit(payload: FormSubmitEvent<Schema>) {
       <div class="text-center text-sm text-muted">
         Don't have an account?
         <ULink
-          to="/register" 
-          variant="link" 
+          to="/register"
+          variant="link"
           class="font-semibold text-primary ml-1"
         >
           Sign up
