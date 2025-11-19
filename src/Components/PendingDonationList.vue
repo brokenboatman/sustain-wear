@@ -34,7 +34,7 @@ const data = ref<Donation[]>([
 
 <template>
   <div>
-    <h1 class="text-default font-bold">Pending Donations</h1>
+    <h1 class="text-default font-bold text-xl pb-2">Pending Donations</h1>
   </div>
   <div class="flex-1 flex-direction-column text-default">
     <div v-for="donation in data" :key="donation.id" class="flex items-center justify-between h-20 border border-muted bg-elevated mb-2 p-2 rounded-lg gap-x-1">
