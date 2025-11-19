@@ -19,6 +19,7 @@ const state = reactive({
     title: '',
     description: '',
     quantity: 1,
+    category: '',
     size: '',
     colour: '',
     material: '',
@@ -74,7 +75,10 @@ images.value.push('ADD_BUTTON')
     <UModal 
     v-model="isOpen"
     title="Add a donation">
-        <UButton label="Open" color="neutral" variant="subtle" @click="isOpen = true"/>
+        <UButton color="neutral" variant="solid" @click="isOpen = true" class="w-full sm:w-auto justify-center">
+            <UIcon name="i-lucide-plus" class="w-6 h-6" />
+            New donation
+        </UButton>
 
         <template #body>
             <input 
@@ -112,6 +116,14 @@ images.value.push('ADD_BUTTON')
                         <UInput v-model.number="state.quantity" type="number" min="1" class="w-full" />
                     </UFormField>
 
+                    <UFormField label="Category" name="category" class="flex-1">
+                        <USelect 
+                            v-model="state.category" 
+                            :items="['Tops', 'Bottoms', 'Dresses', 'Outerwear', 'Footwear', 'Accessories', 'Other']"
+                            placeholder="Select"
+                            class="w-48"
+                        />
+                    </UFormField>
                     <UFormField label="Size" name="size" class="flex-1">
                         <USelect 
                             v-model="state.size" 

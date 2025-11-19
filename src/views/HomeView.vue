@@ -9,8 +9,8 @@ import NewDonationDialog from "./NewDonationDialog.vue";
 <template>
   <main>
     <DonationList />
-    <BarChart />
     <NewDonationDialog />
+    <BarChart />
   </main>
 </template>
 
