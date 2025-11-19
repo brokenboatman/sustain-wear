@@ -6,6 +6,7 @@ import AccountView from "../views/AccountView.vue";
 import RewardsView from "../views/RewardsView.vue";
 import UnauthorisedView from "@/views/UnauthorisedView.vue";
 import DashboardLayout from "@/components/DashboardLayout.vue";
+import GoogleCallbackView from "../views/GoogleCallbackView.vue";
 
 const routes = [
   {
@@ -30,7 +31,7 @@ const routes = [
         component: RewardsView,
         meta: { requiresAuth: true },
       },
-    ]
+    ],
   },
   {
     path: "/login",
@@ -42,7 +43,7 @@ const routes = [
     name: "register",
     component: RegisterView,
   },
-  
+
   {
     path: "/Unauthorized",
     name: "unauthorized",
@@ -51,10 +52,9 @@ const routes = [
   {
     path: "/auth/google/callback",
     name: "google-callback",
-    component: () => import("../views/GoogleCallbackView.vue"),
+    component: GoogleCallbackView,
   },
 ];
-
 
 // const routes = [
 //   {
