@@ -56,19 +56,16 @@ async function main() {
 
   // Statuses
   const statusPending = await prisma.status.create({
-    data: { status: "Pending Pickup" },
+    data: { status: "On its way" },
   });
   const statusPickedUp = await prisma.status.create({
-    data: { status: "Picked Up" },
+    data: { status: "In transit" },
   });
   const statusReceived = await prisma.status.create({
     data: { status: "Received at Charity" },
   });
   const statusAccepted = await prisma.status.create({
     data: { status: "Accepted" },
-  });
-  const statusRejected = await prisma.status.create({
-    data: { status: "Rejected" },
   });
 
   // Colours
@@ -78,6 +75,18 @@ async function main() {
   const colMulti = await prisma.colour.create({
     data: { colour: "Multi-colour" },
   });
+  // ... existing colours ...
+  const colRed = await prisma.colour.create({ data: { colour: "Red" } });
+  const colGreen = await prisma.colour.create({ data: { colour: "Green" } });
+  const colYellow = await prisma.colour.create({ data: { colour: "Yellow" } });
+  const colPink = await prisma.colour.create({ data: { colour: "Pink" } });
+  const colPurple = await prisma.colour.create({ data: { colour: "Purple" } });
+  const colGrey = await prisma.colour.create({ data: { colour: "Grey" } });
+  const colBrown = await prisma.colour.create({ data: { colour: "Brown" } });
+  const colBeige = await prisma.colour.create({ data: { colour: "Beige" } });
+  const colOrange = await prisma.colour.create({ data: { colour: "Orange" } });
+  const colGold = await prisma.colour.create({ data: { colour: "Gold" } });
+  const colSilver = await prisma.colour.create({ data: { colour: "Silver" } });
 
   // Conditions
   const condNewTags = await prisma.condition.create({
@@ -91,6 +100,12 @@ async function main() {
   });
   const condFair = await prisma.condition.create({
     data: { condition: "Fair" },
+  });
+  const condNewNoTags = await prisma.condition.create({
+    data: { condition: "New without Tags" },
+  });
+  const condPoor = await prisma.condition.create({
+    data: { condition: "Heavily Used / Poor" },
   });
 
   // Genders
@@ -110,137 +125,79 @@ async function main() {
   const catShoes = await prisma.category.create({
     data: { category: "Shoes" },
   });
+  const catDresses = await prisma.category.create({
+    data: { category: "Dresses" },
+  });
+  const catAccessories = await prisma.category.create({
+    data: { category: "Accessories" }, // Belts, hats, scarves
+  });
+  const catBags = await prisma.category.create({
+    data: { category: "Bags" },
+  });
+  const catJewelry = await prisma.category.create({
+    data: { category: "Jewelry" },
+  });
+  const catActivewear = await prisma.category.create({
+    data: { category: "Activewear" },
+  });
+  const catSwimwear = await prisma.category.create({
+    data: { category: "Swimwear" },
+  });
+  const catSuits = await prisma.category.create({
+    data: { category: "Suits & Blazers" },
+  });
 
   // Materials
-  const matCotton = await prisma.material.create({
-    data: { material: "Cotton" },
-  });
-  const matDenim = await prisma.material.create({
-    data: { material: "Denim" },
-  });
-  const matPolyester = await prisma.material.create({
-    data: { material: "Polyester" },
-  });
-  const matWool = await prisma.material.create({ data: { material: "Wool" } });
+  const materialNames = [
+    "Cotton",
+    "Denim",
+    "Polyester",
+    "Wool",
+    "Silk",
+    "Linen",
+    "Leather",
+    "Nylon",
+    "Spandex",
+    "Rayon",
+    "Cashmere",
+    "Velvet",
+    "Suede",
+    "Bamboo",
+    "Hemp",
+    "Fleece",
+    "Satin",
+    "Corduroy",
+  ];
+
+  const materials = await Promise.all(
+    materialNames.map((name) =>
+      prisma.material.create({
+        data: { material: name },
+      })
+    )
+  );
+
+  console.log(`Seeded ${materials.length} materials.`);
 
   // Sizes
   const sizeS = await prisma.size.create({ data: { size: "S" } });
   const sizeM = await prisma.size.create({ data: { size: "M" } });
   const sizeL = await prisma.size.create({ data: { size: "L" } });
-  const sizeOne = await prisma.size.create({ data: { size: "One Size" } });
+  const sizeXL = await prisma.size.create({ data: { size: "XL" } });
+  const sizeXXL = await prisma.size.create({ data: { size: "XXL" } });
+  const size3Xl = await prisma.size.create({ data: { size: "3XL" } });
+  const size4XL = await prisma.size.create({ data: { size: "4XL" } });
 
   console.log("Lookup tables created.");
 
-  // --- 3. Create Charities ---
   console.log("Creating charities...");
   const charity1 = await prisma.charity.create({
     data: {
-      name: "CityHope Outreach",
-      city: "London",
-      address: "123 Helping Hand St, London, E1 4BH",
+      name: "Charity",
+      city: "Sheffield",
+      address: "28 Neill Road, Sheffield, S11 8QG",
     },
   });
-
-  const charity2 = await prisma.charity.create({
-    data: {
-      name: "People's Closet",
-      city: "Manchester",
-      address: "456 Community Way, Manchester, M4 1AH",
-    },
-  });
-  console.log("Charities created.");
-
-  // --- 4. Create Users ---
-  console.log("Creating users...");
-  // NOTE: In a real application, you MUST hash passwords.
-  // We use plaintext here only for a simple seed script.
-  const userAlice = await prisma.user.create({
-    data: {
-      username: "alice_donor",
-      email: "alice@example.com",
-      password: "password123", // <-- HASH THIS in a real app
-      roleId: roleDonor.roleId,
-      charityId: null, // Donors are not affiliated with a specific charity
-    },
-  });
-
-  const userBob = await prisma.user.create({
-    data: {
-      username: "bob_admin",
-      email: "bob@cityhope.org",
-      password: "password456", // <-- HASH THIS in a real app
-      roleId: roleCharityAdmin.roleId,
-      charityId: charity1.charityId, // Bob works for CityHope Outreach
-    },
-  });
-  console.log("Users created.");
-
-  // --- 5. Create a Donation ---
-  console.log("Creating a donation...");
-  const donation1 = await prisma.donation.create({
-    data: {
-      userId: userAlice.userId,
-      charityId: charity1.charityId,
-      statusId: statusPending.statusId,
-      date: new Date("2025-10-20T10:00:00Z"),
-    },
-  });
-  console.log("Donation created.");
-
-  // --- 6. Create Donation Items ---
-  console.log("Creating donation items...");
-  const item1 = await prisma.donationItem.create({
-    data: {
-      donationId: donation1.donationId,
-      statusId: statusPending.statusId, // Item status starts same as donation
-      description: "Mens Blue Jeans",
-      quantity: 1,
-      weight: 0.5,
-      co2: 1.2,
-      colourId: colBlue.colourId,
-      conditionId: condGood.conditionId,
-      genderId: genMens.genderId,
-      categoryId: catBottoms.categoryId,
-      materialId: matDenim.materialId,
-      sizeId: sizeM.sizeId,
-    },
-  });
-
-  const item2 = await prisma.donationItem.create({
-    data: {
-      donationId: donation1.donationId,
-      statusId: statusPending.statusId,
-      description: "Womens Wool Coat",
-      photoUrl: "https://example.com/images/coat.jpg",
-      quantity: 1,
-      weight: 1.1,
-      co2: 2.5,
-      colourId: colBlack.colourId,
-      conditionId: condLikeNew.conditionId,
-      genderId: genWomens.genderId,
-      categoryId: catOuterwear.categoryId,
-      materialId: matWool.materialId,
-      sizeId: sizeL.sizeId,
-    },
-  });
-
-  const item3 = await prisma.donationItem.create({
-    data: {
-      donationId: donation1.donationId,
-      statusId: statusPending.statusId,
-      description: "Kids Cotton T-Shirts",
-      quantity: 5,
-      weight: 0.8,
-      co2: 1.0,
-      colourId: colMulti.colourId,
-      conditionId: condGood.conditionId,
-      genderId: genKids.genderId,
-      categoryId: catTops.categoryId,
-      materialId: matCotton.materialId,
-      sizeId: sizeS.sizeId,
-    },
-  });
-  console.log("Donation items created.");
 
   console.log("Seeding finished.");
 }
