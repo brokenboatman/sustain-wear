@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import type { TabsItem } from '@nuxt/ui'
 import { ref } from 'vue'
+import PendingDonationList from './PendingDonationList.vue'
+import PastDonationList from './PastDonationList.vue'
 
 const items = ref<TabsItem[]>([
   {
@@ -19,12 +21,12 @@ const items = ref<TabsItem[]>([
 </script>
 
 <template>
-  <UTabs :items="items" :content="false" class="w-full">
-    <template #pending="{ item }">
-        <DonationList />
+  <UTabs :items="items" class="w-full">
+    <template #pending>
+        <PendingDonationList />
     </template>
     <template #past="{ item }">
-        <p>{{ item }}</p>
+        <PastDonationList />
     </template>
   </UTabs>
 </template>
