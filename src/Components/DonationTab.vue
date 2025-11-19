@@ -21,7 +21,7 @@ const items = ref<TabsItem[]>([
 </script>
 
 <template>
-  <UTabs :items="items" class="w-full">
+  <UTabs :items="items" class="w-full" color="neutral" size="xl">
     <template #pending>
         <PendingDonationList />
     </template>

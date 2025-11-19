@@ -75,10 +75,12 @@ images.value.push('ADD_BUTTON')
     <UModal 
     v-model="isOpen"
     title="Add a donation">
-        <UButton color="neutral" variant="solid" @click="isOpen = true" class="w-full sm:w-auto justify-center">
+    <div class="w-full flex justify-end">
+        <UButton color="neutral" variant="solid" size="xl" @click="isOpen = true" class="w-full justify-center mb-4 ">
             <UIcon name="i-lucide-plus" class="w-6 h-6" />
             New donation
         </UButton>
+    </div>
 
         <template #body>
             <input 
