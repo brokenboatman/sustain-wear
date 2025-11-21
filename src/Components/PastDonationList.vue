@@ -34,12 +34,14 @@ const data = ref<Donation[]>([
 
 <template>
   <div class="flex-1 flex-direction-column text-default">
-    <div v-for="donation in data" :key="donation.id" class="flex items-center justify-between h-20 border border-muted bg-elevated mb-2 p-2 rounded-lg gap-x-1">
-      <!-- comment code below is for when images are added -->
-      <!-- <img :src="donation.imageRef" /> -->
-      <p class="text-left w-3/10">{{ donation.imageRef }}</p>
-      <p class="text-left w-3/10 font-bold">{{ donation.name }}</p>
-      <p class="text-left w-4/10">Date Donated: {{ donation.date }}</p>
+    <div class="overflow-y-auto max-h-80 border border-muted p-2 rounded-lg mb-2">
+      <div v-for="donation in data" :key="donation.id" class="flex items-center justify-between h-20 border border-muted bg-elevated mb-2 p-2 rounded-lg gap-x-1">
+        <!-- comment code below is for when images are added -->
+        <!-- <img :src="donation.imageRef" /> -->
+        <p class="text-left w-3/10">{{ donation.imageRef }}</p>
+        <p class="text-left w-3/10 font-bold">{{ donation.name }}</p>
+        <p class="text-left w-4/10">Date Donated: {{ donation.date }}</p>
+      </div>
     </div>
   </div>
 </template>
