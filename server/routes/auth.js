@@ -74,7 +74,7 @@ router.post("/register", async (req, res) => {
     }
     const existingEmail = await prisma.user.findUnique({ where: { email } });
     if (existingEmail)
-      return res.status(409).json({ error: "User already exists" });
+      return res.status(409).json({ error: "This email is already associated with another account" });
     const existingUsername = await prisma.user.findUnique({
       where: { username },
     });
@@ -94,7 +94,7 @@ router.post("/register", async (req, res) => {
 
     res.json({
       message: "Registered!",
-      user: { id: user.userId, email: user.email, username: user.username },
+      user: { id: user.userId, email: user.email, username: user.username, roleId: user.roleId },
     });
   } catch (e) {
     console.error(e);
@@ -129,9 +129,13 @@ router.get(
       { expiresIn: "1h" }
     );
 
-    res.redirect(
-      `${process.env.FRONTEND_SERVER_URL}/auth/google/callback?token=${token}`
-    );
+    const redirectUrl = new URL(`${process.env.FRONTEND_SERVER_URL}/auth/google/callback`);
+    redirectUrl.searchParams.set('token', token);
+    redirectUrl.searchParams.set('userId', user.userId);
+    redirectUrl.searchParams.set('username', user.username);
+    redirectUrl.searchParams.set('roleId', user.roleId);
+
+    res.redirect(redirectUrl.toString());
   }
 );
 
@@ -182,7 +186,9 @@ router.post("/login", async (req, res) => {
       token,
       user: {
         id: user.userId,
+        username: user.username,
         email: user.email,
+        roleId: user.roleId,
       },
     });
   } catch (e) {

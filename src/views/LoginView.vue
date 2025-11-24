@@ -78,7 +78,9 @@ async function onSubmit(payload: FormSubmitEvent<Schema>) {
       });
       return;
     }
-
+    localStorage.clear();
+    localStorage.setItem("username", data.user.username);
+    localStorage.setItem("roleId", data.user.roleId);
     localStorage.setItem("token", data.token);
     toast.add({
       title: "Success",
