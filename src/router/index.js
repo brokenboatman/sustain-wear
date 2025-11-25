@@ -8,6 +8,9 @@ import UnauthorisedView from "@/views/UnauthorisedView.vue";
 import DashboardLayout from "@/components/DashboardLayout.vue";
 import GoogleCallbackView from "../views/GoogleCallbackView.vue";
 import MyDonationsView from "@/views/MyDonationsView.vue";
+import UserManagementView from "@/views/UserManagementView.vue";
+import DonationsView from "@/views/DonationsView.vue";
+import ReportsView from "@/views/ReportsView.vue";
 
 const routes = [
   {
@@ -37,6 +40,24 @@ const routes = [
         name: "rewards",
         component: RewardsView,
         meta: { requiresAuth: true, requiredRoles: [1] },
+      },
+      {
+        path: "reports",
+        name: "reports",
+        component: ReportsView,
+        meta: { requiresAuth: true, requiredRoles: [3] },
+      },
+      {
+        path: "donations",
+        name: "donations",
+        component: DonationsView,
+        meta: { requiresAuth: true, requiredRoles: [2] },
+      },
+      {
+        path: "user-management",
+        name: "user-management",
+        component: UserManagementView,
+        meta: { requiresAuth: true, requiredRoles: [3] },
       },
     ],
   },
