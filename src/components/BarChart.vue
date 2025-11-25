@@ -1,8 +1,12 @@
 <!-- Good luck trying to change any styling in this :) -->
 
 <template>
-  <div class="bg-white text-black font-bold">
-    <h2>Your Monthly CO2 Savings (kg)</h2>
+  <div class="text-neutral font-bold w-full sm:max-w-[720px] p-10 rounded-lg border-muted border text-left">
+    <h3 class="text-default font-bold text-2xl mb-4">Your impact</h3>
+    <p>This month you've saved <b>{{ currentMonthSaving }} kg</b> of CO<sub>2</sub>.</p>
+    <p>That's equivalent to planting <b>{{ totalYearInTrees }} trees</b> this year!</p>
+    <p>This year you've saved <b>{{ totalYearSaving }} kg</b> of CO<sub>2</sub>.</p>
+    <p>That's equivalent to planting <b>{{ totalYearInTrees }} trees</b> this year!</p>
     <Bar
       id="my-chart-id"
       :options="chartOptions"
@@ -35,6 +39,29 @@ export default {
     chartOptions() {
       return; /* mutable chart options */
     },
+    currentMonthSaving() {
+      const currentMonth = new Date().getMonth();
+      return this.chartData.datasets[0].data[currentMonth];
+    },
+    totalYearSaving() {
+      return this.chartData.datasets[0].data.reduce((a, b) => a + b, 0);
+    },
+    averageMonthSaving() {
+      const total = this.totalYearSaving;
+      return (total / 12).toFixed(2);
+    },
+    currentMonthInTrees() {
+      const kg = this.currentMonthSaving;
+      return (kg / 21.77).toFixed(2);
+    },
+    totalYearInTrees() {
+      const totalKg = this.totalYearSaving;
+      return (totalKg / 21.77).toFixed(2);
+    },
+    averageMonthInTrees() {
+      const avgKg = this.averageMonthSaving;
+      return (avgKg / 21.77).toFixed(2);
+    }
   },
   data() {
     return {
@@ -71,8 +98,6 @@ export default {
 
 <style>
 .bar {
-  background-color: white;
-  color: black;
   text-align: center;
   font-weight: 700;
   font-size: 25px;

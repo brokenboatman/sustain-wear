@@ -1,6 +1,6 @@
 <script setup>
   import AccountDetails from '@/components/AccountDetails.vue';
-  import Sidebar from '../components/Sidebar.vue';
+  import Sidebar from '../Components/Sidebar.vue';
   import Header from "@/components/Header.vue";
 
 </script>
@@ -8,7 +8,7 @@
 <template>
   <main>
     <!-- displaying the account  -->
-    <div class="px-4">
+    <div class="px-4 animate-slide-in">
       <AccountDetails/>
     </div>
   </main>
