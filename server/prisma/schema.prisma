@@ -58,6 +58,7 @@ model Donation {
   userId      Int
   charityId   Int
   statusId    Int
+  title   String
   date        DateTime @default(now())
   photoUrl    String?
   description String?
