@@ -12,7 +12,6 @@ export function auth(requiredRoles = null) {
       const decoded = jwt.verify(token, process.env.JWT_SECRET || "dev-secret");
       req.user = decoded;
       req.token = token;
-
       if (requiredRoles && !requiredRoles.includes(decoded.roleId)) {
         return res.status(403).json({ error: "Insufficient permissions" });
       }
