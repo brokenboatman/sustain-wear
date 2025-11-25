@@ -50,7 +50,7 @@ async function logout() {
         class="flex items-center gap-4 animate-slide-in"
         style="animation-delay: 0s"
       >
-        <UButton to="/" class="text-xl w-full py-2 text-toned gap-2" variant="ghost" color="neutral" @click="closeSidebar">
+        <UButton to="/my-donations" class="text-xl w-full py-2 text-toned gap-2" variant="ghost" color="neutral" @click="closeSidebar">
           <UIcon name="line-md:heart" class="size-8" />
           My Donations
         </UButton>

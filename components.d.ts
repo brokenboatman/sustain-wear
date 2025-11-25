@@ -39,6 +39,7 @@ declare module 'vue' {
     UModal: typeof import('./node_modules/@nuxt/ui/dist/runtime/components/Modal.vue')['default']
     UPageCard: typeof import('./node_modules/@nuxt/ui/dist/runtime/components/PageCard.vue')['default']
     UPageGrid: typeof import('./node_modules/@nuxt/ui/dist/runtime/components/PageGrid.vue')['default']
+    UPageList: typeof import('./node_modules/@nuxt/ui/dist/runtime/components/PageList.vue')['default']
     USelect: typeof import('./node_modules/@nuxt/ui/dist/runtime/components/Select.vue')['default']
     USeparator: typeof import('./node_modules/@nuxt/ui/dist/runtime/components/Separator.vue')['default']
     USlideover: typeof import('./node_modules/@nuxt/ui/dist/runtime/components/Slideover.vue')['default']

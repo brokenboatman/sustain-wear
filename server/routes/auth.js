@@ -26,7 +26,6 @@ passport.use(
         let user = await prisma.user.findUnique({ where: { googleId } });
         if (user) return done(null, user);
 
-        // 2. Check if user exists by Email (link accounts)
         user = await prisma.user.findUnique({ where: { email } });
         if (user) {
           user = await prisma.user.update({
@@ -75,7 +74,7 @@ router.post("/register", async (req, res) => {
     }
     const existingEmail = await prisma.user.findUnique({ where: { email } });
     if (existingEmail)
-      return res.status(409).json({ error: "User already exists" });
+      return res.status(409).json({ error: "This email is already associated with another account" });
     const existingUsername = await prisma.user.findUnique({
       where: { username },
     });
@@ -95,7 +94,7 @@ router.post("/register", async (req, res) => {
 
     res.json({
       message: "Registered!",
-      user: { id: user.userId, email: user.email, username: user.username },
+      user: { id: user.userId, email: user.email, username: user.username, roleId: user.roleId },
     });
   } catch (e) {
     console.error(e);
@@ -130,53 +129,70 @@ router.get(
       { expiresIn: "1h" }
     );
 
-    res.redirect(
-      `${process.env.FRONTEND_SERVER_URL}/auth/google/callback?token=${token}`
-    );
+    const redirectUrl = new URL(`${process.env.FRONTEND_SERVER_URL}/auth/google/callback`);
+    redirectUrl.searchParams.set('token', token);
+    redirectUrl.searchParams.set('userId', user.userId);
+    redirectUrl.searchParams.set('username', user.username);
+    redirectUrl.searchParams.set('roleId', user.roleId);
+
+    res.redirect(redirectUrl.toString());
   }
 );
 
 router.post("/login", async (req, res) => {
   try {
-    const { email, password } = req.body;
-
+    // --- STAGE 1: Input Extraction ---
+    const { email, password, remember } = req.body;
+    // --- STAGE 2: Validation ---
     if (!email || !password) {
       return res.status(400).json({ error: "Missing required fields" });
     }
+    // --- STAGE 3: User Lookup ---
     const user = await prisma.user.findUnique({ where: { email } });
+
+    // If no user is found, return 401 (Unauthorized).
+
     if (!user) {
       return res.status(401).json({ error: "Invalid credentials" });
     }
+    // --- STAGE 4: Authentication Method Check ---
     if (!user.password) {
       return res.status(401).json({
         error:
           "This account was created with Google. Please use Google to log in.",
       });
     }
-
+    // --- STAGE 5: Password Verification ---
     const isValid = await bcrypt.compare(password, user.password);
+
     if (!isValid) {
       return res.status(401).json({ error: "Invalid credentials" });
     }
+    // --- STAGE 6: Token Generation (JWT) ---
+    const expiresIn = remember ? "7d" : "12h";
+
     const token = jwt.sign(
       {
         id: user.userId,
         email: user.email,
         role: user.roleId,
       },
-      process.env.JWT_SECRET || "dev-secret",
-      { expiresIn: "12h" }
+      process.env.JWT_SECRET,
+      { expiresIn }
     );
-
+    // --- STAGE 7: Response ---
     res.json({
       message: "Logged in!",
       token,
       user: {
         id: user.userId,
+        username: user.username,
         email: user.email,
+        roleId: user.roleId,
       },
     });
   } catch (e) {
+    // --- STAGE 8: Error Handling ---
     console.error(e);
     res.status(500).json({ error: "Server error" });
   }

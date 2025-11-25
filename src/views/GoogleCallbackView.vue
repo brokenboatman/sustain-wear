@@ -13,9 +13,12 @@ const route = useRoute();
 const router = useRouter();
 
 onMounted(() => {
-  const token = route.query.token;
+  const { token, userId, username, roleId } = route.query;
 
-  if (token) {
+  if (token && userId && username && roleId) {
+    localStorage.clear();
+    localStorage.setItem("username", username);
+    localStorage.setItem("roleId", roleId);
     localStorage.setItem("token", token);
     router.push("/");
   } else {
