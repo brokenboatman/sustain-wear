@@ -1,8 +1,83 @@
 <script setup lang="ts">
 import type { TabsItem } from '@nuxt/ui'
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 import PendingDonationList from './PendingDonationList.vue'
 import PastDonationList from './PastDonationList.vue'
+import { onMounted } from 'vue'
+
+type Donation = {
+  donationId: string
+  imageRef: string
+  name: string
+  status: 'On its way' | 'In transit' | 'Received at Charity' | 'Accepted'
+}
+
+const loading = ref(false)
+const error = ref<string | null>(null)
+
+async function fetchDonations(): Promise<void> {
+  loading.value = true
+  error.value = null
+  try {
+    const token = localStorage.getItem('token')
+    const res = await fetch(`http://localhost:3000/api/my-donations/`, {
+      headers: token ? { Authorization: `Bearer ${token}` } : undefined,
+    })
+
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({ error: res.statusText }))
+      throw new Error(err?.error || res.statusText)
+    }
+
+    const json = await res.json()
+    const donationsFromApi = Array.isArray(json.donations) ? json.donations : []
+
+    data.value = donationsFromApi.map((d: any) => ({
+      id: String(d.id),
+      imageRef: d.imageRef ?? '',
+      name: d.name ?? (d.item?.name ?? 'Unknown'),
+      status: d.status.status ?? 'On its way',
+    }))
+  } catch (e: any) {
+    console.error(e)
+    error.value = e?.message ?? 'Failed to fetch donations'
+  } finally {
+    loading.value = false
+  }
+}
+
+onMounted(() => {
+  fetchDonations()
+})
+
+const data = ref<Donation[]>([
+  {
+    donationId: '001',
+    imageRef: "[image ref here]",
+    name: "T-Shirt",
+    status: 'In transit',
+  },
+  {
+    donationId: '002',
+    imageRef: "[image ref here]",
+    name: "Beige trousers",
+    status: 'Received at Charity',
+  },
+  {
+    donationId: '003',
+    imageRef: "[image ref here]",
+    name: "Floral dress",
+    status: 'On its way',
+  }
+])
+
+const pendingDonations = computed(() => 
+  data.value.filter(d => d.status !== "Accepted")
+)
+
+const pastDonations = computed(() => 
+  data.value.filter(d => d.status === 'Accepted')
+)
 
 const items = ref<TabsItem[]>([
   {
@@ -23,10 +98,18 @@ const items = ref<TabsItem[]>([
 <template>
   <UTabs :items="items" class="w-full" color="neutral" size="xl">
     <template #pending>
-        <PendingDonationList />
+        <PendingDonationList
+          :donations="pendingDonations"
+          :loading="loading"
+          :error="error"
+        />
     </template>
     <template #past="{ item }">
-        <PastDonationList />
+        <PastDonationList 
+          :donations="pastDonations"
+          :loading="loading"
+          :error="error"
+        />
     </template>
   </UTabs>
 </template>

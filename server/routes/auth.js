@@ -123,7 +123,7 @@ router.get(
       {
         id: user.userId,
         email: user.email,
-        role: user.roleId,
+        roleId: user.roleId,
       },
       process.env.JWT_SECRET,
       { expiresIn: "1h" }
@@ -175,7 +175,7 @@ router.post("/login", async (req, res) => {
       {
         id: user.userId,
         email: user.email,
-        role: user.roleId,
+        roleId: user.roleId,
       },
       process.env.JWT_SECRET,
       { expiresIn }
@@ -198,7 +198,7 @@ router.post("/login", async (req, res) => {
   }
 });
 
-router.post("/logout", auth, async (req, res) => {
+router.post("/logout", auth(), async (req, res) => {
   try {
     res.json({ message: "Logged out successfully" });
   } catch (error) {
