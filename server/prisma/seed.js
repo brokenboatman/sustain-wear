@@ -6,7 +6,9 @@ async function main() {
 
   // --- 1. Cleanup existing data (in reverse order of creation) ---
   console.log("Cleaning up database...");
-  await prisma.donationItem.deleteMany();
+
+  // DELETED: await prisma.donationItem.deleteMany(); <- This line was causing the issue
+
   await prisma.donation.deleteMany();
   await prisma.user.deleteMany();
   await prisma.charity.deleteMany();
@@ -24,127 +26,93 @@ async function main() {
   console.log("Creating lookup tables...");
 
   // Roles
-  // 1. Donor
-  const roleDonor = await prisma.role.upsert({
-    where: { roleId: 1 },
-    update: {}, // No changes if it already exists
-    create: {
-      roleId: 1,
-      roleName: "Donor",
-    },
-  });
-
-  // 2. Charity Staff
-  const roleCharityAdmin = await prisma.role.upsert({
-    where: { roleId: 2 },
-    update: {},
-    create: {
-      roleId: 2,
-      roleName: "Charity Staff",
-    },
-  });
-
-  // 3. Administrator
-  const roleSuperAdmin = await prisma.role.upsert({
-    where: { roleId: 3 },
-    update: {},
-    create: {
-      roleId: 3,
-      roleName: "Administrator",
-    },
+  await prisma.role.createMany({
+    data: [
+      { roleName: "Donor", roleId: 1 },
+      { roleName: "Charity Staff", roleId: 2 },
+      { roleName: "Administrator", roleId: 3 },
+    ],
+    skipDuplicates: true, // Useful to prevent errors if running multiple times
   });
 
   // Statuses
-  const statusPending = await prisma.status.create({
-    data: { status: "On its way" },
-  });
-  const statusPickedUp = await prisma.status.create({
-    data: { status: "In transit" },
-  });
-  const statusReceived = await prisma.status.create({
-    data: { status: "Received at Charity" },
-  });
-  const statusAccepted = await prisma.status.create({
-    data: { status: "Accepted" },
+  await prisma.status.createMany({
+    data: [
+      { status: "On its way" },
+      { status: "In transit" },
+      { status: "Received at Charity" },
+      { status: "Accepted" },
+    ],
+    skipDuplicates: true,
   });
 
   // Colours
-  const colBlack = await prisma.colour.create({ data: { colour: "Black" } });
-  const colBlue = await prisma.colour.create({ data: { colour: "Blue" } });
-  const colWhite = await prisma.colour.create({ data: { colour: "White" } });
-  const colMulti = await prisma.colour.create({
-    data: { colour: "Multi-colour" },
+  const colours = [
+    "Black",
+    "Blue",
+    "White",
+    "Multi-colour",
+    "Red",
+    "Green",
+    "Yellow",
+    "Pink",
+    "Purple",
+    "Grey",
+    "Brown",
+    "Beige",
+    "Orange",
+    "Gold",
+    "Silver",
+  ];
+
+  // Using Promise.all for speed, or createMany if you don't need the return objects immediately
+  await prisma.colour.createMany({
+    data: colours.map((c) => ({ colour: c })),
+    skipDuplicates: true,
   });
-  // ... existing colours ...
-  const colRed = await prisma.colour.create({ data: { colour: "Red" } });
-  const colGreen = await prisma.colour.create({ data: { colour: "Green" } });
-  const colYellow = await prisma.colour.create({ data: { colour: "Yellow" } });
-  const colPink = await prisma.colour.create({ data: { colour: "Pink" } });
-  const colPurple = await prisma.colour.create({ data: { colour: "Purple" } });
-  const colGrey = await prisma.colour.create({ data: { colour: "Grey" } });
-  const colBrown = await prisma.colour.create({ data: { colour: "Brown" } });
-  const colBeige = await prisma.colour.create({ data: { colour: "Beige" } });
-  const colOrange = await prisma.colour.create({ data: { colour: "Orange" } });
-  const colGold = await prisma.colour.create({ data: { colour: "Gold" } });
-  const colSilver = await prisma.colour.create({ data: { colour: "Silver" } });
 
   // Conditions
-  const condNewTags = await prisma.condition.create({
-    data: { condition: "New with Tags" },
-  });
-  const condLikeNew = await prisma.condition.create({
-    data: { condition: "Like New" },
-  });
-  const condGood = await prisma.condition.create({
-    data: { condition: "Good" },
-  });
-  const condFair = await prisma.condition.create({
-    data: { condition: "Fair" },
-  });
-  const condNewNoTags = await prisma.condition.create({
-    data: { condition: "New without Tags" },
-  });
-  const condPoor = await prisma.condition.create({
-    data: { condition: "Heavily Used / Poor" },
+  const conditions = [
+    "New with Tags",
+    "Like New",
+    "Good",
+    "Fair",
+    "New without Tags",
+    "Heavily Used / Poor",
+  ];
+  await prisma.condition.createMany({
+    data: conditions.map((c) => ({ condition: c })),
+    skipDuplicates: true,
   });
 
   // Genders
-  const genMens = await prisma.gender.create({ data: { gender: "Mens" } });
-  const genWomens = await prisma.gender.create({ data: { gender: "Womens" } });
-  const genKids = await prisma.gender.create({ data: { gender: "Kids" } });
-  const genUnisex = await prisma.gender.create({ data: { gender: "Unisex" } });
+  await prisma.gender.createMany({
+    data: [
+      { gender: "Mens" },
+      { gender: "Womens" },
+      { gender: "Kids" },
+      { gender: "Unisex" },
+    ],
+    skipDuplicates: true,
+  });
 
   // Categories
-  const catTops = await prisma.category.create({ data: { category: "Tops" } });
-  const catBottoms = await prisma.category.create({
-    data: { category: "Bottoms" },
-  });
-  const catOuterwear = await prisma.category.create({
-    data: { category: "Outerwear" },
-  });
-  const catShoes = await prisma.category.create({
-    data: { category: "Shoes" },
-  });
-  const catDresses = await prisma.category.create({
-    data: { category: "Dresses" },
-  });
-  const catAccessories = await prisma.category.create({
-    data: { category: "Accessories" }, // Belts, hats, scarves
-  });
-  const catBags = await prisma.category.create({
-    data: { category: "Bags" },
-  });
-  const catJewelry = await prisma.category.create({
-    data: { category: "Jewelry" },
-  });
-  const catActivewear = await prisma.category.create({
-    data: { category: "Activewear" },
-  });
-  const catSwimwear = await prisma.category.create({
-    data: { category: "Swimwear" },
-  });
-  const catSuits = await prisma.category.create({
-    data: { category: "Suits & Blazers" },
+  const categories = [
+    "Tops",
+    "Bottoms",
+    "Outerwear",
+    "Shoes",
+    "Dresses",
+    "Accessories",
+    "Bags",
+    "Jewelry",
+    "Activewear",
+    "Swimwear",
+    "Suits & Blazers",
+  ];
+  await prisma.category.createMany({
+    data: categories.map((c) => ({ category: c })),
+    skipDuplicates: true,
   });
 
   // Materials
@@ -169,24 +137,18 @@ async function main() {
     "Corduroy",
   ];
 
-  const materials = await Promise.all(
-    materialNames.map((name) =>
-      prisma.material.create({
-        data: { material: name },
-      })
-    )
-  );
-
-  console.log(`Seeded ${materials.length} materials.`);
+  await prisma.material.createMany({
+    data: materialNames.map((m) => ({ material: m })),
+    skipDuplicates: true,
+  });
+  console.log(`Seeded materials.`);
 
   // Sizes
-  const sizeS = await prisma.size.create({ data: { size: "S" } });
-  const sizeM = await prisma.size.create({ data: { size: "M" } });
-  const sizeL = await prisma.size.create({ data: { size: "L" } });
-  const sizeXL = await prisma.size.create({ data: { size: "XL" } });
-  const sizeXXL = await prisma.size.create({ data: { size: "XXL" } });
-  const size3Xl = await prisma.size.create({ data: { size: "3XL" } });
-  const size4XL = await prisma.size.create({ data: { size: "4XL" } });
+  const sizes = ["S", "M", "L", "XL", "XXL", "3XL", "4XL"];
+  await prisma.size.createMany({
+    data: sizes.map((s) => ({ size: s })),
+    skipDuplicates: true,
+  });
 
   console.log("Lookup tables created.");
 
