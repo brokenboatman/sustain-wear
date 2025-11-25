@@ -6,12 +6,17 @@ const prisma = new PrismaClient();
 async function main() {
   console.log("Start seeding ...");
 
-  // --- 1. Cleanup existing data (in reverse order of creation) ---
+  // --- 1. Cleanup existing data (Order matters to avoid foreign key errors) ---
   console.log("Cleaning up database...");
 
+  // Delete child tables first
   await prisma.donation.deleteMany();
+
+  // Delete users and charities
   await prisma.user.deleteMany();
   await prisma.charity.deleteMany();
+
+  // Delete lookup tables
   await prisma.role.deleteMany();
   await prisma.status.deleteMany();
   await prisma.colour.deleteMany();
@@ -49,101 +54,57 @@ async function main() {
 
   // Colours
   const colours = [
-    "Black",
-    "Blue",
-    "White",
-    "Multi-colour",
-    "Red",
-    "Green",
-    "Yellow",
-    "Pink",
-    "Purple",
-    "Grey",
-    "Brown",
-    "Beige",
-    "Orange",
-    "Gold",
-    "Silver",
+    "Black", "Blue", "White", "Multi-colour", "Red", "Green", "Yellow",
+    "Pink", "Purple", "Grey", "Brown", "Beige", "Orange", "Gold", "Silver",
   ];
   await prisma.colour.createMany({
-    data: colours.map((c) => ({ colour: c })),
+    // Maps index 0 -> ID 1, index 1 -> ID 2, etc.
+    data: colours.map((c, index) => ({ colour: c, colourId: index + 1 })),
     skipDuplicates: true,
   });
 
   // Conditions
   const conditions = [
-    "New with Tags",
-    "Like New",
-    "Good",
-    "Fair",
-    "New without Tags",
-    "Heavily Used / Poor",
+    "New with Tags", "Like New", "Good", "Fair",
+    "New without Tags", "Heavily Used / Poor",
   ];
   await prisma.condition.createMany({
-    data: conditions.map((c) => ({ condition: c })),
+    data: conditions.map((c, index) => ({ condition: c, conditionId: index + 1 })),
     skipDuplicates: true,
   });
 
   // Genders
+  const genders = ["Mens", "Womens", "Kids", "Unisex"];
   await prisma.gender.createMany({
-    data: [
-      { gender: "Mens" },
-      { gender: "Womens" },
-      { gender: "Kids" },
-      { gender: "Unisex" },
-    ],
+    data: genders.map((g, index) => ({ gender: g, genderId: index + 1 })),
     skipDuplicates: true,
   });
 
   // Categories
   const categories = [
-    "Tops",
-    "Bottoms",
-    "Outerwear",
-    "Shoes",
-    "Dresses",
-    "Accessories",
-    "Bags",
-    "Jewelry",
-    "Activewear",
-    "Swimwear",
-    "Suits & Blazers",
+    "Tops", "Bottoms", "Outerwear", "Shoes", "Dresses", "Accessories",
+    "Bags", "Jewelry", "Activewear", "Swimwear", "Suits & Blazers",
   ];
   await prisma.category.createMany({
-    data: categories.map((c) => ({ category: c })),
+    data: categories.map((c, index) => ({ category: c, categoryId: index + 1 })),
     skipDuplicates: true,
   });
 
   // Materials
   const materialNames = [
-    "Cotton",
-    "Denim",
-    "Polyester",
-    "Wool",
-    "Silk",
-    "Linen",
-    "Leather",
-    "Nylon",
-    "Spandex",
-    "Rayon",
-    "Cashmere",
-    "Velvet",
-    "Suede",
-    "Bamboo",
-    "Hemp",
-    "Fleece",
-    "Satin",
-    "Corduroy",
+    "Cotton", "Denim", "Polyester", "Wool", "Silk", "Linen", "Leather",
+    "Nylon", "Spandex", "Rayon", "Cashmere", "Velvet", "Suede", "Bamboo",
+    "Hemp", "Fleece", "Satin", "Corduroy",
   ];
   await prisma.material.createMany({
-    data: materialNames.map((m) => ({ material: m })),
+    data: materialNames.map((m, index) => ({ material: m, materialId: index + 1 })),
     skipDuplicates: true,
   });
 
   // Sizes
   const sizes = ["S", "M", "L", "XL", "XXL", "3XL", "4XL"];
   await prisma.size.createMany({
-    data: sizes.map((s) => ({ size: s })),
+    data: sizes.map((s, index) => ({ size: s, sizeId: index + 1 })),
     skipDuplicates: true,
   });
 
@@ -154,53 +115,67 @@ async function main() {
 
   const hashedPassword = await bcrypt.hash("SuperPassword123", 10);
 
-  // We capture the SuperDoner object to use its ID later
+  // SuperDoner
   const superDoner = await prisma.user.upsert({
-    where: { email: "SuperDoner" },
-    update: { password: hashedPassword },
+    where: { email: "SuperDoner@sustainwear.com" },
+    update: { 
+      password: hashedPassword,
+      userId: 1 // Ensure ID matches on update
+    },
     create: {
+      userId: 1, // Hardcoded ID
       email: "SuperDoner@sustainwear.com",
       username: "SuperDoner",
       password: hashedPassword,
       roleId: 1,
-      userId: 1,
     },
   });
 
+  // SuperStaff
   await prisma.user.upsert({
     where: { email: "SuperStaff@sustainwear.com" },
-    update: { password: hashedPassword },
+    update: { 
+      password: hashedPassword,
+      userId: 2 
+    },
     create: {
+      userId: 2, // Hardcoded ID
       email: "SuperStaff@sustainwear.com",
       username: "SuperStaff",
       password: hashedPassword,
       roleId: 2,
-      userId: 2,
     },
   });
 
+  // SuperAdmin
   await prisma.user.upsert({
     where: { email: "SuperAdmin@sustainwear.com" },
-    update: { password: hashedPassword },
+    update: { 
+      password: hashedPassword,
+      userId: 3
+    },
     create: {
+      userId: 3, // Hardcoded ID
       email: "SuperAdmin@sustainwear.com",
       username: "SuperAdmin",
       password: hashedPassword,
       roleId: 3,
-      userId: 3,
     },
   });
 
-  // Capture charity1 so we can link donations to it
-  const charity1 = await prisma.charity.create({
-    data: {
+  // Create Charity
+  const charity1 = await prisma.charity.upsert({
+    where: { charityId: 1 },
+    update: {},
+    create: {
+      charityId: 1, // Hardcoded ID
       name: "Charity",
       city: "Sheffield",
       address: "28 Neill Road, Sheffield, S11 8QG",
     },
   });
 
-  // --- 4. NEW: Create Donations for SuperDoner ---
+  // --- 4. Create Donations for SuperDoner ---
   console.log("Seeding donations for SuperDoner...");
 
   const donationsData = [
@@ -239,7 +214,7 @@ async function main() {
       gender: "Mens",
       category: "Shoes",
       material: "Leather",
-      size: "XL", // Assumed size mapping
+      size: "XL",
       weight: 1.2,
       co2: 5.0,
     },
@@ -258,8 +233,6 @@ async function main() {
     },
   ];
 
-  // We loop through the data and create them individually
-  // This allows us to "connect" to the specific lookup tables by name
   for (const item of donationsData) {
     await prisma.donation.create({
       data: {
@@ -267,9 +240,14 @@ async function main() {
         description: item.description,
         weight: item.weight,
         co2: item.co2,
-        // Connect Relationships
-        user: { connect: { userId: superDoner.userId } },
-        charity: { connect: { charityId: charity1.charityId } },
+
+        // Connect using the Hardcoded IDs directly
+        user: { connect: { userId: 1 } },
+        charity: { connect: { charityId: 1 } },
+
+        // We can still connect by unique string name (safest), 
+        // or we could look up the ID if strictly necessary. 
+        // Connecting by unique name is standard best practice in Prisma seeding.
         status: { connect: { status: item.status } },
         colour: { connect: { colour: item.colour } },
         condition: { connect: { condition: item.condition } },
