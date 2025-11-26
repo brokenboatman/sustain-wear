@@ -34,3 +34,8 @@ node index.js
 
 cd ..
 npm run dev
+
+Navigate to the login screen and to test doner use:
+
+Email: SuperDoner@sustainwear.com
+Password: SuperPassword123
