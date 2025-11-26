@@ -18,7 +18,7 @@ router.get("/", auth([1]), async (req, res) => {
             },
             include: {
                 status: true,
-            }
+            },
         });
 
         console.log('Found donations:', donations);
