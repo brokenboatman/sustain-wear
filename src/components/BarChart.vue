@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted } from 'vue';
 import { Bar } from "vue-chartjs";
 import {
   Chart as ChartJS,
@@ -9,6 +9,7 @@ import {
   CategoryScale,
   LinearScale,
 } from "chart.js";
+import type { SelectItem } from '@nuxt/ui';
 
 ChartJS.register(Title, Tooltip, BarElement, CategoryScale, LinearScale);
 
@@ -17,6 +18,23 @@ type CO2Saving = {
   co2: number
   date: string
 }
+
+const items = ref<SelectItem[]>([
+  {
+    label: "2025",
+    value: 2025
+  },
+  {
+    label: "2024",
+    value: 2024
+  }
+])
+
+const value = ref(2025)
+
+const selectedYear = value.value
+
+console.log("Selected Year: ", selectedYear)
 
 const loading = ref(false)
 const error = ref<string | null>(null)
@@ -70,8 +88,11 @@ async function fetchDonations(): Promise<void> {
 
     const monthlySavings = Array(12).fill(0);
     donationsFromApi.forEach((donation: CO2Saving) => {
-      const month = new Date(donation.date).getMonth();
-      monthlySavings[month] += donation.co2;
+      if(new Date(donation.date).getFullYear() == selectedYear)
+      {
+        const month = new Date(donation.date).getMonth();
+        monthlySavings[month] += donation.co2;
+      }
     });
 
     // updates chart data
@@ -122,7 +143,8 @@ const totalYearInTrees = computed(() => {
 
 <template>
   <div class="text-neutral font-bold w-full sm:max-w-[720px] p-10 rounded-lg border-muted border text-left">
-    <h3 class="text-default font-bold text-2xl mb-4">Your impact</h3>
+    <h3 class="text-default font-bold text-2xl mb-2">Your impact</h3>
+    <USelect v-model="value" :items="items" class="w-20 mb-2" />
     <p>This month you've saved <b>{{ currentMonthSaving }} kg</b> of CO<sub>2</sub>.</p>
     <p>That's equivalent to planting <b>{{ currentMonthInTrees }} trees</b> this month!</p>
     <p>This year you've saved <b>{{ totalYearSaving }} kg</b> of CO<sub>2</sub>.</p>
@@ -138,6 +160,7 @@ const totalYearInTrees = computed(() => {
 
 <style>
 .bar {
+  margin-top: 4px;
   text-align: center;
   font-weight: 700;
   font-size: 25px;
