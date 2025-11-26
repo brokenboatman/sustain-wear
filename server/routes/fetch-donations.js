@@ -18,9 +18,10 @@ router.get("/", auth([1]), async (req, res) => {
             },
             include: {
                 status: true,
-                items: true,
             }
         });
+
+        console.log('Found donations:', donations);
         
         res.json({ donations, meta: { count: donations.length } });
     } catch (e) {

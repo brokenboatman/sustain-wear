@@ -11,18 +11,18 @@ datasource db {
 }
 
 model User {
-  userId     Int      @id @default(autoincrement())
-  email      String   @unique
-  username   String  @unique
-  password   String?  // Can be null if they sign up with Google
-  googleId   String?  @unique //this links to google id now
-  roleId     Int
-  charityId  Int? 
-  
+  userId    Int     @id @default(autoincrement())
+  email     String  @unique
+  username  String  @unique
+  password  String? // Can be null if they sign up with Google
+  googleId  String? @unique
+  roleId    Int
+  charityId Int?
+
   // --- Relations ---
-  role       Role       @relation(fields: [roleId], references: [roleId])
-  charity    Charity?   @relation(fields: [charityId], references: [charityId])
-  donations  Donation[]
+  role      Role      @relation(fields: [roleId], references: [roleId])
+  charity   Charity?  @relation(fields: [charityId], references: [charityId])
+  donations Donation[]
 }
 
 model Role {
@@ -44,48 +44,38 @@ model Charity {
   donations Donation[]
 }
 
-model Donation {
-  donationId Int      @id @default(autoincrement())
-  userId     Int
-  charityId  Int
-  statusId   Int
-  date       DateTime @default(now())
-
-  // --- Relations ---
-  user    User           @relation(fields: [userId], references: [userId])
-  charity Charity        @relation(fields: [charityId], references: [charityId])
-  status  Status         @relation(fields: [statusId], references: [statusId])
-  items   DonationItem[]
-}
-
 model Status {
   statusId Int    @id @default(autoincrement())
   status   String @unique
 
   // --- Relations ---
-  donations     Donation[]
-  donationItems DonationItem[]
+  // Updated: Points to Donation, removed DonationItem
+  donations Donation[] 
 }
 
-model DonationItem {
-  donationItemId Int     @id @default(autoincrement())
-  donationId     Int
-  statusId       Int
-  photoUrl       String?
-  description    String?
-  quantity       Int     @default(1)
-  weight         Float?
-  co2            Float?
-  colourId       Int
-  conditionId    Int
-  genderId       Int
-  categoryId     Int
-  materialId     Int
-  sizeId         Int
+model Donation {
+  donationId  Int      @id @default(autoincrement())
+  userId      Int
+  charityId   Int
+  statusId    Int
+  title   String
+  date        DateTime @default(now())
+  photoUrl    String?
+  description String?
+  quantity    Int      @default(1)
+  weight      Float?   // Fixed: lowercase 'float' to 'Float'
+  co2         Float?   // Fixed: lowercase 'float' to 'Float'
+  colourId    Int
+  conditionId Int
+  genderId    Int
+  categoryId  Int
+  materialId  Int
+  sizeId      Int
 
-  // --- Relations ---
-  donation  Donation  @relation(fields: [donationId], references: [donationId])
+  user      User      @relation(fields: [userId], references: [userId])
+  charity   Charity   @relation(fields: [charityId], references: [charityId])
   status    Status    @relation(fields: [statusId], references: [statusId])
+  
   colour    Colour    @relation(fields: [colourId], references: [colourId])
   condition Condition @relation(fields: [conditionId], references: [conditionId])
   gender    Gender    @relation(fields: [genderId], references: [genderId])
@@ -101,7 +91,7 @@ model Colour {
   colour   String @unique
 
   // --- Relations ---
-  donationItems DonationItem[]
+  donations Donation[] // Renamed from donationItems
 }
 
 model Condition {
@@ -109,7 +99,7 @@ model Condition {
   condition   String @unique
 
   // --- Relations ---
-  donationItems DonationItem[]
+  donations Donation[] // Renamed from donationItems
 }
 
 model Gender {
@@ -117,7 +107,7 @@ model Gender {
   gender   String @unique
 
   // --- Relations ---
-  donationItems DonationItem[]
+  donations Donation[] // Renamed from donationItems
 }
 
 model Category {
@@ -125,7 +115,7 @@ model Category {
   category   String @unique
 
   // --- Relations ---
-  donationItems DonationItem[]
+  donations Donation[] // Renamed from donationItems
 }
 
 model Material {
@@ -133,7 +123,7 @@ model Material {
   material   String @unique
 
   // --- Relations ---
-  donationItems DonationItem[]
+  donations Donation[] // Renamed from donationItems
 }
 
 model Size {
@@ -141,5 +131,5 @@ model Size {
   size   String @unique
 
   // --- Relations ---
-  donationItems DonationItem[]
+  donations Donation[] // Renamed from donationItems
 }

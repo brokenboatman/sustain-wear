@@ -1,7 +1,7 @@
 import express from "express";
 import cors from "cors";
 import authRoutes from "./routes/auth.js";
-import myDonationsRoutes from "./routes/my-donations.js";
+import myDonationsRoutes from "./routes/fetch-donations.js";
 import dotenv from "dotenv";
 import passport from "passport";
 
@@ -11,7 +11,7 @@ app.use(cors());
 app.use(express.json());
 app.use(passport.initialize());
 app.use("/api/auth", authRoutes);
-app.use("/api/my-donations", myDonationsRoutes);
+app.use("/api/fetch-donations", myDonationsRoutes);
 
 app.listen(3000, () => {
   console.log("Backend running on http://localhost:3000");

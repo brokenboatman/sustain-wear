@@ -6,6 +6,8 @@ const isOpen = ref(false);
 const toast = useToast();
 const router = useRouter();
 
+const roleId = ref(parseInt(localStorage.getItem("roleId")));
+
 function closeSidebar() {
   isOpen.value = false;
 }
@@ -47,6 +49,7 @@ async function logout() {
     <template #body>
       <div class="flex flex-col gap-0">
       <div
+        v-if="roleId == 1" 
         class="flex items-center gap-4 animate-slide-in"
         style="animation-delay: 0s"
       >
@@ -55,7 +58,28 @@ async function logout() {
           My Donations
         </UButton>
       </div>
+      <div
+        v-if="roleId == 2 || roleId == 3"
+        class="flex items-center gap-4 animate-slide-in"
+        style="animation-delay: 0s"
+      >
+        <UButton to="/donations" class="text-xl w-full py-2 text-toned gap-2" variant="ghost" color="neutral" @click="closeSidebar">
+          <UIcon name="line-md:heart" class="size-8" />
+          Donations
+        </UButton>
+      </div>
+      <div
+        v-if="roleId == 3" 
+        class="flex items-center gap-4 animate-slide-in"
+        style="animation-delay: 0s"
+      >
+        <UButton to="/user-management" class="text-xl w-full py-2 text-toned gap-2" variant="ghost" color="neutral" @click="closeSidebar">
+          <UIcon name="line-md:person-search" class="size-8" />
+          User Management
+        </UButton>
+      </div>
         <div
+          v-if="roleId == 1 || roleId == 2"
           class="flex items-center gap-4 animate-slide-in"
           style="animation-delay: 0.2s"
         >
@@ -65,6 +89,7 @@ async function logout() {
           </UButton>
         </div>
         <div
+          v-if="roleId == 1"
           class="flex items-center gap-4 animate-slide-in"
           style="animation-delay: 0.4s"
         >
@@ -74,7 +99,17 @@ async function logout() {
           </UButton>
         </div>
         <div
+          v-if="roleId == 3" 
           class="flex items-center gap-4 animate-slide-in"
+          style="animation-delay: 0s"
+        >
+          <UButton to="/reports" class="text-xl w-full py-2 text-toned gap-2" variant="ghost" color="neutral" @click="closeSidebar">
+            <UIcon name="line-md:file-document" class="size-8" />
+            Reports
+          </UButton>
+      </div>
+        <div
+          class="flex items-center gap-4 animate-slide-in mt-4"
           style="animation-delay: 0.6s"
         >
           <UButton variant="subtle" color="neutral"
