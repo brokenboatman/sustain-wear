@@ -1,96 +1,51 @@
 <script setup lang="ts">
 import Sidebar from '../Components/Sidebar.vue';
 import type { DropdownMenuItem } from '@nuxt/ui';
+import { ref, computed } from 'vue';
+
+const status = ref('online')
+const show = computed(() => status.value !== 'offline')
 
 const items = <DropdownMenuItem[][]>([
   [
     {
-      label: 'Benjamin',
-      avatar: {
-        src: 'https://github.com/benjamincanac.png'
-      },
+      label: 'Notifications:',
+      icon: 'lucide:inbox',
       type: 'label'
     }
   ],
   [
     {
-      label: 'Profile',
-      icon: 'i-lucide-user'
-    },
-    {
-      label: 'Billing',
-      icon: 'i-lucide-credit-card'
-    },
-    {
-      label: 'Settings',
-      icon: 'i-lucide-cog',
-      kbds: [',']
-    },
-    {
-      label: 'Keyboard shortcuts',
-      icon: 'i-lucide-monitor'
+      label: 'New Rewards Available!',
+      href: '/rewards',
+      icon: 'lucide:crown',
+      variant: 'ghost',
+      color: 'primary',
+      class: 'truncate-text-none'
     }
   ],
   [
     {
-      label: 'Team',
-      icon: 'i-lucide-users'
-    },
-    {
-      label: 'Invite users',
-      icon: 'i-lucide-user-plus',
-      children: [
-        [
-          {
-            label: 'Email',
-            icon: 'i-lucide-mail'
-          },
-          {
-            label: 'Message',
-            icon: 'i-lucide-message-square'
-          }
-        ],
-        [
-          {
-            label: 'More',
-            icon: 'i-lucide-circle-plus'
-          }
-        ]
-      ]
-    },
-    {
-      label: 'New team',
-      icon: 'i-lucide-plus',
-      kbds: ['meta', 'n']
+      label: 'Your Donation is on the Way!',
+      href: '/rewards',
+      icon: 'lucide:truck',
+      variant: 'ghost',
+      color: 'info',
     }
   ],
   [
     {
-      label: 'GitHub',
-      icon: 'i-simple-icons-github',
-      to: 'https://github.com/nuxt/ui',
-      target: '_blank'
-    },
-    {
-      label: 'Support',
-      icon: 'i-lucide-life-buoy',
-      to: '/docs/components/dropdown-menu'
-    },
-    {
-      label: 'API',
-      icon: 'i-lucide-cloud',
-      disabled: true
-    }
-  ],
-  [
-    {
-      label: 'Logout',
-      icon: 'i-lucide-log-out',
-      kbds: ['shift', 'meta', 'q']
+      label: 'Your Donation has been Received!',
+      href: '/rewards',
+      icon: 'lucide:check',
+      variant: 'ghost',
+      color: 'info',
     }
   ]
 ])
 </script>
+
+<!-- maybe if you are feeling brave we could make it so the text on the notifications scrolls so you get to see it all if outside container size -->
 
 <template>
     <header class="border-b border-default mb-4">
@@ -103,10 +58,10 @@ const items = <DropdownMenuItem[][]>([
                 <UDropdownMenu
                     :items="items"
                     :ui="{
-                    content: 'w-48'
+                    content: 'w-60'
                     }"
                 >
-                    <UChip inset>
+                    <UChip inset size="xl">
                         <UButton icon="line-md:bell" color="neutral" variant="ghost" class=" cursor-pointer" size="xl" />
                     </UChip>
                 </UDropdownMenu>

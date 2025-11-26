@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { TimelineItem } from '@nuxt/ui'
 
-let donations = 40; // this will be fetched from database and will update accordingly the page depading on how many items the doner has donated
+let donations = 1; // this will be fetched from database and will update accordingly the page depading on how many items the doner has donated
 
 let userMilestones = -1;
 let color = 'info';
@@ -62,57 +62,45 @@ const items = <TimelineItem[]>([
 const cards = ([
   {
     title: 'First Donation Badge',
-    // icon: 'lucide:hand-heart',
+    description: 'Awarded for making your first donation.',
+    requiredDonations: 1,
     variant: 'soft',
-    image: {
-      light: '/images/badges/badgefirst.png',
-      dark: '/images/badges/badgefirst.png',
-    }
+    image: { light: '/images/badges/badgefirst.png', dark: '/images/badges/badgefirst.png' }
   },
   {
     title: 'Five Donations Badge',
-    // icon: 'lucide:star',
+    description: 'Awarded for donating 5 items.',
+    requiredDonations: 5,
     variant: 'soft',
-    image: {
-      light: '/images/badges/badgefive.png',
-      dark: '/images/badges/badgefive.png',
-    }
+    image: { light: '/images/badges/badgefive.png', dark: '/images/badges/badgefive.png' }
   },
   {
     title: 'Ten Donations Badge',
-    // icon: 'lucide:star',
+    description: 'Awarded for donating 10 items.',
+    requiredDonations: 10,
     variant: 'soft',
-    image: {
-      light: '/images/badges/badgeten.png',
-      dark: '/images/badges/badgeten.png',
-    }
+    image: { light: '/images/badges/badgeten.png', dark: '/images/badges/badgeten.png' }
   },
   {
     title: 'Twenty Donations Badge',
-    // icon: 'lucide:star',
+    description: 'Awarded for donating 20 items.',
+    requiredDonations: 20,
     variant: 'soft',
-    image: {
-      light: '/images/badges/badgetwenty.png',
-      dark: '/images/badges/badgetwenty.png',
-    }
+    image: { light: '/images/badges/badgetwenty.png', dark: '/images/badges/badgetwenty.png' }
   },
   {
     title: 'Fifty Donations Badge',
-    // icon: 'lucide:star',
+    description: 'Awarded for donating 50 items.',
+    requiredDonations: 50,
     variant: 'soft',
-    image: {
-      light: '/images/badges/badgefifty.png',
-      dark: '/images/badges/badgefifty.png',
-    }
+    image: { light: '/images/badges/badgefifty.png', dark: '/images/badges/badgefifty.png' }
   },
   {
     title: 'Hundred Donations Badge',
-    // icon: 'lucide:party-popper',
+    description: 'Awarded for donating 100 items.',
+    requiredDonations: 100,
     variant: 'soft',
-    image: {
-      light: '/images/badges/badgehundred.png',
-      dark: '/images/badges/badgehundred.png',
-    }
+    image: { light: '/images/badges/badgehundred.png', dark: '/images/badges/badgehundred.png' }
   }
 ])
 </script>
@@ -131,14 +119,23 @@ const cards = ([
   <USeparator icon="lucide:medal" />
   <div class="px-5 py-15 animate-slide-in">
     <UPageGrid>
-      <UPageCard
-        v-for="(card, index) in cards"
-        :key="index"
-        v-bind="card"
-        class="flex flex-col items-center justify-center text-center gap-4 p-6"
-      >
-        <img v-if="card.image" :src="card.image.light" :alt="card.title" height="200" width="200"/>
-      </UPageCard>
+      <template v-for="(card, index) in cards" :key="index">
+        <UPageCard
+          v-if="donations >= card.requiredDonations"
+          v-bind="card"
+          class="flex flex-col items-center justify-center text-center gap-4 p-6"
+        >
+          <div class="flex flex-col items-center justify-center">
+            <img
+              v-if="card.image"
+              :src="card.image.light"
+              :alt="card.title"
+              height="200"
+              width="200"
+            />
+          </div>
+        </UPageCard>
+      </template>
     </UPageGrid>
   </div>
 </template>
