@@ -74,6 +74,17 @@ async function fetchDonations(): Promise<void> {
       monthlySavings[month] += donation.co2;
     });
 
+    // updates chart data
+    chartData.value = {
+      ...chartData.value,
+      datasets: [
+        {
+          ...chartData.value.datasets[0],
+          data: monthlySavings,
+        },
+      ],
+    };
+
     console.log("chart data:", chartData.value.datasets[0].data);
 
   } catch (e: any) {
