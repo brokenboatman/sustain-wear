@@ -1,115 +1,122 @@
 <script setup lang="ts">
-import type { TabsItem } from '@nuxt/ui'
-import { ref, computed } from 'vue'
-import PendingDonationList from './PendingDonationList.vue'
-import PastDonationList from './PastDonationList.vue'
-import { onMounted } from 'vue'
+import type { TabsItem } from "@nuxt/ui";
+import { ref, computed } from "vue";
+import { onMounted } from "vue";
 
 type Donation = {
-  donationId: string
-  imageRef: string
-  name: string
-  status: 'On its way' | 'In transit' | 'Received at Charity' | 'Accepted'
-}
+  donationId: string;
+  imageRef: string;
+  name: string;
+  status: "On its way" | "In transit" | "Received at Charity" | "Accepted";
+};
 
-const loading = ref(false)
-const error = ref<string | null>(null)
+const loading = ref(false);
+const error = ref<string | null>(null);
 
 async function fetchDonations(): Promise<void> {
-  loading.value = true
-  error.value = null
+  loading.value = true;
+  error.value = null;
   try {
-    const token = localStorage.getItem('token')
-    const res = await fetch(`http://localhost:3000/api/fetch-donations/`, {
+    const token = localStorage.getItem("token");
+    const res = await fetch(`/api/fetch-donations`, {
       headers: token ? { Authorization: `Bearer ${token}` } : undefined,
-    })
+    });
 
     if (!res.ok) {
-      const err = await res.json().catch(() => ({ error: res.statusText }))
-      throw new Error(err?.error || res.statusText)
+      const err = await res.json().catch(() => ({ error: res.statusText }));
+      throw new Error(err?.error || res.statusText);
     }
 
-    const json = await res.json()
-    const donationsFromApi = Array.isArray(json.donations) ? json.donations : []
+    const json = await res.json();
+    const donationsFromApi = Array.isArray(json.donations)
+      ? json.donations
+      : [];
 
+    // --- FIX IS BELOW ---
     data.value = donationsFromApi.map((d: any) => ({
-      id: String(d.id),
-      imageRef: d.imageRef ?? '',
-      name: d.name ?? (d.item?.name ?? 'Unknown'),
-      status: d.status.status ?? 'On its way',
-    }))
+      donationId: String(d.donationId), // Schema uses donationId (Int), convert to String for frontend
+
+      // FIX 1: Map 'photoUrl' (Schema) to 'imageRef' (Frontend)
+      imageRef: d.photoUrl ?? "",
+
+      // FIX 2: Map 'title' (Schema) to 'name' (Frontend)
+      name: d.title ?? "Unknown",
+
+      status: d.status?.status ?? "On its way",
+    }));
+    // --------------------
   } catch (e: any) {
-    console.error(e)
-    error.value = e?.message ?? 'Failed to fetch donations'
+    console.error(e);
+    error.value = e?.message ?? "Failed to fetch donations";
   } finally {
-    loading.value = false
+    loading.value = false;
   }
 }
 
 onMounted(() => {
-  fetchDonations()
-})
+  fetchDonations();
+});
 
 const data = ref<Donation[]>([
   {
-    donationId: '001',
+    donationId: "001",
     imageRef: "[image ref here]",
     name: "T-Shirt",
-    status: 'In transit',
+    status: "In transit",
   },
   {
-    donationId: '002',
+    donationId: "002",
     imageRef: "[image ref here]",
     name: "Beige trousers",
-    status: 'Received at Charity',
+    status: "Received at Charity",
   },
   {
-    donationId: '003',
+    donationId: "003",
     imageRef: "[image ref here]",
     name: "Floral dress",
-    status: 'On its way',
-  }
-])
+    status: "On its way",
+  },
+]);
 
-const pendingDonations = computed(() => 
-  data.value.filter(d => d.status !== "Accepted")
-)
+const pendingDonations = computed(() =>
+  data.value.filter((d) => d.status !== "Accepted")
+);
 
-const pastDonations = computed(() => 
-  data.value.filter(d => d.status === 'Accepted')
-)
+const pastDonations = computed(() =>
+  data.value.filter((d) => d.status === "Accepted")
+);
 
 const items = ref<TabsItem[]>([
   {
-    label: 'Pending Donations',
-    icon: 'lucide:truck',
-    content: 'This is the pending donations.',
-    slot: 'pending' as const
+    label: "Pending Donations",
+    icon: "lucide:truck",
+    content: "This is the pending donations.",
+    slot: "pending" as const,
   },
   {
-    label: 'Past Donations',
-    icon: 'lucide:package-check',
-    content: 'This is the past donations.',
-    slot: 'past' as const
-  }
-])
+    label: "Past Donations",
+    icon: "lucide:package-check",
+    content: "This is the past donations.",
+    slot: "past" as const,
+  },
+]);
 </script>
 
 <template>
   <UTabs :items="items" class="w-full" color="neutral" size="xl">
     <template #pending>
-        <PendingDonationList
-          :donations="pendingDonations"
-          :loading="loading"
-          :error="error"
-        />
+      <PendingDonationList
+        :donations="pendingDonations"
+        :loading="loading"
+        :error="error"
+      />
     </template>
     <template #past="{ item }">
-        <PastDonationList 
-          :donations="pastDonations"
-          :loading="loading"
-          :error="error"
-        />
+      <PastDonationList
+        :donations="pastDonations"
+        :loading="loading"
+        :error="error"
+      />
     </template>
   </UTabs>
 </template>

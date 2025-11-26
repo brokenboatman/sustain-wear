@@ -17,6 +17,7 @@ declare module 'vue' {
     DonationList: typeof import('./src/components/DonationList.vue')['default']
     DonationTab: typeof import('./src/components/DonationTab.vue')['default']
     Header: typeof import('./src/components/Header.vue')['default']
+    NewDonationDialog: typeof import('./src/components/NewDonationDialog.vue')['default']
     PastDonationList: typeof import('./src/components/PastDonationList.vue')['default']
     PendingDonationList: typeof import('./src/components/PendingDonationList.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
