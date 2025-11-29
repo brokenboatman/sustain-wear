@@ -32,19 +32,12 @@ async function fetchDonations(): Promise<void> {
       ? json.donations
       : [];
 
-    // --- FIX IS BELOW ---
     data.value = donationsFromApi.map((d: any) => ({
-      donationId: String(d.donationId), // Schema uses donationId (Int), convert to String for frontend
-
-      // FIX 1: Map 'photoUrl' (Schema) to 'imageRef' (Frontend)
+      donationId: String(d.donationId),
       imageRef: d.photoUrl ?? "",
-
-      // FIX 2: Map 'title' (Schema) to 'name' (Frontend)
-      name: d.title ?? "Unknown",
-
+      name: d.title ?? "Unknown Item",
       status: d.status?.status ?? "On its way",
-    }));
-    // --------------------
+    })) as Donation[];
   } catch (e: any) {
     console.error(e);
     error.value = e?.message ?? "Failed to fetch donations";

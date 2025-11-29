@@ -1,6 +1,8 @@
 <script setup>
+import { Suspense } from "vue";
 import BarChart from "../components/BarChart.vue";
 import DonationTab from "../components/DonationTab.vue";
+import NewDonationDialog from "../components/NewDonationDialog.vue";
 </script>
 
 <template>
@@ -8,8 +10,16 @@ import DonationTab from "../components/DonationTab.vue";
     <div class="w-full flex justify-center">
       <div class="w-full sm:max-w-[720px] gap-0 flex flex-col">
         <DonationTab />
-        <DonationList />
-        <NewDonationDialog />
+        <Suspense>
+          <NewDonationDialog />
+
+          <template #fallback>
+            <div class="text-center p-4">
+              <p>Loading donation options...</p>
+              <UProgress animation="horizontal" />
+            </div>
+          </template>
+        </Suspense>
       </div>
     </div>
     <div class="w-full flex justify-center">

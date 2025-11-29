@@ -6,28 +6,36 @@ import { auth } from "../middleware/auth.js";
 const router = Router();
 
 router.get("/", auth([1]), async (req, res) => {
-    try {
-        const userId = req.user?.id;
-        if (!userId) return res.status(401).json({ error: "Unauthorized" });
+  try {
+    const userIdFromToken = req.user?.id;
 
-        console.log('Searching for userId:', userId, 'Type:', typeof userId);
+    if (!userIdFromToken)
+      return res
+        .status(401)
+        .json({ error: "Unauthorized: User ID missing in token" });
 
-        const donations = await prisma.donation.findMany({
-            where: { 
-                userId: parseInt(userId) // Ensure it's an integer
-            },
-            include: {
-                status: true,
-            },
-        });
+    const userIdInt = parseInt(userIdFromToken);
+    if (isNaN(userIdInt))
+      return res.status(400).json({ error: "Invalid User ID format" });
 
-        console.log('Found donations:', donations);
-        
-        res.json({ donations, meta: { count: donations.length } });
-    } catch (e) {
-        console.error('Error fetching donations:', e);
-        res.status(500).json({ error: "Server error", details: e.message });
-    }
+    console.log("Searching for userId:", userIdInt, "Type:", typeof userIdInt);
+
+    const donations = await prisma.donation.findMany({
+      where: {
+        userId: userIdInt,
+      },
+      include: {
+        status: true,
+      },
+    });
+
+    console.log("Found donations:", donations);
+
+    res.json({ donations, meta: { count: donations.length } });
+  } catch (e) {
+    console.error("Error fetching donations:", e);
+    res.status(500).json({ error: "Server error", details: e.message });
+  }
 });
 
 export default router;
