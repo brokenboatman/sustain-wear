@@ -9,6 +9,10 @@ type NotificationItem = DropdownMenuItem & {
   details?: string
 }
 
+const hasNotifications = computed(() =>
+  items.flat().some(item => item.type !== 'label')
+)
+
 // list of notificatiosn to the user
 const items = <NotificationItem[][]>([
   [
@@ -28,7 +32,6 @@ const items = <NotificationItem[][]>([
       variant: 'ghost',
       color: 'primary',
       class: 'truncate-text-none',
-      description: 'You’ve unlocked new rewards.',
       details:
         'You’ve unlocked new rewards based on your latest donation and purchases. Redeem them in the SustainWear rewards hub to get discounts on future orders and exclusive drops.'
     }
@@ -41,7 +44,6 @@ const items = <NotificationItem[][]>([
       icon: 'lucide:truck',
       variant: 'ghost',
       color: 'info',
-      description: 'We’re shipping your donation.',
       details:
         'Your donation has left our local collection point and is heading to our sorting centre. Once processed, it will be sent to one of our charity partners or recycling facilities.'
     }
@@ -54,7 +56,6 @@ const items = <NotificationItem[][]>([
       icon: 'lucide:check',
       variant: 'ghost',
       color: 'info',
-      description: 'We’ve successfully received your clothes.',
       details:
         'Your donation has arrived safely. Thanks for helping extend the life of garments and reduce textile waste. You’ve earned extra reward points for this donation.'
     }
@@ -87,21 +88,28 @@ const toggleExpanded = (item: NotificationItem) => {
       <div class="flex items-center justify-end">
         <UDropdownMenu
           :items="items"
-          :ui="{ content: 'w-110 overflow-y-auto' }"
+          :ui="{ content: 'w-110' }"
         >
           <!-- Bell -->
-          <UChip inset size="xl">
-            <UButton
-              icon="line-md:bell"
-              color="neutral"
-              variant="ghost"
-              class="cursor-pointer"
-              size="xl"
-            />
-          </UChip>
+           <div class="relative">
+             <UButton
+               icon="line-md:bell"
+               color="neutral"
+               variant="ghost"
+               class="cursor-pointer"
+               size="xl"
+             />
+
+             <UChip v-if="hasNotifications" inset size="xl" class="absolute -top 4 -right 4">
+             </UChip>
+           </div>
 
           <template #item="{ item }">
-            <div v-if="item.type === 'label'" class="px-3 py-1 text-lg font-semibold text-gray-500 uppercase">
+            <!-- Label row -->
+            <div
+              v-if="item.type === 'label'"
+              class="px-3 py-1 text-lg font-semibold text-gray-500 uppercase"
+            >
               <span class="flex items-center gap-2">
                 <UIcon v-if="item.icon" :name="item.icon" class="h-6 w-6" />
                 <span>{{ item.label }}</span>
@@ -109,15 +117,15 @@ const toggleExpanded = (item: NotificationItem) => {
             </div>
 
             <!-- Notifications -->
-            <div
-              v-else
-              class="px-3 py-2"
-            >
-              <div class="flex items-center gap-2">
+            <div v-else class="w-full">
+              <!-- Making the whole row a button -->
+              <button type="button" class="flex items-center cursor-pointer gap-2 w-full text-left rounded-md px-3 py-2"
+                @click.stop.prevent="toggleExpanded(item)"
+              >
                 <UIcon
                   v-if="item.icon"
                   :name="item.icon"
-                  class="h-8 w-8 flex-shrink-0"
+                  class="h-10 w-10 flex-shrink-0"
                 />
 
                 <div class="flex-1 min-w-0">
@@ -126,36 +134,31 @@ const toggleExpanded = (item: NotificationItem) => {
                       {{ item.label }}
                     </span>
                   </div>
-                  <span v-if="item.description" class="text-lg text-gray-500 line-clamp-1">
-                    {{ item.description }}
+                  <span
+                    v-if="item.details"
+                    class="text-lg text-gray-500 line-clamp-1"
+                  >
+                    {{ item.details }}
                   </span>
                 </div>
-
-                <UButton
-                  icon="i-heroicons-chevron-down-20-solid"
-                  size="lg"
-                  variant="ghost"
-                  color="neutral"
-                  :class="[
-                    'flex-shrink-0 transition-transform',
-                    expandedId === item.id ? 'rotate-180' : ''
-                  ]"
-                  @click.stop.prevent="toggleExpanded(item)"
+                <UIcon
+                  name='i-heroicons-chevron-down-20-solid'
+                  :class="[ 'h-8 w-8','transition-transform', expandedId === item.id ? 'rotate-180' : '' ]"
                 />
-              </div>
+              </button>
 
-              <!-- description in the drop down about the notification -->
+              <!-- Expanded content -->
               <transition name="fade">
                 <div
                   v-if="expandedId === item.id"
                   class="mt-2 ml-6 text-lg text-gray-600 dark:text-gray-300 pr-1 space-y-2"
                 >
                   <p class="whitespace-pre-line">
-                    {{ item.details || item.description }}
+                    {{ item.details}}
                   </p>
 
-                  <!-- optional: action button inside dropdown -->
-                  <div v-if="item.href" class="pt-1">
+                  <!-- link to page where notification is on -->
+                  <div v-if="item.href" class="pt-1 pb-2">
                     <UButton
                       :to="item.href"
                       size="lg"
