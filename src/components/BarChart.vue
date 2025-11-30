@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue';
+import { ref, computed, onMounted, watch } from 'vue';
 import { Bar } from "vue-chartjs";
 import {
   Chart as ChartJS,
@@ -19,22 +19,11 @@ type CO2Saving = {
   date: string
 }
 
-const items = ref<SelectItem[]>([
-  {
-    label: "2025",
-    value: 2025
-  },
-  {
-    label: "2024",
-    value: 2024
-  }
-])
+const items = ref<SelectItem[]>([])
 
-const value = ref(2025)
+const currentYear = (new Date).getFullYear()
 
-const selectedYear = value.value
-
-console.log("Selected Year: ", selectedYear)
+const value = ref(currentYear)
 
 const loading = ref(false)
 const error = ref<string | null>(null)
@@ -86,9 +75,16 @@ async function fetchDonations(): Promise<void> {
     const json = await res.json()
     const donationsFromApi = Array.isArray(json.donations) ? json.donations : []
 
+    const years = Array()
     const monthlySavings = Array(12).fill(0);
     donationsFromApi.forEach((donation: CO2Saving) => {
-      if(new Date(donation.date).getFullYear() == selectedYear)
+      const year = new Date(donation.date).getFullYear()
+      if (years.includes(year) == false)
+      {
+        years.push(year)
+      }
+
+      if(year == value.value)
       {
         const month = new Date(donation.date).getMonth();
         monthlySavings[month] += donation.co2;
@@ -106,6 +102,15 @@ async function fetchDonations(): Promise<void> {
       ],
     };
 
+    // adds current year if not already there
+    if (years.includes(currentYear) == false)
+    {
+      years.push(currentYear)
+    }
+    years.sort((a, b) => b - a)
+    items.value = years
+    console.log("Selected Year: ", value.value)
+
     console.log("chart data:", chartData.value.datasets[0].data);
 
   } catch (e: any) {
@@ -118,6 +123,12 @@ async function fetchDonations(): Promise<void> {
 
 onMounted(() => {
   fetchDonations()
+})
+
+// changes the chart data when year is changed
+watch(value, (newYear, oldYear) => {
+  console.log("Date from ", oldYear, " to ", newYear)
+  fetchDonations();
 })
 
 const currentMonthSaving = computed(() => {
