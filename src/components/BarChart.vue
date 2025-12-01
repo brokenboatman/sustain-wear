@@ -156,10 +156,10 @@ const totalYearInTrees = computed(() => {
   <div class="text-neutral font-bold w-full sm:max-w-[720px] p-10 rounded-lg border-muted border text-left">
     <h3 class="text-default font-bold text-2xl mb-2">Your impact</h3>
     <USelect v-model="value" :items="items" class="w-20 mb-2" />
-    <p>This month you've saved <b>{{ currentMonthSaving }} kg</b> of CO<sub>2</sub>.</p>
-    <p>That's equivalent to planting <b>{{ currentMonthInTrees }} trees</b> this month!</p>
+    <p v-if="value === currentYear">This month you've saved <b>{{ currentMonthSaving }} kg</b> of CO<sub>2</sub>.</p>
+    <p v-if="value === currentYear">That's equivalent to planting <b>{{ currentMonthInTrees }} trees!</b></p>
     <p>This year you've saved <b>{{ totalYearSaving }} kg</b> of CO<sub>2</sub>.</p>
-    <p>That's equivalent to planting <b>{{ totalYearInTrees }} trees</b> this year!</p>
+    <p>That's equivalent to planting <b>{{ totalYearInTrees }} trees!</b></p>
     <Bar
       id="my-chart-id"
       :options="chartOptions"
