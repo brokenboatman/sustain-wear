@@ -41,13 +41,18 @@ router.post("/", async (req, res) => {
   try {
     const userIdInt = parseInt(userId);
 
+    // Indents
+    const identTitle = quote_ident(body.title)
+    const identDescription = quote_ident(body.description)
+
+
     const imageRef =
       body.images && body.images.length > 0 ? body.images[0] : null;
 
     const newDonation = await prisma.donation.create({
       data: {
-        title: body.title,
-        description: body.description,
+        title: identTitle,
+        description: identDescription,
         quantity: body.quantity,
         photoUrl: imageRef,
 
