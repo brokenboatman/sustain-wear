@@ -25,6 +25,7 @@ declare module 'vue' {
     StaffDonationList: typeof import('./src/components/StaffDonationList.vue')['default']
     UApp: typeof import('./node_modules/@nuxt/ui/dist/runtime/components/App.vue')['default']
     UAuthForm: typeof import('./node_modules/@nuxt/ui/dist/runtime/components/AuthForm.vue')['default']
+    UAvatar: typeof import('./node_modules/@nuxt/ui/dist/runtime/components/Avatar.vue')['default']
     UButton: typeof import('./node_modules/@nuxt/ui/dist/runtime/components/Button.vue')['default']
     UCarousel: typeof import('./node_modules/@nuxt/ui/dist/runtime/components/Carousel.vue')['default']
     UChip: typeof import('./node_modules/@nuxt/ui/dist/runtime/components/Chip.vue')['default']
