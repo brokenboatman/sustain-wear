@@ -3,7 +3,7 @@ import Sidebar from "../Components/Sidebar.vue";
 import BarChart from "../components/BarChart.vue";
 import DonationTab from "../components/DonationTab.vue";
 import Header from "@/components/Header.vue";
-import NewDonationDialog from "../Components/NewDonationDialog.vue";
+import NewDonationDialog from "../components/NewDonationDialog.vue";
 </script>
 
 <template>
