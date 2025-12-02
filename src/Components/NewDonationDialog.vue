@@ -159,29 +159,62 @@ async function onSubmit({ data: formData }) {
   }
 }
 
+const isDragging = ref(false);
+
 const images = ref([
   "https://picsum.photos/468/468?random=1",
   "https://picsum.photos/468/468?random=2",
   "https://picsum.photos/468/468?random=3",
-  "https://picsum.photos/468/468?random=4",
-  "https://picsum.photos/468/468?random=5",
-  "https://picsum.photos/468/468?random=6",
 ]);
 
-function handleImageUpload(event) {
-  const file = event.target.files[0];
-  if (file) {
+function processImageFile(file) {
+  if (file && file.type.startsWith('image/')) {
     const reader = new FileReader();
     reader.onload = (e) => {
       images.value.splice(images.value.length - 1, 0, e.target.result);
       toast.add({ title: "Image added", color: "success" });
     };
     reader.readAsDataURL(file);
+  } else {
+    toast.add({ title: "Please select an image file", color: "error" });
+  }
+}
+
+function handleImageUpload(event) {
+  const file = event.target.files[0];
+  processImageFile(file);
+}
+
+function handleDragOver(event) {
+  event.preventDefault();
+  isDragging.value = true;
+}
+
+function handleDragLeave(event) {
+  event.preventDefault();
+  isDragging.value = false;
+}
+
+function handleDrop(event) {
+  event.preventDefault();
+  isDragging.value = false;
+  
+  const files = event.dataTransfer.files;
+  if (files.length > 0) {
+    processImageFile(files[0]);
   }
 }
 
 function triggerFileUpload() {
   fileInput.value.click();
+}
+
+function removeImage(index) {
+  images.value.splice(index, 1);
+  toast.add({ 
+    title: "Image removed", 
+    color: "success" 
+  });
 }
 
 images.value.push("ADD_BUTTON");
@@ -199,8 +232,8 @@ images.value.push("ADD_BUTTON");
     New donation
   </UButton>
 
-  <UModal v-model="isOpen">
-    <template #header="{ close }">
+  <UModal v-model:open="isOpen" title="Add a Donation">
+    <!-- <template #header="{ close }">
       <div class="flex items-center justify-between">
         <h3 id="donation-title" class="text-xl font-semibold">
           Add a Donation
@@ -213,14 +246,13 @@ images.value.push("ADD_BUTTON");
           @click="closeModal"
         />
       </div>
-    </template>
+    </template> -->
 
-    <template #default>
+    <template #body>
       <p id="donation-description" class="sr-only">
         Use this form to add details, photos, and categories for the item you
         wish to donate.
       </p>
-
       <div class="p-4 space-y-4">
         <input
           ref="fileInput"
@@ -229,38 +261,53 @@ images.value.push("ADD_BUTTON");
           class="hidden"
           @change="handleImageUpload"
         />
-
         <UCarousel
           arrows
           dots
-          v-slot="{ item }"
+          v-slot="{ item, index }"
           :items="images"
           class="w-full max-w-xs mx-auto"
         >
           <div
             v-if="item === 'ADD_BUTTON'"
-            class="w-full h-80 flex items-center justify-center bg-gray-100 dark:bg-gray-800 rounded-lg cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-700 transition"
+            :class="[
+              'w-full h-80 flex items-center justify-center rounded-lg cursor-pointer transition',
+              isDragging
+                ? 'bg-primary/20 border-2 border-primary border-dashed'
+                : 'bg-elevated hover:bg-accented/60'
+            ]"
+            @dragover.prevent="handleDragOver"
+            @dragleave.prevent="handleDragLeave"
+            @drop.prevent="handleDrop"
             @click="triggerFileUpload"
           >
             <div class="text-center">
               <UIcon
                 name="i-lucide-plus"
-                class="w-12 h-12 mx-auto mb-2 text-gray-500"
+                class="w-12 h-12 mx-auto mb-2 text-muted"
               />
-              <p class="text-sm text-gray-600 dark:text-gray-400">Add Photo</p>
+              <p class="text-sm text-toned">{{isDragging ? 'Drop here' : 'Add Photo'}}</p>
+              <p class="text-xs text-muted">Click or drag & drop</p>
             </div>
           </div>
           <div
             v-else
-            class="w-80 h-80 flex items-center justify-center overflow-hidden rounded-lg"
+            class="relative w-full flex flex-col items-center justify-center overflow-hidden rounded-lg"
           >
-            <img :src="item" class="w-full h-full object-cover rounded-lg" />
+            <div 
+              class="absolute right-2 top-2 bg-elevated/50 text-default rounded-full p-2 border border-muted/25 cursor-pointer hover:bg-error hover:text-inverted transition"
+              @click="removeImage(index)"
+            >
+              <UIcon name="i-lucide-trash" class="w-6 h-6" />
+            </div>
+            <img :src="item" class="w-80 h-80 object-cover rounded-lg" />
           </div>
         </UCarousel>
 
         <UForm
           :schema="schema"
           :state="state"
+          :validate-on="['submit']"
           class="space-y-3"
           @submit="onSubmit"
         >
@@ -272,17 +319,17 @@ images.value.push("ADD_BUTTON");
             <UTextarea v-model="state.description" :rows="2" class="w-full" />
           </UFormField>
 
-          <div class="grid grid-cols-3 gap-2">
-            <UFormField label="Quantity" name="quantity" class="col-span-1">
+          <div class="flex flex-col md:flex-row gap-2">
+            <UFormField label="Quantity" name="quantity" class="flex-0">
               <UInput
                 v-model.number="state.quantity"
                 type="number"
                 min="1"
-                class="w-full"
+                class="w-full min-w-[80px]"
               />
             </UFormField>
 
-            <UFormField label="Category" name="category" class="col-span-2">
+            <UFormField label="Category" name="category">
               <USelect
                 v-model="state.category"
                 :items="categoryOptions"
@@ -290,13 +337,24 @@ images.value.push("ADD_BUTTON");
                 placeholder="Select Category"
                 option-attribute="label"
                 value-attribute="value"
-                class="w-full"
+                class="w-full min-w-[120px]"
+              />
+            </UFormField>
+            <UFormField label="Gender" name="gender">
+              <USelect
+                v-model="state.gender"
+                :items="genderOptions"
+                :loading="pending"
+                placeholder="Select Gender"
+                option-attribute="label"
+                value-attribute="value"
+                class="w-full min-w-[100px]"
               />
             </UFormField>
           </div>
 
-          <div class="grid grid-cols-2 gap-2">
-            <UFormField label="Size" name="size">
+          <div class="flex flex-col md:flex-row gap-2">
+            <UFormField label="Size" name="size" class="flex-0">
               <USelect
                 v-model="state.size"
                 :items="sizeOptions"
@@ -304,6 +362,7 @@ images.value.push("ADD_BUTTON");
                 placeholder="Select Size"
                 option-attribute="label"
                 value-attribute="value"
+                class="w-full min-w-[60px]"
               />
             </UFormField>
 
@@ -315,11 +374,9 @@ images.value.push("ADD_BUTTON");
                 placeholder="Select Colour"
                 option-attribute="label"
                 value-attribute="value"
+                class="w-full min-w-[120px]"
               />
             </UFormField>
-          </div>
-
-          <div class="grid grid-cols-2 gap-2">
             <UFormField label="Material" name="material">
               <USelect
                 v-model="state.material"
@@ -328,9 +385,12 @@ images.value.push("ADD_BUTTON");
                 placeholder="Select Material"
                 option-attribute="label"
                 value-attribute="value"
+                class="w-full min-w-[120px]"
               />
             </UFormField>
+          </div>
 
+          <div class="flex flex-col md:flex-row gap-2">
             <UFormField label="Condition" name="condition">
               <USelect
                 v-model="state.condition"
@@ -339,21 +399,11 @@ images.value.push("ADD_BUTTON");
                 placeholder="Select Condition"
                 option-attribute="label"
                 value-attribute="value"
+                class="w-full min-w-[130px]"
               />
             </UFormField>
           </div>
 
-          <UFormField label="Gender" name="gender">
-            <USelect
-              v-model="state.gender"
-              :items="genderOptions"
-              :loading="pending"
-              placeholder="Select Gender"
-              option-attribute="label"
-              value-attribute="value"
-              class="w-full"
-            />
-          </UFormField>
 
           <div class="flex justify-end pt-2">
             <UButton

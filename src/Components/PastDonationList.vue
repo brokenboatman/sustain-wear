@@ -23,7 +23,7 @@ const props = defineProps<{
     </div>
     <div
       v-else
-      class="overflow-y-auto max-h-80 border border-muted p-2 rounded-lg mb-2"
+      class="flex flex-col gap-y-2 border border-muted p-2 rounded-xl mb-2"
     >
       <div v-if="donations.length === 0" class="text-center p-4 text-muted">
         No past donations
@@ -31,13 +31,12 @@ const props = defineProps<{
       <div
         v-for="donation in donations"
         :key="donation.donationId"
-        class="flex items-center justify-between h-20 border border-muted bg-elevated mb-2 p-2 rounded-lg gap-x-1"
+        class="flex items-center justify-between h-20 border border-muted bg-elevated p-2 rounded-lg gap-x-1"
       >
-        <!-- comment code below is for when images are added -->
-        <!-- <img :src="donation.imageRef" /> -->
-
-        <p class="text-left w-3/10">{{ donation.imageRef }}</p>
-        <p class="text-left w-3/10 font-bold">{{ donation.name }}</p>
+        <div class="text-left flex items-center gap-x-2 w-6/10">
+           <img v-if="donation.imageRef" :src="donation.imageRef" class="w-16 h-16 object-cover rounded-lg" />
+           <p class="text-left w-full font-bold px-2">{{ donation.name }}</p>
+         </div>
         <p class="text-left w-4/10">Status: {{ donation.status }}</p>
       </div>
     </div>
