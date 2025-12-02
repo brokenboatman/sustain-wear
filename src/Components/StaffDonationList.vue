@@ -19,7 +19,7 @@ async function fetchDonations(): Promise<void> {
   error.value = null;
   try {
     const token = localStorage.getItem("token");
-    const res = await fetch(`/api/fetch-donations`, {
+    const res = await fetch(`/api/staff-fetch-donations`, {
       headers: token ? { Authorization: `Bearer ${token}` } : undefined,
     });
 
