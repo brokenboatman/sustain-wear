@@ -161,7 +161,6 @@ async function main() {
 
   console.log("Lookup tables created.");
 
-  // --- 3. Create Users and Charity ---
   console.log("Creating users and charities...");
 
   const hashedPassword = await bcrypt.hash("SuperPassword123", 10);

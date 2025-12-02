@@ -1,4 +1,3 @@
-// server/routes/my-donations.js
 import { Router } from "express";
 import prisma from "../utils/prisma.js";
 import { auth } from "../middleware/auth.js";
@@ -24,14 +23,11 @@ router.get("/", auth([1]), async (req, res) => {
       where: {
         userId: userIdInt,
       },
-      include: {
-        status: true,
-      },
     });
 
     console.log("Found user:", users);
 
-    res.json({ users, meta: { count: donations.length } });
+    res.json({ users, meta: { count: users.length } });
   } catch (e) {
     console.error("Error fetching users:", e);
     res.status(500).json({ error: "Server error", details: e.message });
