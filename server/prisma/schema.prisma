@@ -18,6 +18,7 @@ model User {
   googleId  String? @unique
   roleId    Int
   charityId Int?
+  profileURL String?
 
   // --- Relations ---
   role      Role      @relation(fields: [roleId], references: [roleId])
@@ -63,14 +64,15 @@ model Donation {
   photoUrl    String?
   description String?
   quantity    Int      @default(1)
-  weight      Float?   // Fixed: lowercase 'float' to 'Float'
-  co2         Float?   // Fixed: lowercase 'float' to 'Float'
+  weight      Float?   
+  co2         Float?   
   colourId    Int
   conditionId Int
   genderId    Int
   categoryId  Int
   materialId  Int
   sizeId      Int
+
 
   user      User      @relation(fields: [userId], references: [userId])
   charity   Charity   @relation(fields: [charityId], references: [charityId])

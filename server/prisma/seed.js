@@ -48,14 +48,28 @@ async function main() {
       { status: "In transit", statusId: 2 },
       { status: "Received at Charity", statusId: 3 },
       { status: "Accepted", statusId: 4 },
+      { status: "Rejected", statusId: 5 },
     ],
     skipDuplicates: true,
   });
 
   // Colours
   const colours = [
-    "Black", "Blue", "White", "Multi-colour", "Red", "Green", "Yellow",
-    "Pink", "Purple", "Grey", "Brown", "Beige", "Orange", "Gold", "Silver",
+    "Black",
+    "Blue",
+    "White",
+    "Multi-colour",
+    "Red",
+    "Green",
+    "Yellow",
+    "Pink",
+    "Purple",
+    "Grey",
+    "Brown",
+    "Beige",
+    "Orange",
+    "Gold",
+    "Silver",
   ];
   await prisma.colour.createMany({
     // Maps index 0 -> ID 1, index 1 -> ID 2, etc.
@@ -65,11 +79,18 @@ async function main() {
 
   // Conditions
   const conditions = [
-    "New with Tags", "Like New", "Good", "Fair",
-    "New without Tags", "Heavily Used / Poor",
+    "New with Tags",
+    "Like New",
+    "Good",
+    "Fair",
+    "New without Tags",
+    "Heavily Used / Poor",
   ];
   await prisma.condition.createMany({
-    data: conditions.map((c, index) => ({ condition: c, conditionId: index + 1 })),
+    data: conditions.map((c, index) => ({
+      condition: c,
+      conditionId: index + 1,
+    })),
     skipDuplicates: true,
   });
 
@@ -82,22 +103,52 @@ async function main() {
 
   // Categories
   const categories = [
-    "Tops", "Bottoms", "Outerwear", "Shoes", "Dresses", "Accessories",
-    "Bags", "Jewelry", "Activewear", "Swimwear", "Suits & Blazers",
+    "Tops",
+    "Bottoms",
+    "Outerwear",
+    "Shoes",
+    "Dresses",
+    "Accessories",
+    "Bags",
+    "Jewelry",
+    "Activewear",
+    "Swimwear",
+    "Suits & Blazers",
   ];
   await prisma.category.createMany({
-    data: categories.map((c, index) => ({ category: c, categoryId: index + 1 })),
+    data: categories.map((c, index) => ({
+      category: c,
+      categoryId: index + 1,
+    })),
     skipDuplicates: true,
   });
 
   // Materials
   const materialNames = [
-    "Cotton", "Denim", "Polyester", "Wool", "Silk", "Linen", "Leather",
-    "Nylon", "Spandex", "Rayon", "Cashmere", "Velvet", "Suede", "Bamboo",
-    "Hemp", "Fleece", "Satin", "Corduroy",
+    "Cotton",
+    "Denim",
+    "Polyester",
+    "Wool",
+    "Silk",
+    "Linen",
+    "Leather",
+    "Nylon",
+    "Spandex",
+    "Rayon",
+    "Cashmere",
+    "Velvet",
+    "Suede",
+    "Bamboo",
+    "Hemp",
+    "Fleece",
+    "Satin",
+    "Corduroy",
   ];
   await prisma.material.createMany({
-    data: materialNames.map((m, index) => ({ material: m, materialId: index + 1 })),
+    data: materialNames.map((m, index) => ({
+      material: m,
+      materialId: index + 1,
+    })),
     skipDuplicates: true,
   });
 
@@ -110,22 +161,21 @@ async function main() {
 
   console.log("Lookup tables created.");
 
-  // --- 3. Create Users and Charity ---
   console.log("Creating users and charities...");
 
   const hashedPassword = await bcrypt.hash("SuperPassword123", 10);
 
-  // SuperDoner
-  const superDoner = await prisma.user.upsert({
-    where: { email: "SuperDoner@sustainwear.com" },
-    update: { 
+  // SuperDonor
+  const superDonor = await prisma.user.upsert({
+    where: { email: "SuperDonor@sustainwear.com" },
+    update: {
       password: hashedPassword,
-      userId: 1 // Ensure ID matches on update
+      userId: 1, // Ensure ID matches on update
     },
     create: {
       userId: 1, // Hardcoded ID
-      email: "SuperDoner@sustainwear.com",
-      username: "SuperDoner",
+      email: "SuperDonor@sustainwear.com",
+      username: "SuperDonor",
       password: hashedPassword,
       roleId: 1,
     },
@@ -134,9 +184,9 @@ async function main() {
   // SuperStaff
   await prisma.user.upsert({
     where: { email: "SuperStaff@sustainwear.com" },
-    update: { 
+    update: {
       password: hashedPassword,
-      userId: 2 
+      userId: 2,
     },
     create: {
       userId: 2, // Hardcoded ID
@@ -150,9 +200,9 @@ async function main() {
   // SuperAdmin
   await prisma.user.upsert({
     where: { email: "SuperAdmin@sustainwear.com" },
-    update: { 
+    update: {
       password: hashedPassword,
-      userId: 3
+      userId: 3,
     },
     create: {
       userId: 3, // Hardcoded ID
@@ -175,8 +225,8 @@ async function main() {
     },
   });
 
-  // --- 4. Create Donations for SuperDoner ---
-  console.log("Seeding donations for SuperDoner...");
+  // --- 4. Create Donations for SuperDonor ---
+  console.log("Seeding donations for SuperDonor...");
 
   const donationsData = [
     {
@@ -245,8 +295,8 @@ async function main() {
         user: { connect: { userId: 1 } },
         charity: { connect: { charityId: 1 } },
 
-        // We can still connect by unique string name (safest), 
-        // or we could look up the ID if strictly necessary. 
+        // We can still connect by unique string name (safest),
+        // or we could look up the ID if strictly necessary.
         // Connecting by unique name is standard best practice in Prisma seeding.
         status: { connect: { status: item.status } },
         colour: { connect: { colour: item.colour } },
@@ -259,7 +309,7 @@ async function main() {
     });
   }
 
-  console.log(`Seeded ${donationsData.length} donations for SuperDoner.`);
+  console.log(`Seeded ${donationsData.length} donations for SuperDonor.`);
   console.log("Seeding finished.");
 }
 

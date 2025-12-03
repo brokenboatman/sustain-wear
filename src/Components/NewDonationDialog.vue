@@ -149,7 +149,6 @@ async function onSubmit({ data: formData }) {
       color: "success",
     });
   } catch (e) {
-    console.error("Submission Error:", e);
     toast.add({
       title: "Error 😕",
       description: e.message,
@@ -169,7 +168,7 @@ const images = ref([
 ]);
 
 function processImageFile(file) {
-  if (file && file.type.startsWith('image/')) {
+  if (file && file.type.startsWith("image/")) {
     const reader = new FileReader();
     reader.onload = (e) => {
       images.value.splice(images.value.length - 1, 0, e.target.result);
@@ -199,7 +198,7 @@ function handleDragLeave(event) {
 function handleDrop(event) {
   event.preventDefault();
   isDragging.value = false;
-  
+
   const files = event.dataTransfer.files;
   if (files.length > 0) {
     processImageFile(files[0]);
@@ -212,9 +211,9 @@ function triggerFileUpload() {
 
 function removeImage(index) {
   images.value.splice(index, 1);
-  toast.add({ 
-    title: "Image removed", 
-    color: "success" 
+  toast.add({
+    title: "Image removed",
+    color: "success",
   });
 }
 
@@ -234,21 +233,6 @@ images.value.push("ADD_BUTTON");
   </UButton>
 
   <UModal v-model:open="isOpen" title="Add a Donation">
-    <!-- <template #header="{ close }">
-      <div class="flex items-center justify-between">
-        <h3 id="donation-title" class="text-xl font-semibold">
-          Add a Donation
-        </h3>
-        <UButton
-          icon="i-heroicons-x-mark-20-solid"
-          color="gray"
-          variant="ghost"
-          aria-label="Close"
-          @click="closeModal"
-        />
-      </div>
-    </template> -->
-
     <template #body>
       <p id="donation-description" class="sr-only">
         Use this form to add details, photos, and categories for the item you
@@ -275,7 +259,7 @@ images.value.push("ADD_BUTTON");
               'w-full h-80 flex items-center justify-center rounded-lg cursor-pointer transition',
               isDragging
                 ? 'bg-primary/20 border-2 border-primary border-dashed'
-                : 'bg-elevated hover:bg-accented/60'
+                : 'bg-elevated hover:bg-accented/60',
             ]"
             @dragover.prevent="handleDragOver"
             @dragleave.prevent="handleDragLeave"
@@ -287,7 +271,9 @@ images.value.push("ADD_BUTTON");
                 name="i-lucide-plus"
                 class="w-12 h-12 mx-auto mb-2 text-muted"
               />
-              <p class="text-sm text-toned">{{isDragging ? 'Drop here' : 'Add Photo'}}</p>
+              <p class="text-sm text-toned">
+                {{ isDragging ? "Drop here" : "Add Photo" }}
+              </p>
               <p class="text-xs text-muted">Click or drag & drop</p>
             </div>
           </div>
@@ -295,7 +281,7 @@ images.value.push("ADD_BUTTON");
             v-else
             class="relative w-full flex flex-col items-center justify-center overflow-hidden rounded-lg"
           >
-            <div 
+            <div
               class="absolute right-2 top-2 bg-elevated/50 text-default rounded-full p-2 border border-muted/25 cursor-pointer hover:bg-error hover:text-inverted transition"
               @click="removeImage(index)"
             >
@@ -327,7 +313,7 @@ images.value.push("ADD_BUTTON");
                 type="number"
                 min="1"
                 max="99"
-                class="w-full min-w-[80px]"
+                class="w-full min-w-20"
               />
             </UFormField>
 
@@ -405,7 +391,6 @@ images.value.push("ADD_BUTTON");
               />
             </UFormField>
           </div>
-
 
           <div class="flex justify-end pt-2">
             <UButton
