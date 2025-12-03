@@ -5,6 +5,8 @@ import fetchDonationsRoutes from "./routes/fetch-donations.js";
 import fetchStaffDonationsRoutes from "./routes/staff-fetch-donations.js";
 import addDonationRoutes from "./routes/add-donation.js";
 import donationOptionsRoutes from "./routes/donation-options.js";
+import fetchUserInfoRoutes from "./routes/fetch-userinfo.js";
+import updateUserInfoRoutes from "./routes/update-userinfo.js";
 import dotenv from "dotenv";
 import passport from "passport";
 
@@ -18,6 +20,8 @@ app.use("/api/fetch-donations", fetchDonationsRoutes);
 app.use("/api/fetch-staff-donations", fetchStaffDonationsRoutes);
 app.use("/api/add-donation", addDonationRoutes);
 app.use("/api/donation-options", donationOptionsRoutes);
+app.use("/api/fetch-userinfo", fetchUserInfoRoutes);
+app.use("/api/update-userinfo", updateUserInfoRoutes);
 
 app.listen(3000, () => {
   console.log("Backend running on http://localhost:3000");

@@ -9,6 +9,37 @@ const router = Router();
 
 const JWT_SECRET = process.env.JWT_SECRET || "dev-secret";
 
+// 1. Helper function: Returns weight (kg) based on Category Name
+const getCategoryWeight = (categoryName) => {
+  // Normalize string to ensure matching (optional but safer)
+  const name = categoryName ? categoryName.trim() : "";
+
+  switch (name) {
+    case "Tops":
+      return 0.3;
+    case "Bottoms":
+      return 0.5;
+    case "Outerwear":
+      return 1.2;
+    case "Shoes":
+      return 0.8;
+    case "Dresses":
+      return 0.4;
+    case "Accessories":
+    case "Jewelry":
+      return 0.1;
+    case "Bags":
+      return 0.6;
+    case "Activewear":
+    case "Swimwear":
+      return 0.2;
+    case "Suits & Blazers":
+      return 1.0;
+    default:
+      return 0.5; // Default fallback weight
+  }
+};
+
 router.post("/", async (req, res) => {
   const authHeader = req.headers.authorization;
   if (!authHeader || !authHeader.startsWith("Bearer ")) {
@@ -40,10 +71,24 @@ router.post("/", async (req, res) => {
 
   try {
     const userIdInt = parseInt(userId);
+    const categoryIdInt = parseInt(body.category); // This comes from your Vue Select
+
+    // 2. Fetch the Category Name from the DB using the ID
+    const categoryRecord = await prisma.category.findUnique({
+      where: { categoryId: categoryIdInt },
+    });
+
+    if (!categoryRecord) {
+      return res.status(400).json({ error: "Invalid Category ID provided" });
+    }
+
+    // 3. Calculate Weight using the Name we just fetched
+    const calculatedWeight = getCategoryWeight(categoryRecord.category);
 
     const imageRef =
       body.images && body.images.length > 0 ? body.images[0] : null;
 
+    // 4. Create the Donation
     const newDonation = await prisma.donation.create({
       data: {
         title: body.title,
@@ -51,16 +96,19 @@ router.post("/", async (req, res) => {
         quantity: body.quantity,
         photoUrl: imageRef,
 
-        // Connect to User using the parsed ID
-        user: { connect: { userId: userIdInt } },
+        // Save the calculated weight
+        weight: calculatedWeight,
 
-        // Links to the lookup tables using the IDs
-        category: { connect: { categoryId: body.category } },
+        // Connect relations using IDs
+        user: { connect: { userId: userIdInt } },
+        category: { connect: { categoryId: categoryIdInt } },
         size: { connect: { sizeId: body.size } },
         colour: { connect: { colourId: body.colour } },
         material: { connect: { materialId: body.material } },
         condition: { connect: { conditionId: body.condition } },
         gender: { connect: { genderId: body.gender } },
+
+        // Hardcoded defaults based on your previous code
         status: { connect: { statusId: 1 } },
         charity: { connect: { charityId: 1 } },
       },
