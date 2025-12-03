@@ -165,17 +165,17 @@ async function main() {
 
   const hashedPassword = await bcrypt.hash("SuperPassword123", 10);
 
-  // SuperDoner
-  const superDoner = await prisma.user.upsert({
-    where: { email: "SuperDoner@sustainwear.com" },
+  // SuperDonor
+  const superDonor = await prisma.user.upsert({
+    where: { email: "SuperDonor@sustainwear.com" },
     update: {
       password: hashedPassword,
       userId: 1, // Ensure ID matches on update
     },
     create: {
       userId: 1, // Hardcoded ID
-      email: "SuperDoner@sustainwear.com",
-      username: "SuperDoner",
+      email: "SuperDonor@sustainwear.com",
+      username: "SuperDonor",
       password: hashedPassword,
       roleId: 1,
     },
@@ -225,8 +225,8 @@ async function main() {
     },
   });
 
-  // --- 4. Create Donations for SuperDoner ---
-  console.log("Seeding donations for SuperDoner...");
+  // --- 4. Create Donations for SuperDonor ---
+  console.log("Seeding donations for SuperDonor...");
 
   const donationsData = [
     {
@@ -309,7 +309,7 @@ async function main() {
     });
   }
 
-  console.log(`Seeded ${donationsData.length} donations for SuperDoner.`);
+  console.log(`Seeded ${donationsData.length} donations for SuperDonor.`);
   console.log("Seeding finished.");
 }
 

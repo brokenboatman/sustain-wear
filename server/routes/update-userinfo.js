@@ -33,6 +33,21 @@ router.put("/", auth(), async (req, res) => {
       return res.status(404).json({ error: "User not found" });
     }
 
+    if (user.googleId) {
+      if (email && email !== user.email) {
+        return res.status(403).json({
+          error:
+            "Security Restriction: Google-authenticated users cannot change their email address.",
+        });
+      }
+      if (newPassword) {
+        return res.status(403).json({
+          error:
+            "Security Restriction: Google-authenticated users cannot set a password.",
+        });
+      }
+    }
+
     if (email && email !== user.email) {
       const emailExists = await prisma.user.findUnique({ where: { email } });
       if (emailExists)
