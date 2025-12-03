@@ -4,7 +4,7 @@ import { auth } from "../middleware/auth.js";
 
 const router = Router();
 
-router.get("/", auth([1]), async (req, res) => {
+router.get("/", auth([1,2,3]), async (req, res) => {
   try {
     const userIdFromToken = req.user?.id;
 
