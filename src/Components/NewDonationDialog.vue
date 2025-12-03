@@ -79,7 +79,7 @@ const fileInput = ref(null);
 const schema = z.object({
   title: z.string().min(1, "Title is required").max(100, "Title must be less than 100 characters"),
   description: z.string().min(1, "Description is required").max(255, "Description must be less than 255 characters"),
-  quantity: z.number().min(1, "Quantity must be at least 1"),
+  quantity: z.number().min(1, "Quantity must be at least 1").max(99, "Quantity too large"),
   // Validate that the ID is provided
   category: z.number().min(1, "Category is required"),
   size: z.number().min(1, "Size is required"),
@@ -325,6 +325,7 @@ images.value.push("ADD_BUTTON");
                 v-model.number="state.quantity"
                 type="number"
                 min="1"
+                max="99"
                 class="w-full min-w-[80px]"
               />
             </UFormField>
