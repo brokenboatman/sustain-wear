@@ -9,10 +9,37 @@ type Donation = {
   status: "On its way" | "In transit" | "Received at Charity" | "Accepted";
 };
 
-
-
 const loading = ref(false);
 const error = ref<string | null>(null);
+
+async function fetchDonation(donationId: number): Promise<Donation | null> {
+  const token = localStorage.getItem("token");
+  try {
+    const res = await fetch(`/api/fetch-donation?donationId=${donationId}`, {
+      headers: token ? { Authorization: `Bearer ${token}` } : undefined,
+    });
+
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({ error: res.statusText }));
+      throw new Error(err?.error || res.statusText);
+    }
+
+    const json = await res.json();
+    const d = json.donation;
+
+    if (!d) return null;
+
+    return {
+      donationId: String(d.donationId),
+      imageRef: d.items?.[0]?.photoUrl ?? "",
+      name: d.items?.[0]?.description ?? "Unknown Item",
+      status: d.status?.status ?? "Unknown",
+    } as Donation;
+  } catch (e: any) {
+    console.error(e);
+    throw e;
+  }
+}
 
 async function fetchDonations(): Promise<void> {
   loading.value = true;
@@ -43,6 +70,19 @@ async function fetchDonations(): Promise<void> {
     error.value = e?.message ?? "Failed to fetch donations";
   } finally {
     loading.value = false;
+  }
+}
+
+async function handleEditDonation(donationId: number): Promise<void> {
+  try {
+    const donation = await fetchDonation(donationId);
+    if (donation) {
+      console.log("Editing donation:", donation);
+    } else {
+      console.warn("Donation not found for editing:", donationId);
+    }
+  } catch (e) {
+    console.error("Error fetching donation for editing:", e);
   }
 }
 
@@ -99,22 +139,13 @@ const pendingDonations = computed(() =>
            <p class="text-left w-full font-bold px-2">{{ donation.name }}</p>
          </div>
         <div class="text-left flex items-center gap-x-2 w-4/10">
-          <UIcon
-            class="size-5"
-            v-if="donation.status === 'In transit'"
-            name="lucide:truck"
-          />
-          <UIcon
-            class="size-5"
-            v-if="donation.status === 'Received at Charity'"
-            name="lucide:warehouse"
-          />
-          <UIcon
-            class="size-5"
-            v-if="donation.status === 'On its way'"
-            name="lucide:package"
-          />
-          <p>{{ donation.status }}</p>
+          <UButton 
+          label="Edit" 
+          size="lg" 
+          color="primary" 
+          icon="i-lucide-edit" 
+          @click="handleEditDonation(parseInt(donation.donationId))"
+           />
         </div>
         
       </div>
