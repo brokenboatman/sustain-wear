@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import type { TabsItem } from "@nuxt/ui";
 import { ref, computed } from "vue";
 import { onMounted } from "vue";
 
@@ -11,6 +10,7 @@ type Donation = {
 };
 
 
+
 const loading = ref(false);
 const error = ref<string | null>(null);
 
@@ -19,7 +19,7 @@ async function fetchDonations(): Promise<void> {
   error.value = null;
   try {
     const token = localStorage.getItem("token");
-    const res = await fetch(`/api/staff-fetch-donations`, {
+    const res = await fetch(`/api/staff-donations`, {
       headers: token ? { Authorization: `Bearer ${token}` } : undefined,
     });
 
@@ -37,7 +37,6 @@ async function fetchDonations(): Promise<void> {
       donationId: String(d.donationId),
       imageRef: d.photoUrl ?? "",
       name: d.title ?? "Unknown Item",
-      status: d.status?.status ?? "On its way",
     })) as Donation[];
   } catch (e: any) {
     console.error(e);
@@ -75,25 +74,6 @@ const data = ref<Donation[]>([
 const pendingDonations = computed(() =>
   data.value.filter((d) => d.status !== "Accepted")
 );
-
-const pastDonations = computed(() =>
-  data.value.filter((d) => d.status === "Accepted")
-);
-
-const items = ref<TabsItem[]>([
-  {
-    label: "Pending Donations",
-    icon: "lucide:truck",
-    content: "This is the pending donations.",
-    slot: "pending" as const,
-  },
-  {
-    label: "Past Donations",
-    icon: "lucide:package-check",
-    content: "This is the past donations.",
-    slot: "past" as const,
-  },
-]);
 </script>
 
 <template>

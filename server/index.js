@@ -17,7 +17,7 @@ app.use(express.json());
 app.use(passport.initialize());
 app.use("/api/auth", authRoutes);
 app.use("/api/fetch-donations", fetchDonationsRoutes);
-app.use("/api/fetch-staff-donations", fetchStaffDonationsRoutes);
+app.use("/api/staff-donations", fetchStaffDonationsRoutes);
 app.use("/api/add-donation", addDonationRoutes);
 app.use("/api/donation-options", donationOptionsRoutes);
 app.use("/api/fetch-userinfo", fetchUserInfoRoutes);
