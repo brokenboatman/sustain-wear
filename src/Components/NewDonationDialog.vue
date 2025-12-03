@@ -77,8 +77,8 @@ const isOpen = ref(false);
 const fileInput = ref(null);
 
 const schema = z.object({
-  title: z.string().min(1, "Title is required"),
-  description: z.string().min(1, "Description is required"),
+  title: z.string().min(1, "Title is required").max(100, "Title must be less than 100 characters"),
+  description: z.string().min(1, "Description is required").max(255, "Description must be less than 255 characters"),
   quantity: z.number().min(1, "Quantity must be at least 1"),
   // Validate that the ID is provided
   category: z.number().min(1, "Category is required"),
