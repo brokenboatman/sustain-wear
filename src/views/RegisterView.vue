@@ -60,10 +60,12 @@ const schema = z
     email: z.email("Invalid email"),
     password: z
       .string("Password is required")
-      .min(8, "Must be at least 8 characters"),
+      .min(8, "Must be at least 8 characters")
+      .max(100, "Password must be less than 100 characters"),
     username: z
       .string("Username is required")
-      .min(3, "Must be at least 3 characters"),
+      .min(3, "Must be at least 3 characters")
+      .max(100, "Username must be less than 100 characters"),
     "repeat password": z.string("Please repeat your password"),
   })
   .refine((data) => data.password === data["repeat password"], {
