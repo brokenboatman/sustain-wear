@@ -4,7 +4,7 @@ import { z } from "zod";
 
 const updateProfileSchema = z
   .object({
-    username: z.string().min(3, "Username must be at least 3 characters"),
+    username: z.string().min(3, "Username must be at least 3 characters").max(100, "Username must be less than 100 characters"),
     email: z.email("Invalid email address"),
     avatar: z.string().min(1, "Please select an avatar"),
     currentPassword: z.string().optional(),
@@ -59,6 +59,7 @@ const loading = ref(false);
 const error = ref<string | null>(null);
 const selectedAvatar = ref<string>("");
 const successMessage = ref<string | null>(null);
+const isGoogleUser = ref(false);
 
 async function fetchUserInfo(): Promise<void> {
   loading.value = true;
@@ -81,6 +82,8 @@ async function fetchUserInfo(): Promise<void> {
       state.email = userFromApi.email ?? "";
       state.username = userFromApi.username ?? "";
       selectedAvatar.value = userFromApi.profileURL ?? "";
+
+      isGoogleUser.value = !userFromApi.password;
     }
   } catch (e: any) {
     console.error(e);
@@ -185,30 +188,33 @@ onMounted(() => {
             label="Username"
             placeholder="Enter your username"
           />
-          <UInput
-            v-model="state.email"
-            type="email"
-            label="Email"
-            placeholder="Enter your email"
-          />
-          <UInput
-            v-model="state.currentPassword"
-            type="password"
-            label="Current Password"
-            placeholder="Enter your current password"
-          />
-          <UInput
-            v-model="state.newPassword"
-            type="password"
-            label="New Password"
-            placeholder="Enter your new password"
-          />
-          <UInput
-            v-model="state.confirmPassword"
-            type="password"
-            label="Confirm New Password"
-            placeholder="Confirm your new password"
-          />
+          <div v-if="!isGoogleUser" class="flex flex-col gap-6">
+            <UInput
+              v-model="state.email"
+              type="email"
+              label="Email"
+              placeholder="Enter your email"
+            />
+
+            <UInput
+              v-model="state.currentPassword"
+              type="password"
+              label="Current Password"
+              placeholder="Enter your current password"
+            />
+            <UInput
+              v-model="state.newPassword"
+              type="password"
+              label="New Password"
+              placeholder="Enter your new password"
+            />
+            <UInput
+              v-model="state.confirmPassword"
+              type="password"
+              label="Confirm New Password"
+              placeholder="Confirm your new password"
+            />
+          </div>
           <div>
             <UButton
               type="submit"
