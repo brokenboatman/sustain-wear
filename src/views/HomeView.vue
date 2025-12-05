@@ -1,5 +1,4 @@
 <script setup>
-import Sidebar from "../Components/Sidebar.vue";
 import BarChart from "../components/BarChart.vue";
 import DonationTab from "../components/DonationTab.vue";
 import Header from "@/components/Header.vue";
