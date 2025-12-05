@@ -15,6 +15,7 @@ declare module 'vue' {
     BarChart: typeof import('./src/components/BarChart.vue')['default']
     DashboardLayout: typeof import('./src/components/DashboardLayout.vue')['default']
     DonationTab: typeof import('./src/components/DonationTab.vue')['default']
+    EditDonationDialog: typeof import('./src/components/EditDonationDialog.vue')['default']
     Header: typeof import('./src/components/Header.vue')['default']
     NewDonationDialog: typeof import('./src/components/NewDonationDialog.vue')['default']
     PastDonationList: typeof import('./src/components/PastDonationList.vue')['default']
