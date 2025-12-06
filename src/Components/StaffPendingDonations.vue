@@ -15,6 +15,7 @@ const props = defineProps<{
   error: string | null;
 }>();
 
+// updates donation status to accepted (4)
 async function updateDonation(donationId: number, newStatus: number) {
   const token = localStorage.getItem("token");
 
@@ -41,6 +42,7 @@ async function updateDonation(donationId: number, newStatus: number) {
       color: "success",
     });
 
+    // moves the pending donation to the accepted donations list without having to reload the donation list
     const updatedDonation = props.donations.find((donation) => donation.donationId === donationId);
     if(updatedDonation) {
         updatedDonation.status = "Accepted";
@@ -80,7 +82,6 @@ async function updateDonation(donationId: number, newStatus: number) {
          </div>
         <div class="text-left flex items-center gap-x-4 w-4/10">
             <UButton icon="lucide:check" color="neutral" class="text-lg" @click="updateDonation(donation.donationId, 4)">Accept</UButton>
-            <UButton icon="lucide:x" color="neutral" class="text-lg">Reject</UButton>
         </div>
         
       </div>
