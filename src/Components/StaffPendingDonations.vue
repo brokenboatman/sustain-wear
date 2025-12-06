@@ -36,8 +36,8 @@ const props = defineProps<{
            <p class="text-left w-full font-bold px-2">{{ donation.name }}</p>
          </div>
         <div class="text-left flex items-center gap-x-4 w-4/10">
-            <UButton color="neutral" class="text-lg">Accept</UButton>
-            <UButton color="neutral" class="text-lg">Reject</UButton>
+            <UButton icon="lucide:check" color="neutral" class="text-lg">Accept</UButton>
+            <UButton icon="lucide:x" color="neutral" class="text-lg">Reject</UButton>
         </div>
         
       </div>
