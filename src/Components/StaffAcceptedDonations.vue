@@ -1,6 +1,6 @@
 <script setup lang="ts">
 type Donation = {
-  donationId: string;
+  donationId: number;
   imageRef: string;
   name: string;
   status: "On its way" | "In transit" | "Received at Charity" | "Accepted";

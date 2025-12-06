@@ -4,7 +4,7 @@ import { ref, computed } from "vue";
 import { onMounted } from "vue";
 
 type Donation = {
-  donationId: string;
+  donationId: number;
   imageRef: string;
   name: string;
   status: "On its way" | "In transit" | "Received at Charity" | "Accepted";
@@ -36,6 +36,7 @@ async function fetchDonations(): Promise<void> {
       donationId: String(d.donationId),
       imageRef: d.photoUrl ?? "",
       name: d.title ?? "Unknown Item",
+      status: d.status.name,
     })) as Donation[];
   } catch (e: any) {
     console.error(e);
@@ -51,19 +52,19 @@ onMounted(() => {
 
 const data = ref<Donation[]>([
   {
-    donationId: "001",
+    donationId: 1,
     imageRef: "[image ref here]",
     name: "T-Shirt",
     status: "In transit",
   },
   {
-    donationId: "002",
+    donationId: 2,
     imageRef: "[image ref here]",
     name: "Beige trousers",
     status: "Received at Charity",
   },
   {
-    donationId: "003",
+    donationId: 3,
     imageRef: "[image ref here]",
     name: "Floral dress",
     status: "On its way",
