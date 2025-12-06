@@ -33,10 +33,10 @@ async function fetchDonations(): Promise<void> {
       : [];
 
     data.value = donationsFromApi.map((d: any) => ({
-      donationId: String(d.donationId),
+      donationId: d.donationId,
       imageRef: d.photoUrl ?? "",
       name: d.title ?? "Unknown Item",
-      status: d.status.name,
+      status: d.status.status,
     })) as Donation[];
   } catch (e: any) {
     console.error(e);
