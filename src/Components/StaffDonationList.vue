@@ -112,5 +112,4 @@ const items = ref<TabsItem[]>([
       />
     </template>
   </UTabs>
-  <!-- <EditDonationDialog :donationId="parseInt(donation.donationId)" /> -->
 </template>
