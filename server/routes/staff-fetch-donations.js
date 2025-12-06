@@ -9,7 +9,7 @@ router.get("/", auth([2]), async (req, res) => {
   try {
     const donations = await prisma.donation.findMany({
       where: {
-        statusId: 3, // arrived at charity status
+        statusId: 3 || 4, // arrived at charity and accepted status
       },
       include: {
         status: true,
