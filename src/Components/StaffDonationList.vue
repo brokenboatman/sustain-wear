@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import type { TabsItem } from "@nuxt/ui";
 import { ref, computed } from "vue";
 import { onMounted } from "vue";
 
@@ -72,7 +73,45 @@ const data = ref<Donation[]>([
 const pendingDonations = computed(() =>
   data.value.filter((d) => d.status !== "Accepted")
 );
+
+const acceptedDonations = computed(() =>
+  data.value.filter((d) => d.status === "Accepted")
+)
+
+const items = ref<TabsItem[]>([
+  {
+    label: "Pending Donations",
+    icon: "lucide:truck",
+    content: "This is the pending donations.",
+    slot: "pending" as const,
+  },
+  {
+    label: "Accepted Donations",
+    icon: "lucide:package-check",
+    content: "This is the accepted donations.",
+    slot: "accepted" as const,
+  },
+]);
 </script>
+
+<template>
+  <UTabs :items="items" class="w-full" color="neutral" size="xl">
+    <template #pending>
+      <PendingDonationList
+        :donations="pendingDonations"
+        :loading="loading"
+        :error="error"
+      />
+    </template>
+    <template #accepted>
+      <PastDonationList
+        :donations="acceptedDonations"
+        :loading="loading"
+        :error="error"
+      />
+    </template>
+  </UTabs>
+</template>
 
 <template>
   <div class="flex-1 flex-direction-column text-default">

@@ -104,7 +104,7 @@ const items = ref<TabsItem[]>([
         :error="error"
       />
     </template>
-    <template #past="{ item }">
+    <template #past>
       <PastDonationList
         :donations="pastDonations"
         :loading="loading"
