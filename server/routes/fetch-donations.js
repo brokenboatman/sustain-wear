@@ -22,10 +22,14 @@ router.get("/", auth([1]), async (req, res) => {
 
     const donations = await prisma.donation.findMany({
       where: {
-        userId: userIdInt,
+        userId: userIdInt, // <--- CHANGED THIS
       },
       include: {
         status: true,
+        images: true, // Includes the multiple images we set up earlier
+      },
+      orderBy: {
+        date: "desc", // Optional: Shows newest donations first
       },
     });
 
