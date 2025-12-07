@@ -5,6 +5,7 @@ import * as z from "zod";
 const options = ref(null);
 const pending = ref(true);
 const toast = useToast();
+const emit = defineEmits(["donation-added"])
 
 async function loadOptions() {
   pending.value = true;
@@ -148,6 +149,9 @@ async function onSubmit({ data: formData }) {
       description: json.statusMessage || "Donation created successfully.",
       color: "success",
     });
+
+    // tells parent element the donation was added
+    emit("donation-added")
   } catch (e) {
     toast.add({
       title: "Error:",

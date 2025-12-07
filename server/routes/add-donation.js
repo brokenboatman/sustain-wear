@@ -7,7 +7,7 @@ import jwt from "jsonwebtoken";
 const prisma = new PrismaClient();
 const router = Router();
 
-const JWT_SECRET = process.env.JWT_SECRET || "dev-secret";
+const JWT_SECRET = process.env.JWT_SECRET;
 
 // 1. Helper function: Returns weight (kg) based on Category Name
 const getCategoryWeight = (categoryName) => {
@@ -37,6 +37,28 @@ const getCategoryWeight = (categoryName) => {
       return 1.0;
     default:
       return 0.5; // Default fallback weight
+  }
+};
+
+const simulateLogisticsCycle = async (donationId) => {
+  console.log(`Starting simulation for Donation ${donationId}`);
+
+  try {
+    await new Promise((resolve) => setTimeout(resolve, 15000));
+    await prisma.donation.update({
+      where: { donationId: donationId },
+      data: { statusId: 2 },
+    });
+    console.log(`Donation ${donationId} moved to 'In transit'`);
+
+    await new Promise((resolve) => setTimeout(resolve, 15000));
+    await prisma.donation.update({
+      where: { donationId: donationId },
+      data: { statusId: 3 },
+    });
+    console.log(`Donation ${donationId} moved to 'Received at Charity'`);
+  } catch (error) {
+    console.error(`Simulation failed for donation ${donationId}:`, error);
   }
 };
 
@@ -95,11 +117,7 @@ router.post("/", async (req, res) => {
         description: body.description,
         quantity: body.quantity,
         photoUrl: imageRef,
-
-        // Save the calculated weight
         weight: calculatedWeight,
-
-        // Connect relations using IDs
         user: { connect: { userId: userIdInt } },
         category: { connect: { categoryId: categoryIdInt } },
         size: { connect: { sizeId: body.size } },
@@ -107,12 +125,12 @@ router.post("/", async (req, res) => {
         material: { connect: { materialId: body.material } },
         condition: { connect: { conditionId: body.condition } },
         gender: { connect: { genderId: body.gender } },
-
-        // Hardcoded defaults based on your previous code
         status: { connect: { statusId: 1 } },
         charity: { connect: { charityId: 1 } },
       },
     });
+
+    simulateLogisticsCycle(newDonation.donationId);
 
     return res.json({
       donation: newDonation,

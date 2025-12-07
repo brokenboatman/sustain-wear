@@ -1,6 +1,6 @@
 <script setup lang="ts">
 type Donation = {
-  donationId: string;
+  donationId: number;
   imageRef: string;
   name: string;
   status: "On its way" | "In transit" | "Received at Charity" | "Accepted";
@@ -13,8 +13,6 @@ const props = defineProps<{
 }>();
 </script>
 
-<!-- We could remove the imageRef data and just use the ID if our images have a link containing the ID -->
-
 <template>
   <div class="flex-1 flex-direction-column text-default max-h-100 overflow-y-auto">
     <div v-if="loading" class="text-center p-4">Loading...</div>
@@ -26,7 +24,7 @@ const props = defineProps<{
       class="flex flex-col gap-y-2 border border-muted p-2 rounded-xl mb-2"
     >
       <div v-if="donations.length === 0" class="text-center p-4 text-muted">
-        No past donations
+        No accepted donations
       </div>
       <div
         v-for="donation in donations"
@@ -37,7 +35,7 @@ const props = defineProps<{
            <img v-if="donation.imageRef" :src="donation.imageRef" class="w-16 h-16 object-cover rounded-lg" />
            <p class="text-left w-full font-bold px-2">{{ donation.name }}</p>
          </div>
-        <p class="text-left w-4/10">Status: {{ donation.status }}</p>
+        <p class="text-left w-4/10"><EditDonationDialog :donationId="donation.donationId" /></p>
       </div>
     </div>
   </div>

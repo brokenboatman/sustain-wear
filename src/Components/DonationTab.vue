@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import type { TabsItem } from "@nuxt/ui";
-import { ref, computed } from "vue";
-import { onMounted } from "vue";
+import { ref, computed, onMounted, onUnmounted } from "vue";
 
 type Donation = {
   donationId: string;
@@ -12,9 +11,11 @@ type Donation = {
 
 const loading = ref(false);
 const error = ref<string | null>(null);
+let pollingInterval: ReturnType<typeof setInterval> | null = null;
 
-async function fetchDonations(): Promise<void> {
-  loading.value = true;
+async function fetchDonations(isBackgroundUpdate = false): Promise<void> {
+  if (!isBackgroundUpdate) loading.value = true;
+
   error.value = null;
   try {
     const token = localStorage.getItem("token");
@@ -40,14 +41,22 @@ async function fetchDonations(): Promise<void> {
     })) as Donation[];
   } catch (e: any) {
     console.error(e);
-    error.value = e?.message ?? "Failed to fetch donations";
+    if (!isBackgroundUpdate)
+      error.value = e?.message ?? "Failed to fetch donations";
   } finally {
-    loading.value = false;
+    if (!isBackgroundUpdate) loading.value = false;
   }
 }
 
 onMounted(() => {
   fetchDonations();
+  pollingInterval = setInterval(() => {
+    fetchDonations(true);
+  }, 5000);
+});
+
+onUnmounted(() => {
+  if (pollingInterval) clearInterval(pollingInterval);
 });
 
 const data = ref<Donation[]>([
@@ -104,7 +113,7 @@ const items = ref<TabsItem[]>([
         :error="error"
       />
     </template>
-    <template #past="{ item }">
+    <template #past>
       <PastDonationList
         :donations="pastDonations"
         :loading="loading"

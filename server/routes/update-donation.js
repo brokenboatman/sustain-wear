@@ -28,13 +28,15 @@ router.patch("/", auth([2,3]), async (req, res) => {
         colourId: req.body.colourId,
         materialId: req.body.materialId,
         conditionId: req.body.conditionId,
+        statusId: req.body.statusId,
         },
     });
     if (!donation) {
         return res.status(404).json({ error: "Donation not found" });
     }
-
+    
     console.log("Found donation:", donation);
+    console.log("Updating donation:", donationId, "to status:", req.body.statusId);
 
     res.json({ donation });
   } catch (e) {
