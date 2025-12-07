@@ -3,6 +3,11 @@ import { Suspense } from "vue";
 import BarChart from "../components/BarChart.vue";
 import DonationTab from "../components/DonationTab.vue";
 import NewDonationDialog from "../components/NewDonationDialog.vue";
+
+function onDonationAdded(){
+  console.log("reloading chart")
+  BarChart.value?.reloadChart();
+}
 </script>
 
 <template>
@@ -11,7 +16,7 @@ import NewDonationDialog from "../components/NewDonationDialog.vue";
       <div class="w-full sm:max-w-[720px] gap-0 flex flex-col">
         <DonationTab />
         <Suspense>
-          <NewDonationDialog />
+          <NewDonationDialog @donation-added="onDonationAdded" />
 
           <template #fallback>
             <div class="text-center p-4">

@@ -118,6 +118,11 @@ async function fetchDonations(): Promise<void> {
   }
 }
 
+// reloads bar chart
+defineExpose({
+  reloadChart: fetchDonations
+})
+
 onMounted(() => {
   fetchDonations();
 });
