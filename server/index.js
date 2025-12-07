@@ -1,6 +1,8 @@
 import express from "express";
 import cors from "cors";
 import authRoutes from "./routes/auth.js";
+import dotenv from "dotenv";
+import passport from "passport";
 import fetchDonationsRoutes from "./routes/fetch-donations.js";
 import fetchStaffDonationsRoutes from "./routes/staff-fetch-donations.js";
 import addDonationRoutes from "./routes/add-donation.js";
@@ -9,8 +11,7 @@ import fetchUserInfoRoutes from "./routes/fetch-userinfo.js";
 import updateUserInfoRoutes from "./routes/update-userinfo.js";
 import fetchDonation from "./routes/fetch-donation.js";
 import updateDonation from "./routes/update-donation.js";
-import dotenv from "dotenv";
-import passport from "passport";
+import donationImageRouter from "./routes/donation-image.js";
 
 dotenv.config({ path: "../.env" });
 const app = express();
@@ -26,6 +27,7 @@ app.use("/api/fetch-userinfo", fetchUserInfoRoutes);
 app.use("/api/update-userinfo", updateUserInfoRoutes);
 app.use("/api/fetch-donation", fetchDonation);
 app.use("/api/update-donation", updateDonation);
+app.use("/api/donation-image", donationImageRouter);
 
 app.listen(3000, () => {
   console.log("Backend running on http://localhost:3000");

@@ -144,13 +144,13 @@ async function onSubmit({ data: formData }) {
     }
 
     toast.add({
-      title: "Success! 🎉",
+      title: "Success!",
       description: json.statusMessage || "Donation created successfully.",
       color: "success",
     });
   } catch (e) {
     toast.add({
-      title: "Error 😕",
+      title: "Error:",
       description: e.message,
       color: "error",
     });
