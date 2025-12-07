@@ -35,8 +35,8 @@ const props = defineProps<{
            <img v-if="donation.imageRef" :src="donation.imageRef" class="w-16 h-16 object-cover rounded-lg" />
            <p class="text-left w-full font-bold px-2">{{ donation.name }}</p>
          </div>
-        <p class="text-left w-4/10"><EditDonationDialog :donationId="donation.donationId" /></p>
-      </div>
+            <EditDonationDialog :donationId="donation.donationId" />
+        </div>
     </div>
   </div>
 </template>
