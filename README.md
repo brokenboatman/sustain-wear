@@ -1,41 +1,51 @@
-# Sustain Wear
+Sustain WearGroup 14 Applied Software Engineering Assessment
 
-This is Group 14's Applied Software Engineering assessment project.
+Sustain Wear is a web application focused on sustainable clothing donation and distribution. This repository contains the source code for both the client-side interface and the server-side logic.
 
-## Customize configuration
+Prerequisites: before beginning the installation, ensure you have the following installed on your local machine: Node.js (Latest LTS version recommended) PostgreSQL (Ensure the service is running and you have access to a superuser account)
 
-See [Vite Configuration Reference](https://vite.dev/config/).
+Configuration: Create a .env file in the root directory of the project. Populate it with the following environment variables.
 
-## Project Setup
+Note: Ensure that BACKEND_SERVER_URL and FRONTEND_SERVER_URL do not contain trailing slashes.Bash# Database Configuration
 
-```sh
-npm install
-```
+# Replace 'PASSWORDFROMYOURPOSTGRESSQLSERVER' with your actual Postgres password
 
-### Compile and Hot-Reload for Development
-
-Download and install and remember the password for postgresssql server
-
-npm install
-
-create a .env file in the root with a
 DATABASE_URL="postgresql://postgres:PASSWORDFROMYOURPOSTGRESSQLSERVER@localhost:5432/sustain-wear"
+
+# Authentication Secrets
+
 JWT_SECRET="key"
+
+# OAuth Configuration
+
 GOOGLE_CLIENT_ID="334970749720-aia1uo57j1b6i24m92s23dc3mgdmpjv5.apps.googleusercontent.com"
 GOOGLE_CLIENT_SECRET="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"
+
+# Server URLs
+
 BACKEND_SERVER_URL="http://localhost:3000"
 FRONTEND_SERVER_URL="http://localhost:5173"
 
-cd server
-npx prisma migrate dev
-cd ..
-npx prisma db seed
-node index.js
+Installation & Setup
 
-cd ..
-npm run dev
+1. Install Dependencies
+   npm install
+2. Database Setup & Backend Initialization
+   cd server
+   npx prisma migrate dev
+   npx prisma db seed
+3. Running the Application
+   cd server
+   node index.js
+   cd ..
+   npm run dev
 
-Navigate to the login screen and to test doner use:
+The application will be accessible at http://localhost:5173.
 
-Email: SuperDoner@sustainwear.com
-Password: SuperPassword123
+User Credentials:
+
+Donor Superdonor@sustainwear.com SuperPassword123
+
+Charity Staff SuperStaff@sustainwear.com SuperPassword123
+
+Administrator SuperAdmin@sustainwear.com SuperPassword123

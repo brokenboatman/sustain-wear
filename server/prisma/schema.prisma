@@ -72,6 +72,7 @@ model Donation {
   categoryId  Int
   materialId  Int
   sizeId      Int
+  images DonationImage[]
 
 
   user      User      @relation(fields: [userId], references: [userId])
@@ -84,6 +85,13 @@ model Donation {
   category  Category  @relation(fields: [categoryId], references: [categoryId])
   material  Material  @relation(fields: [materialId], references: [materialId])
   size      Size      @relation(fields: [sizeId], references: [sizeId])
+}
+
+model DonationImage {
+  imageId    Int      @id @default(autoincrement())
+  url        String
+  donationId Int
+  donation   Donation @relation(fields: [donationId], references: [donationId])
 }
 
 // --- Lookup Tables ---

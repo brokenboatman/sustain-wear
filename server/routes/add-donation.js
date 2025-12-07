@@ -3,11 +3,18 @@
 import { Router } from "express";
 import { PrismaClient } from "@prisma/client";
 import jwt from "jsonwebtoken";
+import cloudinary from "cloudinary";
 
 const prisma = new PrismaClient();
 const router = Router();
 
 const JWT_SECRET = process.env.JWT_SECRET;
+
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+});
 
 // 1. Helper function: Returns weight (kg) based on Category Name
 const getCategoryWeight = (categoryName) => {
@@ -106,18 +113,44 @@ router.post("/", async (req, res) => {
 
     // 3. Calculate Weight using the Name we just fetched
     const calculatedWeight = getCategoryWeight(categoryRecord.category);
+    const imagePayloads = body.images || []; // Expecting an array of Base64 strings
+    const uploadPromises = [];
 
-    const imageRef =
-      body.images && body.images.length > 0 ? body.images[0] : null;
+    for (const imgStr of imagePayloads) {
+      if (imgStr.startsWith("data:")) {
+        // Create a promise for the upload
+        const p = cloudinary.uploader.upload(imgStr, {
+          folder: "donations",
+          resource_type: "image",
+        });
+        uploadPromises.push(p);
+      } else {
+        // If it's already a URL (rare in this case, but good safety), just resolve it
+        uploadPromises.push(Promise.resolve({ secure_url: imgStr }));
+      }
+    }
 
-    // 4. Create the Donation
+    // Wait for ALL uploads to finish in parallel
+    const uploadResults = await Promise.all(uploadPromises);
+
+    // Extract the URLs
+    const imageUrls = uploadResults.map((r) => r.secure_url);
+
+    // Determine the "Cover Image" (the first one uploaded)
+    const coverPhotoUrl = imageUrls.length > 0 ? imageUrls[0] : null;
+
+    // --- 2. CREATE DATABASE RECORD ---
     const newDonation = await prisma.donation.create({
       data: {
         title: body.title,
         description: body.description,
         quantity: body.quantity,
-        photoUrl: imageRef,
         weight: calculatedWeight,
+
+        // Save the first image as the cover photo for backward compatibility
+        photoUrl: coverPhotoUrl,
+
+        // CONNECT RELATIONS
         user: { connect: { userId: userIdInt } },
         category: { connect: { categoryId: categoryIdInt } },
         size: { connect: { sizeId: body.size } },
@@ -127,6 +160,14 @@ router.post("/", async (req, res) => {
         gender: { connect: { genderId: body.gender } },
         status: { connect: { statusId: 1 } },
         charity: { connect: { charityId: 1 } },
+
+        // NEW: Create the related images in the same transaction
+        images: {
+          create: imageUrls.map((url) => ({ url: url })),
+        },
+      },
+      include: {
+        images: true, // Return the created images in the response
       },
     });
 
