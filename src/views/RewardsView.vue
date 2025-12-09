@@ -114,7 +114,7 @@ const cards = ([
   </div>
   <USeparator icon="lucide:map" class="pb-6"/>
   <div class="flex justify-center py-10 animate-slide-in">
-    <UTimeline :color="color" size="xl" orientation="vertical" :default-value="userMilestones" :items="items" :ui="{ item: 'even:flex-row-reverse even:-translate-x-[calc(100%-40px)] even:text-right' }" class="w-70 mx-10 float-right mx-15 translate-x-[calc(50%-1rem)]"/>
+    <UTimeline :color="color" size="xl" orientation="vertical" :default-value="userMilestones" :items="items" :ui="{ item: 'even:flex-row-reverse even:-translate-x-[calc(100%-40px)] even:text-right' }" class="w-70 float-right mx-15 translate-x-[calc(50%-1rem)]"/>
   </div>
   <USeparator icon="lucide:medal" />
   <div class="px-5 py-15 animate-slide-in">
