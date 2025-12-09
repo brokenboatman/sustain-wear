@@ -24,7 +24,7 @@ declare module 'vue' {
     RouterView: typeof import('vue-router')['RouterView']
     Sidebar: typeof import('./src/components/Sidebar.vue')['default']
     StaffAcceptedDonations: typeof import('./src/components/StaffAcceptedDonations.vue')['default']
-    StaffDonationList: typeof import('./src/components/StaffDonationList.vue')['default']
+    StaffDonationList: typeof import('./src/components/StaffDonationTab.vue')['default']
     StaffDonationTab: typeof import('./src/components/StaffDonationTab.vue')['default']
     StaffPendingDonations: typeof import('./src/components/StaffPendingDonations.vue')['default']
     UApp: typeof import('./node_modules/@nuxt/ui/dist/runtime/components/App.vue')['default']
@@ -49,6 +49,7 @@ declare module 'vue' {
     UTabs: typeof import('./node_modules/@nuxt/ui/dist/runtime/components/Tabs.vue')['default']
     UTextarea: typeof import('./node_modules/@nuxt/ui/dist/runtime/components/Textarea.vue')['default']
     UTimeline: typeof import('./node_modules/@nuxt/ui/dist/runtime/components/Timeline.vue')['default']
+    UTooltip: typeof import('./node_modules/@nuxt/ui/dist/runtime/components/Tooltip.vue')['default']
     UUser: typeof import('./node_modules/@nuxt/ui/dist/runtime/components/User.vue')['default']
   }
 }

@@ -38,7 +38,7 @@ async function updateDonation(donationId: number, newStatus: number) {
 
     toast.add({
       title: "Success:",
-      description: "Donation updated successfully.",
+      description: "Donation accepted successfully.",
       color: "success",
     });
 

@@ -1,4 +1,7 @@
 <script setup lang="ts">
+
+const toast = useToast();
+
 type Donation = {
   donationId: number;
   imageRef: string;
@@ -11,6 +14,48 @@ const props = defineProps<{
   loading: boolean;
   error: string | null;
 }>();
+
+// updates donation status to accepted (3)
+async function updateDonation(donationId: number, newStatus: number) {
+  const token = localStorage.getItem("token");
+
+  try {
+
+    const res = await fetch(`/api/update-donation?donationId=${donationId}`, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+        ...(token && { Authorization: `Bearer ${token}` }),
+      },
+      body: JSON.stringify({ statusId: newStatus }),
+    });
+
+    const json = await res.json();
+
+    if (!res.ok) {
+      throw new Error(json.error || "Failed to update donation");
+    }
+
+    toast.add({
+      title: "Success:",
+      description: `Donation moved back to pending.`,
+      color: "success",
+    });
+
+    // moves the pending donation to the accepted donations list without having to reload the donation list
+    const updatedDonation = props.donations.find((donation) => donation.donationId === donationId);
+    if(updatedDonation) {
+        updatedDonation.status = "Received at Charity";
+    }
+    
+  } catch (e: any) {
+    toast.add({
+      title: "Error:",
+      description: e.message,
+      color: "error",
+    });
+  }
+}
 </script>
 
 <template>
@@ -35,7 +80,31 @@ const props = defineProps<{
            <img v-if="donation.imageRef" :src="donation.imageRef" class="w-16 h-16 object-cover rounded-lg" />
            <p class="text-left w-full font-bold px-2">{{ donation.name }}</p>
          </div>
-            <EditDonationDialog :donationId="donation.donationId" />
+         <div class="text-left flex items-center w-4/10 gap-x-4 justify-end">
+           <UTooltip text="Move the donation back to pending to edit details">
+              <UButton
+                color="neutral"
+                variant="solid"
+                size="xl"
+                disabled
+                class="w-[100px] justify-center"
+              >
+                <UIcon name="i-lucide-edit" class="w-6 h-6" />
+                Edit
+            </UButton>
+          </UTooltip>
+            <UTooltip text="Revert donation to pending status">
+            <UButton
+              color="error"
+              variant="solid"
+              size="xl"
+              class="w-[100px] justify-center"
+              @click="updateDonation(donation.donationId, 3)">
+              <UIcon name="i-lucide-undo" class="w-6 h-6" />
+              Revert
+            </UButton>
+            </UTooltip>
+         </div>
         </div>
     </div>
   </div>
