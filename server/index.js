@@ -13,6 +13,8 @@ import fetchDonation from "./routes/fetch-donation.js";
 import updateDonation from "./routes/update-donation.js";
 import donationImageRouter from "./routes/donation-image.js";
 import deleteUser from "./routes/delete-user.js";
+import fetchUsers from "./routes/fetch-users.js";
+import updateUsers from "./routes/update-users.js";
 
 dotenv.config({ path: "../.env" });
 const app = express();
@@ -32,6 +34,8 @@ app.use("/api/fetch-donation", fetchDonation);
 app.use("/api/update-donation", updateDonation);
 app.use("/api/donation-image", donationImageRouter);
 app.use("/api/delete-user", deleteUser);
+app.use("/api/fetch-users", fetchUsers);
+app.use("/api/update-users", updateUsers);
 
 app.listen(3000, () => {
   console.log("Backend running on http://localhost:3000");
