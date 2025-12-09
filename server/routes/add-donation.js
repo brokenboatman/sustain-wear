@@ -1,5 +1,3 @@
-// routes/add-donation.js (Using Express Router)
-
 import { Router } from "express";
 import { PrismaClient } from "@prisma/client";
 import jwt from "jsonwebtoken";
@@ -16,11 +14,10 @@ cloudinary.config({
   api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
-// 1. Helper function: Returns weight (kg) based on Category Name
-const getCategoryWeight = (categoryName) => {
-  // Normalize string to ensure matching (optional but safer)
-  const name = categoryName ? categoryName.trim() : "";
+const CO2_SAVING_PER_KG = 9.0;
 
+const getCategoryWeight = (categoryName) => {
+  const name = categoryName ? categoryName.trim() : "";
   switch (name) {
     case "Tops":
       return 0.3;
@@ -43,13 +40,12 @@ const getCategoryWeight = (categoryName) => {
     case "Suits & Blazers":
       return 1.0;
     default:
-      return 0.5; // Default fallback weight
+      return 0.5;
   }
 };
 
 const simulateLogisticsCycle = async (donationId) => {
   console.log(`Starting simulation for Donation ${donationId}`);
-
   try {
     await new Promise((resolve) => setTimeout(resolve, 15000));
     await prisma.donation.update({
@@ -70,6 +66,7 @@ const simulateLogisticsCycle = async (donationId) => {
 };
 
 router.post("/", async (req, res) => {
+  // --- AUTHENTICATION ---
   const authHeader = req.headers.authorization;
   if (!authHeader || !authHeader.startsWith("Bearer ")) {
     return res.status(401).json({ error: "Unauthorized: No token provided" });
@@ -93,16 +90,13 @@ router.post("/", async (req, res) => {
   }
 
   const body = req.body;
-
   if (!body.title || !body.category || !body.size) {
     return res.status(400).json({ error: "Missing required donation fields" });
   }
 
   try {
     const userIdInt = parseInt(userId);
-    const categoryIdInt = parseInt(body.category); // This comes from your Vue Select
-
-    // 2. Fetch the Category Name from the DB using the ID
+    const categoryIdInt = parseInt(body.category);
     const categoryRecord = await prisma.category.findUnique({
       where: { categoryId: categoryIdInt },
     });
@@ -111,70 +105,84 @@ router.post("/", async (req, res) => {
       return res.status(400).json({ error: "Invalid Category ID provided" });
     }
 
-    // 3. Calculate Weight using the Name we just fetched
     const calculatedWeight = getCategoryWeight(categoryRecord.category);
-    const imagePayloads = body.images || []; // Expecting an array of Base64 strings
+
+    const calculatedCo2 = calculatedWeight * CO2_SAVING_PER_KG;
+
+    const imagePayloads = body.images || [];
     const uploadPromises = [];
 
     for (const imgStr of imagePayloads) {
       if (imgStr.startsWith("data:")) {
-        // Create a promise for the upload
         const p = cloudinary.uploader.upload(imgStr, {
           folder: "donations",
           resource_type: "image",
         });
         uploadPromises.push(p);
       } else {
-        // If it's already a URL (rare in this case, but good safety), just resolve it
         uploadPromises.push(Promise.resolve({ secure_url: imgStr }));
       }
     }
 
-    // Wait for ALL uploads to finish in parallel
     const uploadResults = await Promise.all(uploadPromises);
-
-    // Extract the URLs
     const imageUrls = uploadResults.map((r) => r.secure_url);
-
-    // Determine the "Cover Image" (the first one uploaded)
     const coverPhotoUrl = imageUrls.length > 0 ? imageUrls[0] : null;
 
-    // --- 2. CREATE DATABASE RECORD ---
-    const newDonation = await prisma.donation.create({
-      data: {
-        title: body.title,
-        description: body.description,
-        quantity: body.quantity,
-        weight: calculatedWeight,
-
-        // Save the first image as the cover photo for backward compatibility
-        photoUrl: coverPhotoUrl,
-
-        // CONNECT RELATIONS
-        user: { connect: { userId: userIdInt } },
-        category: { connect: { categoryId: categoryIdInt } },
-        size: { connect: { sizeId: body.size } },
-        colour: { connect: { colourId: body.colour } },
-        material: { connect: { materialId: body.material } },
-        condition: { connect: { conditionId: body.condition } },
-        gender: { connect: { genderId: body.gender } },
-        status: { connect: { statusId: 1 } },
-        charity: { connect: { charityId: 1 } },
-
-        // NEW: Create the related images in the same transaction
-        images: {
-          create: imageUrls.map((url) => ({ url: url })),
+    const result = await prisma.$transaction(async (tx) => {
+      const newDonation = await tx.donation.create({
+        data: {
+          title: body.title,
+          description: body.description,
+          quantity: body.quantity,
+          weight: calculatedWeight,
+          co2: calculatedCo2,
+          photoUrl: coverPhotoUrl,
+          user: { connect: { userId: userIdInt } },
+          category: { connect: { categoryId: categoryIdInt } },
+          size: { connect: { sizeId: body.size } },
+          colour: { connect: { colourId: body.colour } },
+          material: { connect: { materialId: body.material } },
+          condition: { connect: { conditionId: body.condition } },
+          gender: { connect: { genderId: body.gender } },
+          status: { connect: { statusId: 1 } },
+          charity: { connect: { charityId: 1 } },
+          images: {
+            create: imageUrls.map((url) => ({ url: url })),
+          },
         },
-      },
-      include: {
-        images: true, // Return the created images in the response
-      },
-    });
+        include: {
+          images: true,
+        },
+      });
 
-    simulateLogisticsCycle(newDonation.donationId);
+      const totalCount = await tx.donation.count({
+        where: { userId: userIdInt },
+      });
+
+      if (totalCount === 5) {
+        const notifType = await tx.notificationType.findUnique({
+          where: { type: "DONATION_MILESTONE" },
+        });
+
+        if (notifType) {
+          await tx.notifications.create({
+            data: {
+              userId: userIdInt,
+              notificationTypeId: notifType.notificationTypeId,
+              message:
+                "Congratulations! You've unlocked the '5 Donations' badge.",
+              isRead: false,
+            },
+          });
+        }
+      }
+
+      return newDonation;
+    });
+    simulateLogisticsCycle(result.donationId);
 
     return res.json({
-      donation: newDonation,
+      donation: result,
       statusMessage: "Donation added successfully",
     });
   } catch (e) {

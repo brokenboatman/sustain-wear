@@ -248,6 +248,10 @@ async function main() {
 
   console.log("Notification seeding finished.");
 
+  const today = new Date();
+  const lastMonth = new Date(today);
+  lastMonth.setMonth(today.getMonth() - 1);
+
   const donationsData = [
     {
       title: "Vintage Denim Jacket",
@@ -261,6 +265,7 @@ async function main() {
       size: "L",
       weight: 0.8,
       co2: 2.5,
+      date: lastMonth,
     },
     {
       title: "Summer Floral Dress",
@@ -274,6 +279,7 @@ async function main() {
       size: "M",
       weight: 0.3,
       co2: 1.1,
+      date: lastMonth,
     },
     {
       title: "Leather Hiking Boots",
@@ -310,14 +316,8 @@ async function main() {
         description: item.description,
         weight: item.weight,
         co2: item.co2,
-
-        // Connect using the Hardcoded IDs directly
         user: { connect: { userId: 1 } },
         charity: { connect: { charityId: 1 } },
-
-        // We can still connect by unique string name (safest),
-        // or we could look up the ID if strictly necessary.
-        // Connecting by unique name is standard best practice in Prisma seeding.
         status: { connect: { status: item.status } },
         colour: { connect: { colour: item.colour } },
         condition: { connect: { condition: item.condition } },

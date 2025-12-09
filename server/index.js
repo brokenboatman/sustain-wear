@@ -13,6 +13,9 @@ import fetchDonation from "./routes/fetch-donation.js";
 import updateDonation from "./routes/update-donation.js";
 import donationImageRouter from "./routes/donation-image.js";
 import deleteUser from "./routes/delete-user.js";
+import fetchDonationCount from "./routes/fetch-donationcount.js";
+import fetchNotifications from "./routes/fetch-notifications.js";
+import updateNotification from "./routes/update-notification.js";
 import fetchUsers from "./routes/fetch-users.js";
 import updateUsers from "./routes/update-users.js";
 
@@ -34,6 +37,9 @@ app.use("/api/fetch-donation", fetchDonation);
 app.use("/api/update-donation", updateDonation);
 app.use("/api/donation-image", donationImageRouter);
 app.use("/api/delete-user", deleteUser);
+app.use("/api/fetch-donationcount", fetchDonationCount);
+app.use("/api/fetch-notifications", fetchNotifications);
+app.use("/api/update-notification", updateNotification);
 app.use("/api/fetch-users", fetchUsers);
 app.use("/api/update-users", updateUsers);
 

@@ -52,7 +52,7 @@ onMounted(() => {
   fetchDonations();
   pollingInterval = setInterval(() => {
     fetchDonations(true);
-  }, 5000);
+  }, 2000);
 });
 
 onUnmounted(() => {

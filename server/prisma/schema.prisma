@@ -64,7 +64,7 @@ model Notifications {
   createdAt          DateTime @default(now()) // Best practice: automatically set time
 
   // --- Relations ---
-  user             User             @relation(fields: [userId], references: [userId])
+  user             User             @relation(fields: [userId], references: [userId], onDelete: Cascade)
   notificationType NotificationType @relation(fields: [notificationTypeId], references: [notificationTypeId])
 }
 
