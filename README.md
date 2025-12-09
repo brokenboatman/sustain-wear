@@ -26,6 +26,12 @@ GOOGLE_CLIENT_SECRET="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"
 BACKEND_SERVER_URL="http://localhost:3000"
 FRONTEND_SERVER_URL="http://localhost:5173"
 
+# Cloudinary Virtual Images
+
+CLOUDINARY_CLOUD_NAME=dtckq9bj4
+CLOUDINARY_API_KEY=452996932715446
+CLOUDINARY_API_SECRET=UpwnhGtAPW9r9kQT6E-B5KFaOzU
+
 Installation & Setup
 
 1. Install Dependencies
