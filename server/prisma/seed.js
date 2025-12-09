@@ -228,6 +228,26 @@ async function main() {
   // --- 4. Create Donations for SuperDonor ---
   console.log("Seeding donations for SuperDonor...");
 
+  const notificationTypeData = [
+    { type: "DONATION_MILESTONE" }, // For 10, 50, 100 donations
+    { type: "SYSTEM_ALERT" }, // For system maintenance or important updates
+    { type: "CHARITY_UPDATE" }, //update the user on the status of their item
+    { type: "ACCOUNT_SECURITY" }, // For password changes, login from new device, etc.
+  ];
+
+  for (const n of notificationTypeData) {
+    const type = await prisma.notificationType.upsert({
+      where: { type: n.type },
+      update: {}, // If it exists, do nothing
+      create: {
+        type: n.type,
+      },
+    });
+    console.log(`Upserted type: ${type.type}`);
+  }
+
+  console.log("Notification seeding finished.");
+
   const donationsData = [
     {
       title: "Vintage Denim Jacket",
