@@ -84,7 +84,6 @@ const schema = z.object({
     .max(100, "Title must be less than 100 characters"),
   description: z
     .string()
-    .min(1, "Description is required")
     .max(255, "Description must be less than 255 characters"),
   // preprocessing to set value to 0 if input is null
   quantity: z.preprocess(
@@ -324,7 +323,7 @@ images.value.push("ADD_BUTTON");
           class="space-y-3"
           @submit="onSubmit"
         >
-          <UFormField label="Title" name="title">
+          <UFormField label="Title" name="title" required>
             <UInput v-model="state.title" class="w-full" />
           </UFormField>
 
@@ -333,7 +332,7 @@ images.value.push("ADD_BUTTON");
           </UFormField>
 
           <div class="flex flex-col md:flex-row gap-2">
-            <UFormField label="Quantity" name="quantity" class="flex-0">
+            <UFormField label="Quantity" name="quantity" class="flex-0" required>
               <UInput
                 v-model.number="state.quantity"
                 type="number"
@@ -343,7 +342,7 @@ images.value.push("ADD_BUTTON");
               />
             </UFormField>
 
-            <UFormField label="Category" name="category">
+            <UFormField label="Category" name="category" required>
               <USelect
                 v-model="state.category"
                 :items="categoryOptions"
@@ -354,7 +353,7 @@ images.value.push("ADD_BUTTON");
                 class="w-full min-w-[120px]"
               />
             </UFormField>
-            <UFormField label="Gender" name="gender">
+            <UFormField label="Gender" name="gender" required>
               <USelect
                 v-model="state.gender"
                 :items="genderOptions"
@@ -368,7 +367,7 @@ images.value.push("ADD_BUTTON");
           </div>
 
           <div class="flex flex-col md:flex-row gap-2">
-            <UFormField label="Size" name="size" class="flex-0">
+            <UFormField label="Size" name="size" class="flex-0" required>
               <USelect
                 v-model="state.size"
                 :items="sizeOptions"
@@ -380,7 +379,7 @@ images.value.push("ADD_BUTTON");
               />
             </UFormField>
 
-            <UFormField label="Colour" name="colour">
+            <UFormField label="Colour" name="colour" required>
               <USelect
                 v-model="state.colour"
                 :items="colourOptions"
@@ -391,7 +390,7 @@ images.value.push("ADD_BUTTON");
                 class="w-full min-w-[120px]"
               />
             </UFormField>
-            <UFormField label="Material" name="material">
+            <UFormField label="Material" name="material" required>
               <USelect
                 v-model="state.material"
                 :items="materialOptions"
@@ -405,7 +404,7 @@ images.value.push("ADD_BUTTON");
           </div>
 
           <div class="flex flex-col md:flex-row gap-2">
-            <UFormField label="Condition" name="condition">
+            <UFormField label="Condition" name="condition" required>
               <USelect
                 v-model="state.condition"
                 :items="conditionOptions"
