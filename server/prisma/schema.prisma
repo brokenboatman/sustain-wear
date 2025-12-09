@@ -75,7 +75,7 @@ model Donation {
   images DonationImage[]
 
 
-  user      User      @relation(fields: [userId], references: [userId])
+  user User @relation(fields: [userId], references: [userId], onDelete: Cascade)
   charity   Charity   @relation(fields: [charityId], references: [charityId])
   status    Status    @relation(fields: [statusId], references: [statusId])
   
@@ -91,7 +91,7 @@ model DonationImage {
   imageId    Int      @id @default(autoincrement())
   url        String
   donationId Int
-  donation   Donation @relation(fields: [donationId], references: [donationId])
+  donation Donation @relation(fields: [donationId], references: [donationId], onDelete: Cascade)
 }
 
 // --- Lookup Tables ---

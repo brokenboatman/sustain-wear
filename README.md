@@ -50,8 +50,16 @@ The application will be accessible at http://localhost:5173.
 
 User Credentials:
 
-Donor Superdonor@sustainwear.com SuperPassword123
+Donor SuperDonor@sustainwear.com SuperPassword123
 
 Charity Staff SuperStaff@sustainwear.com SuperPassword123
 
 Administrator SuperAdmin@sustainwear.com SuperPassword123
+
+# PostgreSQL known error with prisma
+
+If you encounter an error when trying to login or register go into pgAdmin4 (PostgreSQL IDE) and run:
+
+SELECT setval(pg_get_serial_sequence('"User"', 'userId'), 4, false);
+
+This resets the count which was causing the error.
