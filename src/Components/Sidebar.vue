@@ -41,7 +41,7 @@ async function logout() {
     class: 'mt-0'
    }"
    :ui="{
-    wrapper: 'mb-10'
+    wrapper: 'mb-10',
    }"
    >
     <UButton icon="line-md:menu" color="neutral" variant="ghost" class="cursor-pointer" size="xl"/>

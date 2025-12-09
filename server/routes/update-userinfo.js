@@ -8,7 +8,7 @@ const router = Router();
 router.put("/", auth(), async (req, res) => {
   try {
     const userIdFromToken = req.user?.id || req.user?.userId;
-
+    // user can only update their own profile unless they are an admin
     if (!userIdFromToken) {
       return res
         .status(401)
@@ -16,6 +16,7 @@ router.put("/", auth(), async (req, res) => {
     }
 
     const userIdInt = parseInt(userIdFromToken);
+
     if (isNaN(userIdInt)) {
       return res.status(400).json({ error: "Invalid User ID format" });
     }

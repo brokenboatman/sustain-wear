@@ -16,6 +16,8 @@ import deleteUser from "./routes/delete-user.js";
 import fetchDonationCount from "./routes/fetch-donationcount.js";
 import fetchNotifications from "./routes/fetch-notifications.js";
 import updateNotification from "./routes/update-notification.js";
+import fetchUsers from "./routes/fetch-users.js";
+import updateUsers from "./routes/update-users.js";
 
 dotenv.config({ path: "../.env" });
 const app = express();
@@ -38,6 +40,8 @@ app.use("/api/delete-user", deleteUser);
 app.use("/api/fetch-donationcount", fetchDonationCount);
 app.use("/api/fetch-notifications", fetchNotifications);
 app.use("/api/update-notification", updateNotification);
+app.use("/api/fetch-users", fetchUsers);
+app.use("/api/update-users", updateUsers);
 
 app.listen(3000, () => {
   console.log("Backend running on http://localhost:3000");
