@@ -2,9 +2,14 @@
 import { ref, reactive, onMounted } from "vue";
 import { z } from "zod";
 
+const toast = useToast();
+
 const updateProfileSchema = z
   .object({
-    username: z.string().min(3, "Username must be at least 3 characters").max(100, "Username must be less than 100 characters"),
+    username: z
+      .string()
+      .min(3, "Username must be at least 3 characters")
+      .max(100, "Username must be less than 100 characters"),
     email: z.email("Invalid email address"),
     avatar: z.string().min(1, "Please select an avatar"),
     currentPassword: z.string().optional(),
@@ -56,17 +61,14 @@ const presetAvatars = [
 ];
 
 const loading = ref(false);
-const error = ref<string | null>(null);
 const selectedAvatar = ref<string>("");
-const successMessage = ref<string | null>(null);
 const isGoogleUser = ref(false);
 
 async function fetchUserInfo(): Promise<void> {
   loading.value = true;
-  error.value = null;
   try {
     const token = localStorage.getItem("token");
-    const res = await fetch(`/api/fetch-userinfo`, {
+    const res = await fetch("/api/fetch-userinfo", {
       headers: token ? { Authorization: `Bearer ${token}` } : undefined,
     });
 
@@ -82,21 +84,48 @@ async function fetchUserInfo(): Promise<void> {
       state.email = userFromApi.email ?? "";
       state.username = userFromApi.username ?? "";
       selectedAvatar.value = userFromApi.profileURL ?? "";
-
       isGoogleUser.value = !userFromApi.password;
     }
   } catch (e: any) {
-    console.error(e);
-    error.value = e?.message ?? "Failed to fetch User Info";
+    toast.add({
+      title: "Error",
+      description: e?.message ?? "Failed to fetch User Info",
+      color: "red",
+    });
+  } finally {
+    loading.value = false;
+  }
+}
+
+async function deleteProfile() {
+  if (!confirm("Are you sure? This cannot be undone.")) return;
+
+  loading.value = true;
+  try {
+    const token = localStorage.getItem("token");
+    const res = await fetch("/api/delete-user", {
+      method: "DELETE",
+      headers: { Authorization: `Bearer ${token}` },
+    });
+
+    if (res.ok) {
+      toast.add({ title: "Account deleted", color: "green" });
+      window.location.href = "/register";
+    } else {
+      throw new Error("Failed to delete account");
+    }
+  } catch (e: any) {
+    toast.add({
+      title: "Error",
+      description: e.message || "Failed to delete profile",
+      color: "red",
+    });
   } finally {
     loading.value = false;
   }
 }
 
 async function saveChanges() {
-  error.value = null;
-  successMessage.value = null;
-
   const formValues = {
     ...state,
     avatar: selectedAvatar.value,
@@ -105,7 +134,11 @@ async function saveChanges() {
   const result = updateProfileSchema.safeParse(formValues);
 
   if (!result.success) {
-    error.value = result.error.issues[0].message;
+    toast.add({
+      title: "Validation Error",
+      description: result.error.issues[0].message,
+      color: "red",
+    });
     return;
   }
 
@@ -138,14 +171,21 @@ async function saveChanges() {
       throw new Error(data.error || "Failed to update profile");
     }
 
-    successMessage.value = "Profile updated successfully!";
+    toast.add({
+      title: "Success",
+      description: "Profile updated successfully!",
+      color: "green",
+    });
 
     state.currentPassword = "";
     state.newPassword = "";
     state.confirmPassword = "";
   } catch (e: any) {
-    console.error("Save Error:", e);
-    error.value = e.message || "An error occurred while saving.";
+    toast.add({
+      title: "Save Failed",
+      description: e.message || "An error occurred while saving.",
+      color: "red",
+    });
   } finally {
     loading.value = false;
   }
@@ -163,7 +203,7 @@ onMounted(() => {
       <div class="pt-4">
         <h2 class="text-2xl mb-4">Change Account Details</h2>
 
-        <div class="flex flex-wrap gap-4">
+        <div class="flex flex-wrap gap-4 justify-center">
           <UAvatar
             v-for="url in presetAvatars"
             :key="url"
@@ -225,19 +265,19 @@ onMounted(() => {
             >
               Save Changes
             </UButton>
+            <UButton
+              type="button"
+              color="error"
+              variant="solid"
+              size="xl"
+              :loading="loading"
+              @click="deleteProfile"
+              class="ml-4"
+            >
+              Delete Profile
+            </UButton>
           </div>
         </form>
-
-        <div
-          v-if="successMessage"
-          class="text-green-500 mt-2 text-center font-bold"
-        >
-          {{ successMessage }}
-        </div>
-
-        <div v-if="error" class="text-red-500 mt-2 text-center">
-          {{ error }}
-        </div>
       </div>
     </div>
   </div>
