@@ -80,6 +80,14 @@ const acceptedDonations = computed(() =>
   data.value.filter((d) => d.status === "Accepted")
 )
 
+const pendingCount = computed(() => 
+  data.value.filter((d) => d.status !== "Accepted").length
+)
+
+const totalCount = computed(() =>
+  data.value.length
+)
+
 const items = ref<TabsItem[]>([
   {
     label: "Pending Donations",
