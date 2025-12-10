@@ -1,11 +1,11 @@
-<script setup>
+<script setup lang="ts">
+import { Donation } from "@prisma/client";
 import { reactive, ref, computed, onMounted } from "vue";
 import * as z from "zod";
 
 const options = ref(null);
 const pending = ref(true);
 const toast = useToast();
-const emit = defineEmits(["donation-added"])
 
 async function loadOptions() {
   pending.value = true;
@@ -30,9 +30,7 @@ async function loadOptions() {
   }
 }
 
-onMounted(() => {
-  loadOptions();
-});
+const props = defineProps<{ donationId?: number }>();
 
 const categoryOptions = computed(
   () =>
@@ -145,17 +143,85 @@ function closeModal() {
     condition: null,
     gender: null,
   });
+  images.value = [];
 }
 
-async function onSubmit({ data: formData }) {
-  const imageRefs = images.value.filter((img) => img !== "ADD_BUTTON");
-  const payload = { ...formData, images: imageRefs }; // Sends Array
+async function fetchDonation(donationId: number): Promise<Donation | null> {
+  const token = localStorage.getItem("token");
+  try {
+    const res = await fetch(`/api/fetch-donation?donationId=${donationId}`, {
+      headers: token ? { Authorization: `Bearer ${token}` } : undefined,
+    });
+
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({ error: res.statusText }));
+      throw new Error(err?.error || res.statusText);
+    }
+
+    const json = await res.json();
+    const d = json.donation;
+
+    if (!d) return null;
+
+    return d as Donation;
+  } catch (e: any) {
+    console.error(e);
+    throw e;
+  }
+}
+
+async function handleFetchDonation(donationId: number): Promise<void> {
+  loadOptions();
+  try {
+    const donation = await fetchDonation(donationId);
+    if (donation) {
+      state.title = donation.title || "";
+      state.description = donation.description || "";
+      state.quantity = donation.quantity || 1;
+      state.category = donation.categoryId || null;
+      state.gender = donation.genderId || null;
+      state.size = donation.sizeId || null;
+      state.colour = donation.colourId || null;
+      state.material = donation.materialId || null;
+      state.condition = donation.conditionId || null;
+      
+      images.value = [];
+      if (donation.photoUrl) {
+        images.value.push(donation.photoUrl);
+      }
+
+      images.value.push("ADD_BUTTON");
+
+      isOpen.value = true;
+    } else {
+      console.warn("Donation not found for editing:", donationId);
+    }
+  } catch (e) {
+    console.error("Error fetching donation for editing:", e);
+  }
+}
+
+async function updateDonation(donationId: number, formData: any) {
+  const token = localStorage.getItem("token");
+  
+  const imagesToUpload = images.value.filter(img => img !== "ADD_BUTTON");
+
+  const payload = {
+    photoUrl: imagesToUpload[0] || null,
+    title: formData.title,
+    description: formData.description,
+    quantity: formData.quantity,
+    categoryId: formData.category,
+    genderId: formData.gender,
+    sizeId: formData.size,
+    colourId: formData.colour,
+    materialId: formData.material,
+    conditionId: formData.condition,
+  };
 
   try {
-    const token = localStorage.getItem("token");
-
-    const res = await fetch("/api/add-donation", {
-      method: "POST",
+    const res = await fetch(`/api/update-donation?donationId=${donationId}`, {
+      method: "PATCH",
       headers: {
         "Content-Type": "application/json",
         ...(token && { Authorization: `Bearer ${token}` }),
@@ -166,25 +232,36 @@ async function onSubmit({ data: formData }) {
     const json = await res.json();
 
     if (!res.ok) {
-      throw new Error(json.statusMessage || "Failed to add donation");
+      throw new Error(json.error || "Failed to update donation");
     }
 
     toast.add({
-      title: "Success!",
-      description: json.statusMessage || "Donation created successfully.",
+      title: "Success:",
+      description: "Donation updated successfully.",
       color: "success",
     });
-
-    // tells parent element the donation was added
-    emit("donation-added")
-  } catch (e) {
+    
+    closeModal();
+  } catch (e: any) {
     toast.add({
       title: "Error:",
       description: e.message,
       color: "error",
     });
-  } finally {
-    closeModal();
+  }
+}
+
+async function handleUpdateDonation(donationId: number, formData: any) {
+  try {
+    await updateDonation(donationId, formData);
+  } catch (e) {
+    console.error("Error updating donation:", e);
+  }
+}
+
+async function onSubmit({ data: formData }) {
+  if (props.donationId != null) {
+    await handleUpdateDonation(props.donationId, formData);
   }
 }
 
@@ -196,7 +273,7 @@ function processImageFile(file) {
   if (file && file.type.startsWith("image/")) {
     const reader = new FileReader();
     reader.onload = (e) => {
-      images.value.splice(images.value.length - 1, 0, e.target.result);
+      images.value.splice(images.value.length - 1, 0, e.target?.result as string);
       toast.add({ title: "Image added", color: "success" });
     };
     reader.readAsDataURL(file);
@@ -242,7 +319,6 @@ function removeImage(index) {
   });
 }
 
-images.value.push("ADD_BUTTON");
 </script>
 
 <template>
@@ -250,11 +326,11 @@ images.value.push("ADD_BUTTON");
     color="neutral"
     variant="solid"
     size="xl"
-    @click="isOpen = true"
-    class="w-full justify-center mb-4"
+    @click="handleFetchDonation(props.donationId!)"
+    class="w-[100px] justify-center"
   >
-    <UIcon name="i-lucide-plus" class="w-6 h-6" />
-    New donation
+    <UIcon name="i-lucide-edit" class="w-6 h-6" />
+    Edit
   </UButton>
 
   <UModal v-model:open="isOpen" title="Add a Donation">
@@ -319,7 +395,6 @@ images.value.push("ADD_BUTTON");
         <UForm
           :schema="schema"
           :state="state"
-          :validate-on="['submit']"
           class="space-y-3"
           @submit="onSubmit"
         >
@@ -337,7 +412,6 @@ images.value.push("ADD_BUTTON");
                 v-model.number="state.quantity"
                 type="number"
                 min="1"
-                max="99"
                 class="w-full min-w-20"
               />
             </UFormField>
@@ -425,7 +499,7 @@ images.value.push("ADD_BUTTON");
               :loading="pending"
               :disabled="pending"
             >
-              Confirm Donation
+              Update Details
             </UButton>
           </div>
         </UForm>

@@ -165,17 +165,17 @@ async function main() {
 
   const hashedPassword = await bcrypt.hash("SuperPassword123", 10);
 
-  // SuperDoner
-  const superDoner = await prisma.user.upsert({
-    where: { email: "SuperDoner@sustainwear.com" },
+  // SuperDonor
+  const superDonor = await prisma.user.upsert({
+    where: { email: "SuperDonor@sustainwear.com" },
     update: {
       password: hashedPassword,
       userId: 1, // Ensure ID matches on update
     },
     create: {
       userId: 1, // Hardcoded ID
-      email: "SuperDoner@sustainwear.com",
-      username: "SuperDoner",
+      email: "SuperDonor@sustainwear.com",
+      username: "SuperDonor",
       password: hashedPassword,
       roleId: 1,
     },
@@ -225,8 +225,32 @@ async function main() {
     },
   });
 
-  // --- 4. Create Donations for SuperDoner ---
-  console.log("Seeding donations for SuperDoner...");
+  // --- 4. Create Donations for SuperDonor ---
+  console.log("Seeding donations for SuperDonor...");
+
+  const notificationTypeData = [
+    { type: "DONATION_MILESTONE" }, // For 10, 50, 100 donations
+    { type: "SYSTEM_ALERT" }, // For system maintenance or important updates
+    { type: "CHARITY_UPDATE" }, //update the user on the status of their item
+    { type: "ACCOUNT_SECURITY" }, // For password changes, login from new device, etc.
+  ];
+
+  for (const n of notificationTypeData) {
+    const type = await prisma.notificationType.upsert({
+      where: { type: n.type },
+      update: {}, // If it exists, do nothing
+      create: {
+        type: n.type,
+      },
+    });
+    console.log(`Upserted type: ${type.type}`);
+  }
+
+  console.log("Notification seeding finished.");
+
+  const today = new Date();
+  const lastMonth = new Date(today);
+  lastMonth.setMonth(today.getMonth() - 1);
 
   const donationsData = [
     {
@@ -241,6 +265,7 @@ async function main() {
       size: "L",
       weight: 0.8,
       co2: 2.5,
+      date: lastMonth,
     },
     {
       title: "Summer Floral Dress",
@@ -254,6 +279,7 @@ async function main() {
       size: "M",
       weight: 0.3,
       co2: 1.1,
+      date: lastMonth,
     },
     {
       title: "Leather Hiking Boots",
@@ -420,14 +446,8 @@ async function main() {
         description: item.description,
         weight: item.weight,
         co2: item.co2,
-
-        // Connect using the Hardcoded IDs directly
         user: { connect: { userId: 1 } },
         charity: { connect: { charityId: 1 } },
-
-        // We can still connect by unique string name (safest),
-        // or we could look up the ID if strictly necessary.
-        // Connecting by unique name is standard best practice in Prisma seeding.
         status: { connect: { status: item.status } },
         colour: { connect: { colour: item.colour } },
         condition: { connect: { condition: item.condition } },
@@ -439,7 +459,7 @@ async function main() {
     });
   }
 
-  console.log(`Seeded ${donationsData.length} donations for SuperDoner.`);
+  console.log(`Seeded ${donationsData.length} donations for SuperDonor.`);
   console.log("Seeding finished.");
 }
 

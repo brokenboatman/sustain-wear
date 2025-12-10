@@ -4,7 +4,7 @@ import { auth } from "../middleware/auth.js";
 
 const router = Router();
 
-router.get("/", auth([1]), async (req, res) => {
+router.get("/", auth([1, 2, 3]), async (req, res) => {
   try {
     const userIdFromToken = req.user?.id;
 
@@ -19,24 +19,21 @@ router.get("/", auth([1]), async (req, res) => {
 
     console.log("Searching for userId:", userIdInt, "Type:", typeof userIdInt);
 
-    const donations = await prisma.donation.findMany({
+    const notifications = await prisma.notifications.findMany({
       where: {
         userId: userIdInt,
-      },
-      include: {
-        status: true,
-        images: true,
+        isRead: false,
       },
       orderBy: {
-        date: "desc",
+        createdAt: "desc",
       },
     });
 
-    console.log("Found donations:", donations);
+    console.log("Found notifications:", notifications);
 
-    res.json({ donations, meta: { count: donations.length } });
+    res.json({ notifications, meta: { count: notifications.length } });
   } catch (e) {
-    console.error("Error fetching donations:", e);
+    console.error("Error fetching notifications:", e);
     res.status(500).json({ error: "Server error", details: e.message });
   }
 });

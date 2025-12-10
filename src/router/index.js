@@ -51,7 +51,7 @@ const routes = [
         path: "donations",
         name: "donations",
         component: DonationsView,
-        meta: { requiresAuth: true, requiredRoles: [2] },
+        meta: { requiresAuth: true, requiredRoles: [2, 3] },
       },
       {
         path: "user-management",

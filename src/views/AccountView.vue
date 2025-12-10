@@ -1,7 +1,5 @@
 <script setup>
   import AccountDetails from '@/components/AccountDetails.vue';
-  import Sidebar from '../Components/Sidebar.vue';
-  import Header from "@/components/Header.vue";
 
 </script>
 

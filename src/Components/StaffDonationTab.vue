@@ -1,25 +1,25 @@
 <script setup lang="ts">
 import type { TabsItem } from "@nuxt/ui";
-import { ref, computed, onMounted, onUnmounted } from "vue";
+import { ref, computed } from "vue";
+import { onMounted } from "vue";
 
 type Donation = {
-  donationId: string;
+  donationId: number;
   imageRef: string;
   name: string;
+  description?: string;
   status: "On its way" | "In transit" | "Received at Charity" | "Accepted";
 };
 
 const loading = ref(false);
 const error = ref<string | null>(null);
-let pollingInterval: ReturnType<typeof setInterval> | null = null;
 
-async function fetchDonations(isBackgroundUpdate = false): Promise<void> {
-  if (!isBackgroundUpdate) loading.value = true;
-
+async function fetchDonations(): Promise<void> {
+  loading.value = true;
   error.value = null;
   try {
     const token = localStorage.getItem("token");
-    const res = await fetch(`/api/fetch-donations`, {
+    const res = await fetch(`/api/staff-donations`, {
       headers: token ? { Authorization: `Bearer ${token}` } : undefined,
     });
 
@@ -34,46 +34,38 @@ async function fetchDonations(isBackgroundUpdate = false): Promise<void> {
       : [];
 
     data.value = donationsFromApi.map((d: any) => ({
-      donationId: String(d.donationId),
+      donationId: d.donationId,
       imageRef: d.photoUrl ?? "",
       name: d.title ?? "Unknown Item",
-      status: d.status?.status ?? "On its way",
+      status: d.status.status,
     })) as Donation[];
   } catch (e: any) {
     console.error(e);
-    if (!isBackgroundUpdate)
-      error.value = e?.message ?? "Failed to fetch donations";
+    error.value = e?.message ?? "Failed to fetch donations";
   } finally {
-    if (!isBackgroundUpdate) loading.value = false;
+    loading.value = false;
   }
 }
 
 onMounted(() => {
   fetchDonations();
-  pollingInterval = setInterval(() => {
-    fetchDonations(true);
-  }, 2000);
-});
-
-onUnmounted(() => {
-  if (pollingInterval) clearInterval(pollingInterval);
 });
 
 const data = ref<Donation[]>([
   {
-    donationId: "001",
+    donationId: 1,
     imageRef: "[image ref here]",
     name: "T-Shirt",
     status: "In transit",
   },
   {
-    donationId: "002",
+    donationId: 2,
     imageRef: "[image ref here]",
     name: "Beige trousers",
     status: "Received at Charity",
   },
   {
-    donationId: "003",
+    donationId: 3,
     imageRef: "[image ref here]",
     name: "Floral dress",
     status: "On its way",
@@ -84,9 +76,9 @@ const pendingDonations = computed(() =>
   data.value.filter((d) => d.status !== "Accepted")
 );
 
-const pastDonations = computed(() =>
+const acceptedDonations = computed(() =>
   data.value.filter((d) => d.status === "Accepted")
-);
+)
 
 const items = ref<TabsItem[]>([
   {
@@ -96,10 +88,10 @@ const items = ref<TabsItem[]>([
     slot: "pending" as const,
   },
   {
-    label: "Past Donations",
+    label: "Accepted Donations",
     icon: "lucide:package-check",
-    content: "This is the past donations.",
-    slot: "past" as const,
+    content: "This is the accepted donations.",
+    slot: "accepted" as const,
   },
 ]);
 </script>
@@ -107,15 +99,15 @@ const items = ref<TabsItem[]>([
 <template>
   <UTabs :items="items" class="w-full" color="neutral" size="xl">
     <template #pending>
-      <PendingDonationList
+      <StaffPendingDonations
         :donations="pendingDonations"
         :loading="loading"
         :error="error"
       />
     </template>
-    <template #past>
-      <PastDonationList
-        :donations="pastDonations"
+    <template #accepted>
+      <StaffAcceptedDonations
+        :donations="acceptedDonations"
         :loading="loading"
         :error="error"
       />

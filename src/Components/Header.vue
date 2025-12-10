@@ -1,114 +1,143 @@
 <script setup lang="ts">
-import Sidebar from '../Components/Sidebar.vue'
-import type { DropdownMenuItem } from '@nuxt/ui'
-import { ref, computed } from 'vue'
+import Sidebar from "../components/Sidebar.vue";
+import { ref, computed, onMounted } from "vue";
 
-type NotificationItem = DropdownMenuItem & {
-  id: string
-  description?: string
-  details?: string
+interface NotificationItem {
+  id: string;
+  label: string;
+  icon?: string;
+  to?: string;
+  disabled?: boolean;
+  class?: string;
+  click?: Function;
+  // Custom fields
+  type?: string;
+  details?: string;
+  createdAt?: string;
 }
 
-const hasNotifications = computed(() =>
-  items.flat().some(item => item.type !== 'label')
-)
+const notifications = ref<NotificationItem[]>([]);
+const isLoading = ref(true);
 
-// list of notificatiosn to the user
-const items = <NotificationItem[][]>([
-  [
-    {
-      id: 'label',
-      label: 'Notifications:',
-      icon: 'lucide:inbox',
-      type: 'label'
-    }
-  ],
-  [
-    {
-      id: 'rewards',
-      label: 'New Rewards Available!',
-      href: '/rewards',
-      icon: 'lucide:crown',
-      variant: 'ghost',
-      color: 'primary',
-      class: 'truncate-text-none',
-      details:
-        'You’ve unlocked new rewards based on your latest donation and purchases. Redeem them in the SustainWear rewards hub to get discounts on future orders and exclusive drops.'
-    }
-  ],
-  [
-    {
-      id: 'donation-on-the-way',
-      label: 'Your Donation is on the Way!',
-      href: '/rewards',
-      icon: 'lucide:truck',
-      variant: 'ghost',
-      color: 'info',
-      details:
-        'Your donation has left our local collection point and is heading to our sorting centre. Once processed, it will be sent to one of our charity partners or recycling facilities.'
-    }
-  ],
-  [
-    {
-      id: 'donation-received',
-      label: 'Your Donation has been Received!',
-      href: '/rewards',
-      icon: 'lucide:check',
-      variant: 'ghost',
-      color: 'info',
-      details:
-        'Your donation has arrived safely. Thanks for helping extend the life of garments and reduce textile waste. You’ve earned extra reward points for this donation.'
-    }
-  ]
-])
+const items = computed(() => {
+  const emptyItem: NotificationItem = {
+    id: "empty",
+    label: "No new notifications",
+    icon: "lucide:bell-off",
+    disabled: true,
+    class: "cursor-default text-gray-400",
+  };
 
-// which notification is expanded inside the dropdown
-const expandedId = ref<string | null>(null)
+  const notificationList =
+    notifications.value.length > 0 ? notifications.value : [emptyItem];
 
-const toggleExpanded = (item: NotificationItem) => {
-  if (item.type === 'label') return
-  expandedId.value = expandedId.value === item.id ? null : item.id
-}
+  const labelItem: NotificationItem = {
+    id: "label",
+    label: "Notifications:",
+    icon: "lucide:inbox",
+    type: "label",
+    disabled: true,
+  };
+
+  return [[labelItem], notificationList];
+});
+
+const hasNotifications = computed(() => notifications.value.length > 0);
+
+const expandedId = ref<string | null>(null);
+
+const toggleExpanded = (item: any) => {
+  if (item.type === "label" || item.id === "empty") return;
+  expandedId.value = expandedId.value === item.id ? null : item.id;
+};
+
+const markAsRead = async (item: NotificationItem) => {
+  notifications.value = notifications.value.filter((n) => n.id !== item.id);
+
+  try {
+    const token = localStorage.getItem("token");
+    if (!token) return;
+
+    await fetch(`/api/notifications/${item.id}/read`, {
+      method: "PATCH",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+  } catch (error) {
+    console.error("Failed to mark notification as read:", error);
+  }
+};
+
+onMounted(async () => {
+  try {
+    const token = localStorage.getItem("token");
+    if (!token) return;
+
+    const res = await fetch("/api/fetch-notifications", {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+
+    if (res.ok) {
+      const data = await res.json();
+
+      notifications.value = data.notifications.map(
+        (n: any): NotificationItem => ({
+          id: n.notificationId.toString(),
+          label: "New Notification",
+          details: n.message,
+          to: "/rewards",
+          icon: "lucide:info",
+          createdAt: n.createdAt,
+        })
+      );
+    }
+  } catch (error) {
+    console.error("Failed to fetch notifications:", error);
+  } finally {
+    isLoading.value = false;
+  }
+});
 </script>
 
 <template>
   <header class="border-b border-default mb-4">
     <div class="flex align-center justify-between p-4">
       <a href="/" class="flex items-center">
-          <img
-            src="@/assets/favicon.ico"
-            alt="SustainWear Logo"
-            class="h-8 w-8 mr-2 animate-slide-in"
-          />
-          <h1 class="text-default text-2xl animate-slide-in font-brand">
-            SustainWear
-          </h1>
+        <img
+          src="@/assets/favicon.ico"
+          alt="SustainWear Logo"
+          class="h-8 w-8 mr-2 animate-slide-in"
+        />
+        <h1 class="text-default text-2xl animate-slide-in font-brand">
+          SustainWear
+        </h1>
       </a>
 
       <div class="flex items-center justify-end">
-        <UDropdownMenu
-          :items="items"
-          :ui="{ content: 'w-110' }"
-        >
-          <!-- Bell -->
-           <div class="relative">
-             <UButton
-               icon="line-md:bell"
-               color="neutral"
-               variant="ghost"
-               class="cursor-pointer"
-               size="xl"
-             />
+        <UDropdownMenu :items="items as any" :ui="{ content: 'w-110' }">
+          <div class="relative">
+            <UButton
+              icon="line-md:bell"
+              color="neutral"
+              variant="ghost"
+              class="cursor-pointer"
+              size="xl"
+            />
 
-             <UChip v-if="hasNotifications" inset size="xl" class="absolute -top 4 -right 4">
-             </UChip>
-           </div>
+            <UChip
+              v-if="hasNotifications"
+              :text="notifications.length"
+              inset
+              size="xl"
+              class="absolute -top 4 -right 4"
+            />
+          </div>
 
           <template #item="{ item }">
-            <!-- Label row -->
             <div
               v-if="item.type === 'label'"
-              class="px-3 py-1 text-lg font-semibold text-gray-500 uppercase"
+              class="px-3 py-1 text-lg font-semibold text-gray-500 uppercase cursor-default"
             >
               <span class="flex items-center gap-2">
                 <UIcon v-if="item.icon" :name="item.icon" class="h-6 w-6" />
@@ -116,22 +145,33 @@ const toggleExpanded = (item: NotificationItem) => {
               </span>
             </div>
 
-            <!-- Notifications -->
             <div v-else class="w-full">
-              <!-- Making the whole row a button -->
-              <button type="button" class="flex items-center cursor-pointer gap-2 w-full text-left rounded-md px-3 py-2"
+              <div
+                v-if="item.id === 'empty'"
+                class="px-3 py-4 text-center text-gray-500"
+              >
+                {{ item.label }}
+              </div>
+
+              <button
+                v-else
+                type="button"
+                class="flex items-center cursor-pointer gap-2 w-full text-left rounded-md px-3 py-2 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
                 @click.stop.prevent="toggleExpanded(item)"
               >
                 <UIcon
                   v-if="item.icon"
                   :name="item.icon"
-                  class="h-10 w-10 flex-shrink-0"
+                  class="h-10 w-10 shrink-0 text-primary-500"
                 />
 
                 <div class="flex-1 min-w-0">
-                  <div class="flex items-center gap-1">
-                    <span class="text-lg truncate">
+                  <div class="flex items-center gap-1 justify-between">
+                    <span class="text-lg truncate font-medium">
                       {{ item.label }}
+                    </span>
+                    <span v-if="item.createdAt" class="text-xs text-gray-400">
+                      {{ new Date(item.createdAt).toLocaleDateString() }}
                     </span>
                   </div>
                   <span
@@ -142,30 +182,32 @@ const toggleExpanded = (item: NotificationItem) => {
                   </span>
                 </div>
                 <UIcon
-                  name='i-heroicons-chevron-down-20-solid'
-                  :class="[ 'h-8 w-8','transition-transform', expandedId === item.id ? 'rotate-180' : '' ]"
+                  name="i-heroicons-chevron-down-20-solid"
+                  :class="[
+                    'h-8 w-8',
+                    'transition-transform',
+                    expandedId === item.id ? 'rotate-180' : '',
+                  ]"
                 />
               </button>
 
-              <!-- Expanded content -->
               <transition name="fade">
                 <div
                   v-if="expandedId === item.id"
-                  class="mt-2 ml-6 text-lg text-gray-600 dark:text-gray-300 pr-1 space-y-2"
+                  class="mt-2 ml-14 text-lg text-gray-600 dark:text-gray-300 pr-2 space-y-2 pb-2"
                 >
                   <p class="whitespace-pre-line">
-                    {{ item.details}}
+                    {{ item.details }}
                   </p>
 
-                  <!-- link to page where notification is on -->
-                  <div v-if="item.href" class="pt-1 pb-2">
+                  <div v-if="item.to" class="pt-1">
                     <UButton
-                      :to="item.href"
-                      size="lg"
+                      :to="item.to"
+                      size="md"
                       color="primary"
                       variant="soft"
                       class="w-full justify-center"
-                      @click.stop
+                      @click="markAsRead(item)"
                     >
                       View details
                     </UButton>
@@ -183,13 +225,13 @@ const toggleExpanded = (item: NotificationItem) => {
 </template>
 
 <style scoped>
-  .fade-enter-active,
-  .fade-leave-active {
-    transition: opacity 0.15s ease, transform 0.15s ease;
-  }
-  .fade-enter-from,
-  .fade-leave-to {
-    opacity: 0;
-    transform: translateY(-2px);
-  }
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.15s ease, transform 0.15s ease;
+}
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+  transform: translateY(-2px);
+}
 </style>

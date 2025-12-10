@@ -15,16 +15,13 @@ ChartJS.register(Title, Tooltip, BarElement, CategoryScale, LinearScale);
 
 type CO2Saving = {
   donationId: string;
-  co2: number;
+  co2: number | null;
   date: string;
 };
 
 const items = ref<SelectItem[]>([]);
-
 const currentYear = new Date().getFullYear();
-
 const value = ref(currentYear);
-
 const loading = ref(false);
 const error = ref<string | null>(null);
 
@@ -78,19 +75,21 @@ async function fetchDonations(): Promise<void> {
 
     const years = Array();
     const monthlySavings = Array(12).fill(0);
+
     donationsFromApi.forEach((donation: CO2Saving) => {
+      if (!donation.date) return;
+
       const year = new Date(donation.date).getFullYear();
-      if (years.includes(year) == false) {
+      if (!years.includes(year)) {
         years.push(year);
       }
 
-      if (year == value.value) {
+      if (year === value.value) {
         const month = new Date(donation.date).getMonth();
-        monthlySavings[month] += donation.co2;
+        monthlySavings[month] += Number(donation.co2 || 0);
       }
     });
 
-    // updates chart data
     chartData.value = {
       ...chartData.value,
       datasets: [
@@ -101,15 +100,11 @@ async function fetchDonations(): Promise<void> {
       ],
     };
 
-    // adds current year if not already there
-    if (years.includes(currentYear) == false) {
+    if (!years.includes(currentYear)) {
       years.push(currentYear);
     }
     years.sort((a, b) => b - a);
     items.value = years;
-    console.log("Selected Year: ", value.value);
-
-    console.log("chart data:", chartData.value.datasets[0].data);
   } catch (e: any) {
     console.error(e);
     error.value = e?.message ?? "Failed to fetch donations";
@@ -118,23 +113,31 @@ async function fetchDonations(): Promise<void> {
   }
 }
 
+// reloads bar chart
+defineExpose({
+  reloadChart: fetchDonations,
+});
+
 onMounted(() => {
   fetchDonations();
 });
 
 // changes the chart data when year is changed
 watch(value, (newYear, oldYear) => {
-  console.log("Date from ", oldYear, " to ", newYear);
   fetchDonations();
 });
 
 const currentMonthSaving = computed(() => {
   const currentMonth = new Date().getMonth();
-  return chartData.value.datasets[0].data[currentMonth];
+  const val = chartData.value.datasets[0].data[currentMonth];
+  // Fix to 1 decimal place (e.g., "9.1")
+  return Number(val.toFixed(1));
 });
 
 const totalYearSaving = computed(() => {
-  return chartData.value.datasets[0].data.reduce((a, b) => a + b, 0);
+  const val = chartData.value.datasets[0].data.reduce((a, b) => a + b, 0);
+  // Fix to 1 decimal place
+  return Number(val.toFixed(1));
 });
 
 const currentMonthInTrees = computed(() => {
@@ -154,21 +157,33 @@ const totalYearInTrees = computed(() => {
   >
     <h3 class="text-default font-bold text-2xl mb-2">Your impact</h3>
     <USelect v-model="value" :items="items" class="w-20 mb-2" />
-    <div v-if="value === currentYear && currentMonthSaving !== 0">
-      <p>This month you've saved <b>{{ currentMonthSaving }} kg</b> of CO<sub>2</sub>.</p>
-      <p>That's equivalent to planting <b>{{ currentMonthInTrees }} trees!</b></p>
-    </div>
-    <div v-if="currentMonthSaving === 0">
-      <p>You've not made any donations this month, time to get started!</p>
-    </div>
+
     <div v-if="totalYearSaving !== 0">
-      <p>This year you've saved <b>{{ totalYearSaving }} kg</b> of CO<sub>2</sub>.</p>
-      <p>That's equivalent to planting <b>{{ totalYearInTrees }} trees!</b></p>
+      <div v-if="value === currentYear && currentMonthSaving !== 0">
+        <p>
+          This month you've saved <b>{{ currentMonthSaving }} kg</b> of
+          CO<sub>2</sub>.
+        </p>
+        <p>
+          That's equivalent to planting <b>{{ currentMonthInTrees }} trees!</b>
+        </p>
+      </div>
+
+      <div>
+        <p>
+          This year you've saved <b>{{ totalYearSaving }} kg</b> of
+          CO<sub>2</sub>.
+        </p>
+        <p>
+          That's equivalent to planting <b>{{ totalYearInTrees }} trees!</b>
+        </p>
+      </div>
     </div>
-    <div v-if="totalYearSaving === 0">
+
+    <div v-else>
       <p>You've not made any donations this year, time to get started!</p>
     </div>
-    
+
     <Bar
       id="my-chart-id"
       :options="chartOptions"

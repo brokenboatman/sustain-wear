@@ -5,11 +5,13 @@ import { auth } from "../middleware/auth.js";
 
 const router = Router();
 
-router.get("/", auth([2]), async (req, res) => {
+router.get("/", auth([2, 3]), async (req, res) => {
   try {
     const donations = await prisma.donation.findMany({
       where: {
-        statusId: 3, // arrived at charity status
+        statusId:{
+          in: [3, 4]
+        }, // arrived at charity and accepted status
       },
       include: {
         status: true,
