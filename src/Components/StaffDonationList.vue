@@ -6,6 +6,7 @@ type Donation = {
   donationId: string;
   imageRef: string;
   name: string;
+  description?: string;
   status: "On its way" | "In transit" | "Received at Charity" | "Accepted";
 };
 
@@ -37,6 +38,7 @@ async function fetchDonations(): Promise<void> {
       donationId: String(d.donationId),
       imageRef: d.photoUrl ?? "",
       name: d.title ?? "Unknown Item",
+      description: d.description ?? "",
     })) as Donation[];
   } catch (e: any) {
     console.error(e);
@@ -94,9 +96,10 @@ const pendingDonations = computed(() =>
         :key="donation.donationId"
         class="flex items-center justify-between h-20 border border-muted bg-elevated p-2 rounded-lg"
       >
-         <div class="text-left flex items-center gap-x-2 w-6/10">
+         <div class=" flex items-center gap-x-2 w-6/10">
            <img v-if="donation.imageRef" :src="donation.imageRef" class="w-16 h-16 object-cover rounded-lg" />
            <p class="text-left w-full font-bold px-2">{{ donation.name }}</p>
+           <p class="w-full px-2">{{ donation.description }}</p>
          </div>
         <div class="text-left flex items-center gap-x-2 w-4/10">
           <UIcon
