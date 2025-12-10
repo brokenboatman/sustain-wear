@@ -109,18 +109,18 @@ const items = ref<TabsItem[]>([
 </script>
 
 <template>
-  <div class="flex justify-between">
-    <div class="background-muted">
-      Pending Donations:
-      {{ pendingCount }}
+  <div class="flex justify-between mb-2 gap-x-1 text-2xl">
+    <div class="bg-elevated border border-muted flex flex-col p-2 rounded-lg">
+      <p>Pending Donations</p>
+      <p class="text-4xl font-[700]">{{ pendingCount }}</p>
     </div>
-    <div>
-      Accepted Donations:
-      {{ acceptedCount }}
+    <div class="bg-elevated border border-muted flex flex-col p-2 rounded-lg">
+      <p>Accepted Donations</p>
+      <p class="text-4xl font-[700]">{{ acceptedCount }}</p>
     </div>
-    <div>
-      Total Donations:
-      {{ totalCount }}
+    <div class="bg-elevated border border-muted flex flex-col p-2 rounded-lg">
+      <p>Total Donations</p>
+      <p class="text-4xl font-[700]">{{ totalCount }}</p>
     </div>
   </div>
   <UTabs :items="items" class="w-full" color="neutral" size="xl">
