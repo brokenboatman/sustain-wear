@@ -2,6 +2,7 @@ import { Router } from "express";
 import { PrismaClient } from "@prisma/client";
 import jwt from "jsonwebtoken";
 import cloudinary from "cloudinary";
+import { createNotification } from "../utils/notificationHelper.js";
 
 const prisma = new PrismaClient();
 const router = Router();
@@ -44,7 +45,7 @@ const getCategoryWeight = (categoryName) => {
   }
 };
 
-const simulateLogisticsCycle = async (donationId) => {
+const simulateLogisticsCycle = async (donationId, userId, donationTitle) => {
   console.log(`Starting simulation for Donation ${donationId}`);
   try {
     await new Promise((resolve) => setTimeout(resolve, 15000));
@@ -54,19 +55,32 @@ const simulateLogisticsCycle = async (donationId) => {
     });
     console.log(`Donation ${donationId} moved to 'In transit'`);
 
+    await createNotification(
+      prisma,
+      userId,
+      "DONATION_UPDATE",
+      `Your donation '${donationTitle}' is now on its way to the charity.`
+    );
+
     await new Promise((resolve) => setTimeout(resolve, 15000));
     await prisma.donation.update({
       where: { donationId: donationId },
       data: { statusId: 3 },
     });
     console.log(`Donation ${donationId} moved to 'Received at Charity'`);
+
+    await createNotification(
+      prisma,
+      userId,
+      "CHARITY_UPDATE",
+      `Great news! The charity has received your donation: '${donationTitle}'.`
+    );
   } catch (error) {
     console.error(`Simulation failed for donation ${donationId}:`, error);
   }
 };
 
 router.post("/", async (req, res) => {
-  // --- AUTHENTICATION ---
   const authHeader = req.headers.authorization;
   if (!authHeader || !authHeader.startsWith("Bearer ")) {
     return res.status(401).json({ error: "Unauthorized: No token provided" });
@@ -160,26 +174,18 @@ router.post("/", async (req, res) => {
       });
 
       if (totalCount === 5) {
-        const notifType = await tx.notificationType.findUnique({
-          where: { type: "DONATION_MILESTONE" },
-        });
-
-        if (notifType) {
-          await tx.notifications.create({
-            data: {
-              userId: userIdInt,
-              notificationTypeId: notifType.notificationTypeId,
-              message:
-                "Congratulations! You've unlocked the '5 Donations' badge.",
-              isRead: false,
-            },
-          });
-        }
+        await createNotification(
+          tx,
+          userIdInt,
+          "DONATION_MILESTONE",
+          "Congratulations! You've unlocked the '5 Donations' badge."
+        );
       }
 
       return newDonation;
     });
-    simulateLogisticsCycle(result.donationId);
+
+    simulateLogisticsCycle(result.donationId, userIdInt, result.title);
 
     return res.json({
       donation: result,

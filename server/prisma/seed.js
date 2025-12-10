@@ -233,6 +233,9 @@ async function main() {
     { type: "SYSTEM_ALERT" }, // For system maintenance or important updates
     { type: "CHARITY_UPDATE" }, //update the user on the status of their item
     { type: "ACCOUNT_SECURITY" }, // For password changes, login from new device, etc.
+    {
+      type: "PROFILE_UPDATE"
+    }
   ];
 
   for (const n of notificationTypeData) {
