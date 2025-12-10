@@ -7,6 +7,7 @@ type Donation = {
   donationId: number;
   imageRef: string;
   name: string;
+  description?: string;
   status: "On its way" | "In transit" | "Received at Charity" | "Accepted";
 };
 
