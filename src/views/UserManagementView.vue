@@ -6,7 +6,7 @@
 
   import * as z from 'zod'
   import type { FormSubmitEvent } from '@nuxt/ui'
-import { use } from "passport";
+import { routerViewLocationKey } from "vue-router";
 
   const UBadge = resolveComponent('UBadge')
 
@@ -14,6 +14,7 @@ import { use } from "passport";
   const error = ref<string | null>(null);
 
   type User = {
+    isEdited?: boolean;
     userId: number;
     username: string;
     email: string;
@@ -25,28 +26,21 @@ import { use } from "passport";
     users: []
   })
 
-  const editedUsers = ref<Set<number>>(new Set());
-
-  function trackEdit(userId: number) {
-    editedUsers.value.add(userId);
-  }
-
-  const columns: TableColumn<User>[] = [
+  const columns = [
     {
-      accessorKey: "userId",
+      id: "userId",
       header: "ID",
-      cell: ({row}) => `${row.getValue("userId")}`,
     },
     {
-      accessorKey: "username",
+      id: "username",
       header: "Username",
     },
     {
-    accessorKey: 'roleId',
+    id: 'roleId',
     header: 'Role',
   },
-  {accessorKey: "email", header: "Email"},
-  {accessorKey: "password", header: "Password"},
+  {id: "email", header: "Email"},
+  {id: "password", header: "Password"},
   { id: "button" },
 ];
 
@@ -67,6 +61,7 @@ async function fetchUsers(): Promise<void> {
     const json = await res.json();
     // Process the fetched users as needed
     state.users = json.users.map((u: any) => ({
+      isEdited: false,
       userId: u.userId,
       username: u.username,
       email: u.email,
@@ -105,9 +100,18 @@ const confirmModalOpen = ref(false);
 const pendingSubmission = ref<Schema | null>(null);
 
 async function onSubmit(event: FormSubmitEvent<Schema>) {
-    const usersToUpdate = event.data.users.filter(user => 
-      editedUsers.value.has(user.userId)
-    );
+    const usersToUpdate = state.users.filter(user => user.isEdited).map(user => {
+      const updatedUser: any = {
+        userId: user.userId,
+        username: user.username,
+        email: user.email,
+        roleId: user.roleId,
+      };
+      if (user.password && user.password.trim() !== '') {
+        updatedUser.password = user.password;
+      }
+      return updatedUser;
+    });
 
     console.log('Users to update:', usersToUpdate);
     if (usersToUpdate.length === 0) {
@@ -150,7 +154,6 @@ async function confirmSubmit() {
       color: "success",
     });
 
-    editedUsers.value.clear();
     // refresh user list
     await fetchUsers();
     
@@ -191,7 +194,18 @@ onMounted(() => {
     <div class="w-full flex justify-center">
       <div class="w-full  gap-0 flex flex-col">
         <UForm :state="state" :schema="schema" @submit="onSubmit" @error="onError">
-          <UTable sticky :loading="loading" loading-color="primary" :data="state.users" :columns="columns" class="border border-accented rounded-lg text-left z-0">
+          <UTable 
+          sticky 
+          :loading="loading" 
+          loading-color="primary" 
+          :data="state.users" 
+          :columns="columns" 
+          class="border border-accented rounded-lg text-left z-0"
+          >
+          <template #userId-cell="{ row }">
+            <span v-if="state.users[row.index].isEdited" class="text-error font-bold">*</span>
+            <span>{{ state.users[row.index].userId }}</span>
+          </template>
           <template #username-cell="{ row }">
             <UFormField :name="'users.' + row.index + '.username'">
               <UInput 
@@ -199,7 +213,7 @@ onMounted(() => {
                 placeholder="Username"
                 class="w-full"
                 variant="subtle"
-                @input="trackEdit(state.users[row.index].userId)"
+                @input="state.users[row.index].isEdited = true"
               />
             </UFormField>
           </template>
@@ -210,7 +224,7 @@ onMounted(() => {
                   placeholder="Email" 
                   class="w-full"
                   variant="subtle"
-                  @input="trackEdit(state.users[row.index].userId)"
+                  @input="state.users[row.index].isEdited = true"
                   />
             </UFormField>
           </template>
@@ -223,7 +237,7 @@ onMounted(() => {
                 option-attribute="label" 
                 class="w-full" 
                 variant="outline"
-                @change="trackEdit(state.users[row.index].userId)"
+                @change="state.users[row.index].isEdited = true"
               />
             </UFormField>
           </template>
@@ -232,10 +246,10 @@ onMounted(() => {
               <UInput 
                 v-model="state.users[row.index].password" 
                 type="password" 
-                placeholder="Password" 
+                placeholder="Enter new password" 
                 class="w-full" 
                 variant="outline"
-                @input="trackEdit(state.users[row.index].userId)"
+                @input="state.users[row.index].isEdited = true"
               />
             </UFormField>
           </template>
