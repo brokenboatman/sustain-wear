@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import Sidebar from "../components/Sidebar.vue";
-import { ref, computed, onMounted } from "vue";
+import { ref, computed, onMounted, onUnmounted } from "vue";
 
 interface NotificationItem {
   id: string;
@@ -58,7 +58,7 @@ const markAsRead = async (item: NotificationItem) => {
     const token = localStorage.getItem("token");
     if (!token) return;
 
-    await fetch(`/api/notifications/${item.id}/read`, {
+    await fetch(`/api/update-notification/${item.id}`, {
       method: "PATCH",
       headers: {
         Authorization: `Bearer ${token}`,
@@ -68,8 +68,9 @@ const markAsRead = async (item: NotificationItem) => {
     console.error("Failed to mark notification as read:", error);
   }
 };
+let pollingInterval = null;
 
-onMounted(async () => {
+const loadNotifications = async () => {
   try {
     const token = localStorage.getItem("token");
     if (!token) return;
@@ -96,6 +97,20 @@ onMounted(async () => {
     console.error("Failed to fetch notifications:", error);
   } finally {
     isLoading.value = false;
+  }
+};
+
+onMounted(() => {
+  loadNotifications();
+
+  pollingInterval = setInterval(() => {
+    loadNotifications();
+  }, 5000);
+});
+
+onUnmounted(() => {
+  if (pollingInterval) {
+    clearInterval(pollingInterval);
   }
 });
 </script>
