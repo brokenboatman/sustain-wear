@@ -109,16 +109,16 @@ const items = ref<TabsItem[]>([
 </script>
 
 <template>
-  <div class="flex justify-between mb-2 gap-x-1 text-2xl">
-    <div class="bg-elevated border border-muted flex flex-col p-2 rounded-lg">
+  <div class="flex flex-wrap justify-center gap-x-4 text-2xl">
+    <div class="bg-elevated border border-muted flex flex-col p-2 rounded-lg mb-2">
       <p>Pending Donations</p>
       <p class="text-4xl font-[700]">{{ pendingCount }}</p>
     </div>
-    <div class="bg-elevated border border-muted flex flex-col p-2 rounded-lg">
+    <div class="bg-elevated border border-muted flex flex-col p-2 rounded-lg mb-2">
       <p>Accepted Donations</p>
       <p class="text-4xl font-[700]">{{ acceptedCount }}</p>
     </div>
-    <div class="bg-elevated border border-muted flex flex-col p-2 rounded-lg">
+    <div class="bg-elevated border border-muted flex flex-col p-2 rounded-lg mb-2">
       <p>Total Donations</p>
       <p class="text-4xl font-[700]">{{ totalCount }}</p>
     </div>
