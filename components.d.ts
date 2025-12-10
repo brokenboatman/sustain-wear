@@ -13,6 +13,7 @@ declare module 'vue' {
   export interface GlobalComponents {
     AccountDetails: typeof import('./src/components/AccountDetails.vue')['default']
     BarChart: typeof import('./src/components/BarChart.vue')['default']
+    copy: typeof import('./src/components/NewDonationDialog copy.vue')['default']
     DashboardLayout: typeof import('./src/components/DashboardLayout.vue')['default']
     DonationTab: typeof import('./src/components/DonationTab.vue')['default']
     EditDonationDialog: typeof import('./src/components/EditDonationDialog.vue')['default']
@@ -53,5 +54,6 @@ declare module 'vue' {
     UTimeline: typeof import('./node_modules/@nuxt/ui/dist/runtime/components/Timeline.vue')['default']
     UTooltip: typeof import('./node_modules/@nuxt/ui/dist/runtime/components/Tooltip.vue')['default']
     UUser: typeof import('./node_modules/@nuxt/ui/dist/runtime/components/User.vue')['default']
+    ViewDonationDialog: typeof import('./src/components/ViewDonationDialog.vue')['default']
   }
 }

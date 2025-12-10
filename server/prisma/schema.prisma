@@ -19,6 +19,7 @@ model User {
   roleId     Int
   charityId  Int?
   profileURL String?
+  date DateTime @default(now())
 
   // --- Relations ---
   role          Role            @relation(fields: [roleId], references: [roleId])
