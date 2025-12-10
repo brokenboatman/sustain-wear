@@ -1,6 +1,6 @@
 <script setup lang="ts">
 
-  import { reactive, ref } from "vue";
+  import { reactive, ref, computed } from "vue";
   import { h, onMounted, resolveComponent } from "vue";
   import type { TableColumn } from '@nuxt/ui'
 
@@ -14,6 +14,8 @@ import { routerViewLocationKey } from "vue-router";
   const error = ref<string | null>(null);
 
   type User = {
+    isAddButton?: boolean;
+    isNew?: boolean;
     isEdited?: boolean;
     userId: number;
     username: string;
@@ -25,6 +27,11 @@ import { routerViewLocationKey } from "vue-router";
   const state = reactive<{ users: User[] }>({
     users: []
   })
+
+  const nextUserId = computed(() => {
+    if (state.users.length === 0) return 1;
+    return Math.max(...state.users.map(u => u.userId)) + 1;
+  });
 
   const columns = [
     {
@@ -42,7 +49,39 @@ import { routerViewLocationKey } from "vue-router";
   {id: "email", header: "Email"},
   {id: "password", header: "Password"},
   { id: "button" },
+  { id: "new-user-button"}
 ];
+
+// placeholder for adding new user
+ const addUserPlaceholder = {
+  isAddButton: true,
+  isNew: false,
+  isEdited: false,
+  userId: -1,
+  username: '',
+  email: '',
+  password: '',
+  roleId: 0,
+  profileURL: ''
+ };
+
+ const tableData = computed(() => {
+  return [...state.users, addUserPlaceholder];
+ });
+
+ function addUser() {
+  state.users.push({
+    isAddButton: false,
+    isNew: true,
+    isEdited: true,
+    userId: nextUserId.value,
+    username: '',
+    email: '',
+    password: '',
+    roleId: 1,
+    profileURL: ''
+  });
+ }
 
 async function fetchUsers(): Promise<void> {
   loading.value = true;
@@ -97,10 +136,11 @@ type Schema = z.output<typeof schema>
 const toast = useToast()
 
 const confirmModalOpen = ref(false);
-const pendingSubmission = ref<Schema | null>(null);
+const pendingUsersToUpdate = ref<User[] | null>(null);
+const pendingUsersToCreate = ref<User[] | null>(null);
 
 async function onSubmit(event: FormSubmitEvent<Schema>) {
-    const usersToUpdate = state.users.filter(user => user.isEdited).map(user => {
+    const usersToUpdate = state.users.filter(user => user.isEdited && !user.isNew).map(user => {
       const updatedUser: any = {
         userId: user.userId,
         username: user.username,
@@ -112,9 +152,23 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
       }
       return updatedUser;
     });
+    
+    const usersToCreate = state.users.filter(user => user.isNew).map(user => {
+      const newUser: any = {
+        username: user.username,
+        email: user.email,
+        roleId: user.roleId,
+      };
+      if (user.password && user.password.trim() !== '') {
+        newUser.password = user.password;
+      }
+      return newUser;
+    });
 
     console.log('Users to update:', usersToUpdate);
-    if (usersToUpdate.length === 0) {
+    console.log('Users to create:', usersToCreate);
+    
+    if (usersToUpdate.length === 0 && usersToCreate.length === 0) {
       toast.add({
         title: "Info:",
         description: "No changes to save.",
@@ -123,7 +177,8 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
       loading.value = false;
       return;
     }
-    pendingSubmission.value = { users: usersToUpdate };
+    pendingUsersToUpdate.value = usersToUpdate;
+    pendingUsersToCreate.value = usersToCreate;
     confirmModalOpen.value = true;
 }
 
@@ -133,19 +188,41 @@ async function confirmSubmit() {
   confirmModalOpen.value = false;
   try {
     const token = localStorage.getItem("token");
-    const res = await fetch(`/api/update-users`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-        ...(token && { Authorization: `Bearer ${token}` }),
-      },
-      body: JSON.stringify({ users: pendingSubmission.value?.users }),
-    });
 
-    const json = await res.json();
+    // update existing users
+    if (pendingUsersToUpdate.value.length > 0) {
+      const resUpdate = await fetch(`/api/update-users`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          ...(token && { Authorization: `Bearer ${token}` }),
+        },
+        body: JSON.stringify({ users: pendingUsersToUpdate.value }),
+      });
 
-    if (!res.ok) {
-      throw new Error(json.error || "Failed to update user info");
+      const jsonUpdate = await resUpdate.json();
+
+      if (!resUpdate.ok) {
+        throw new Error(jsonUpdate.error || "Failed to update user info");
+      }
+    }
+    
+    // create new users
+    if (pendingUsersToCreate.value.length > 0) {
+      const resCreate = await fetch(`/api/create-users`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          ...(token && { Authorization: `Bearer ${token}` }),
+        },
+        body: JSON.stringify({ users: pendingUsersToCreate.value }),
+      });
+
+      const jsonCreate = await resCreate.json();
+
+      if (!resCreate.ok) {
+        throw new Error(jsonCreate.error || "Failed to create new users");
+      }
     }
 
     toast.add({
@@ -165,7 +242,8 @@ async function confirmSubmit() {
     });
   } finally {
     loading.value = false;
-    pendingSubmission.value = null;
+    pendingUsersToUpdate.value = null;
+    pendingUsersToCreate.value = null;
   }
 }
 
@@ -198,60 +276,75 @@ onMounted(() => {
           sticky 
           :loading="loading" 
           loading-color="primary" 
-          :data="state.users" 
+          :data="tableData" 
           :columns="columns" 
           class="border border-accented rounded-lg text-left z-0"
           >
           <template #userId-cell="{ row }">
-            <span v-if="state.users[row.index].isEdited" class="text-error font-bold">*</span>
-            <span>{{ state.users[row.index].userId }}</span>
+            <div v-if="!row.original?.isAddButton">
+              <span v-if="row.original?.isEdited" class="text-error font-bold">*</span>
+              <span class="font-bold" :class="row.original?.isNew ? 'text-error' : 'text-default'">{{ row.original?.userId }}</span>
+            </div>
           </template>
           <template #username-cell="{ row }">
-            <UFormField :name="'users.' + row.index + '.username'">
-              <UInput 
-                v-model="state.users[row.index].username"
-                placeholder="Username"
-                class="w-full"
-                variant="subtle"
-                @input="state.users[row.index].isEdited = true"
-              />
-            </UFormField>
+            <div v-if="!row.original?.isAddButton">
+              <UFormField :name="'users.' + row.index + '.username'">
+                <UInput 
+                  v-model="row.original.username"
+                  placeholder="Username"
+                  class="w-full"
+                  variant="subtle"
+                  @input="row.original.isEdited = true"
+                />
+              </UFormField>
+            </div>
           </template>
           <template #email-cell="{ row }">
+            <div v-if="!row.original?.isAddButton">
             <UFormField :name="'users.' + row.index + '.email'">
                 <UInput 
-                  v-model="state.users[row.index].email"
+                  v-model="row.original.email"
                   placeholder="Email" 
                   class="w-full"
                   variant="subtle"
-                  @input="state.users[row.index].isEdited = true"
+                  @input="row.original.isEdited = true"
                   />
             </UFormField>
+            </div>
           </template>
           <template #roleId-cell="{ row }">
+            <div v-if="!row.original?.isAddButton">
             <UFormField :name="'users.' + row.index + '.roleId'">
               <USelect 
-                v-model="state.users[row.index].roleId" 
+                v-model="row.original.roleId" 
                 :items="roleItems" 
                 value-attribute="value" 
                 option-attribute="label" 
                 class="w-full" 
                 variant="outline"
-                @change="state.users[row.index].isEdited = true"
+                @change="row.original.isEdited = true"
               />
             </UFormField>
+            </div>
           </template>
           <template #password-cell="{ row }">
+            <div v-if="!row.original?.isAddButton">
             <UFormField :name="'users.' + row.index + '.password'">
               <UInput 
-                v-model="state.users[row.index].password" 
+                v-model="row.original.password" 
                 type="password" 
                 placeholder="Enter new password" 
                 class="w-full" 
                 variant="outline"
-                @input="state.users[row.index].isEdited = true"
+                @input="row.original.isEdited = true"
               />
             </UFormField>
+            </div>
+            <div v-else>
+              <div class="flex flex-row justify-end mt-2">
+                <UButton @click="addUser" class="w-full text-center justify-center" color="neutral" variant="solid" icon="i-lucide-plus">Add User</UButton>
+              </div>
+            </div>
           </template>
           <template #button-header>
             <div class="flex flex-row justify-end">
@@ -260,17 +353,18 @@ onMounted(() => {
           </template>
           </UTable>
         </UForm>
-        <div class="flex flex-row justify-end mt-2">
-          <UButton @click="fetchUsers" class="w-full text-center justify-center" color="neutral" variant="solid" icon="i-lucide-plus">Add User</UButton>
-        </div>
+        
       </div>
     </div>
     <UModal v-model:open="confirmModalOpen" title="Confirm Changes" description="Review the changes before saving">
       <template #body>
-        <div v-if="pendingSubmission">
+        <div v-if="pendingUsersToUpdate || pendingUsersToCreate">
           <p>Are you sure you want to save the changes to the selected users?</p>
-          <p v-for="user in pendingSubmission.users" :key="user.userId" class="mt-2">
+          <p v-for="user in pendingUsersToUpdate" :key="user.userId" class="mt-2">
             <strong>User ID {{ user.userId }}:</strong> {{ user.username }}
+          </p>
+          <p v-for="user in pendingUsersToCreate" :key="user.username" class="mt-2">
+            <strong>New User:</strong> {{ user.username }}
           </p>
         </div>
       </template>
