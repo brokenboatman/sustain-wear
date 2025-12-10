@@ -84,6 +84,10 @@ const pendingCount = computed(() =>
   data.value.filter((d) => d.status !== "Accepted").length
 )
 
+const acceptedCount = computed(() =>
+  data.value.filter((d) => d.status === "Accepted").length
+)
+
 const totalCount = computed(() =>
   data.value.length
 )
@@ -105,6 +109,20 @@ const items = ref<TabsItem[]>([
 </script>
 
 <template>
+  <div class="flex justify-between">
+    <div class="background-muted">
+      Pending Donations:
+      {{ pendingCount }}
+    </div>
+    <div>
+      Accepted Donations:
+      {{ acceptedCount }}
+    </div>
+    <div>
+      Total Donations:
+      {{ totalCount }}
+    </div>
+  </div>
   <UTabs :items="items" class="w-full" color="neutral" size="xl">
     <template #pending>
       <StaffPendingDonations
