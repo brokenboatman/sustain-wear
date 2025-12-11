@@ -20,6 +20,8 @@ declare module 'vue' {
     NewDonationDialog: typeof import('./src/components/NewDonationDialog.vue')['default']
     PastDonationList: typeof import('./src/components/PastDonationList.vue')['default']
     PendingDonationList: typeof import('./src/components/PendingDonationList.vue')['default']
+    ReportsCO2Chart: typeof import('./src/components/ReportsCO2Chart.vue')['default']
+    ReportsLineChart: typeof import('./src/components/ReportsLineChart.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
     Sidebar: typeof import('./src/components/Sidebar.vue')['default']
