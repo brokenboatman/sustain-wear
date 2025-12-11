@@ -13,9 +13,9 @@ import type { SelectItem } from "@nuxt/ui";
 
 ChartJS.register(Title, Tooltip, BarElement, CategoryScale, LinearScale);
 
-type CO2Saving = {
+type DonationItem = {
   donationId: string;
-  co2: number | null;
+  statusId?: number | null;
   date: string;
 };
 
@@ -44,9 +44,9 @@ const chartData = ref({
   ],
   datasets: [
     {
-      label: "CO2 Saving (kg)",
+      label: "Donations Received",
       data: Array(12).fill(0),
-      backgroundColor: "#00c15f",
+      backgroundColor: "#0066cc",
     },
   ],
 });
@@ -77,9 +77,9 @@ async function fetchDonations(): Promise<void> {
     const donationsFromApi = Array.isArray(json.donations) ? json.donations : [];
 
     const years: number[] = [];
-    const monthlySavings = new Array(12).fill(0);
+    const monthlyCounts = new Array(12).fill(0);
 
-    donationsFromApi.forEach((donation: any) => {
+    donationsFromApi.forEach((donation: DonationItem) => {
       if (!donation?.date) return;
       const d = new Date(donation.date);
       if (isNaN(d.getTime())) return;
@@ -89,8 +89,7 @@ async function fetchDonations(): Promise<void> {
 
       if (y === value.value) {
         const m = d.getMonth();
-        const co2 = Number(donation.co2 ?? 0) || 0;
-        monthlySavings[m] += co2;
+        monthlyCounts[m] += 1;
       }
     });
 
@@ -99,7 +98,7 @@ async function fetchDonations(): Promise<void> {
       datasets: [
         {
           ...chartData.value.datasets[0],
-          data: monthlySavings,
+          data: monthlyCounts,
         },
       ],
     };
@@ -108,6 +107,7 @@ async function fetchDonations(): Promise<void> {
     years.sort((a, b) => b - a);
     items.value = (years.map((y) => ({ label: String(y), value: y })) as unknown) as SelectItem[];
 
+    // try to force chart update
     await nextTick();
     try {
       if (barRef.value && barRef.value.chart) barRef.value.chart.update();
@@ -136,60 +136,49 @@ watch(value, (newYear, oldYear) => {
   fetchDonations();
 });
 
-const currentMonthSaving = computed(() => {
+const donationAmountMonth = computed(() => {
   const currentMonth = new Date().getMonth();
   const val = chartData.value.datasets[0].data[currentMonth];
   // Fix to 1 decimal place (e.g., "9.1")
   return Number(val.toFixed(1));
 });
 
-const totalYearSaving = computed(() => {
-  const val = chartData.value.datasets[0].data.reduce((a, b) => a + b, 0);
-  // Fix to 1 decimal place
-  return Number(val.toFixed(1));
+const pendingDonations = computed(() => {
+  return donationsRaw.value?.donations.filter(
+    (donation: DonationItem) => donation.statusId === 3
+  ).length || 0;
 });
 
-const currentMonthInTrees = computed(() => {
-  const kg = currentMonthSaving.value;
-  return (kg / 21.77).toFixed(2);
+const acceptedDonations = computed(() => {
+  return donationsRaw.value?.donations.filter(
+    (donation: DonationItem) => donation.statusId === 4
+  ).length || 0;
 });
 
-const totalYearInTrees = computed(() => {
-  const totalKg = totalYearSaving.value;
-  return (totalKg / 21.77).toFixed(2);
-});
 </script>
 
 <template>
   <div
     class="text-neutral font-bold w-full sm:max-w-[720px] p-10 rounded-lg border-muted border text-left"
   >
-    <h3 class="text-default font-bold text-2xl mb-2">Charity CO₂ Impact</h3>
-    <p class="text-sm text-muted-foreground mb-3">Shows CO₂ savings from all donations received by the charity. Use the year selector to view different years.</p>
+    <h3 class="text-default font-bold text-2xl mb-2">Donations Recieved</h3>
+    <p class="text-sm text-muted-foreground mb-3">Shows all the donations that the charity has recieved over the past year.</p>
     <USelect v-model="value" :items="items" class="w-24 mb-2" />
 
     <div v-if="loading" class="mb-2 text-sm">Loading donations…</div>
     <div v-if="error" class="mb-2 text-sm text-red-600">Error loading donations: {{ error }}</div>
     <div v-if="!loading && !error" class="mb-2 text-xs text-muted-foreground">Years available: {{ items.length }}</div>
 
-    <div v-if="totalYearSaving !== 0">
-      <div v-if="value === currentYear && currentMonthSaving !== 0">
+    <div v-if="donationAmountMonth !== 0">
+      <div v-if="value === currentYear && donationAmountMonth !== 0">
         <p>
-          This month the charity saved <b>{{ currentMonthSaving }} kg</b> of
-          CO<sub>2</sub>.
+          This month the charity recived {{ donationAmountMonth }} donations.
         </p>
         <p>
-          That's equivalent to planting <b>{{ currentMonthInTrees }} trees!</b>
-        </p>
-      </div>
-
-      <div>
-        <p>
-          This year the charity saved <b>{{ totalYearSaving }} kg</b> of
-          CO<sub>2</sub>.
+          Number of accepted donations this month:  <strong>{{ acceptedDonations }}</strong>.
         </p>
         <p>
-          That's equivalent to planting <b>{{ totalYearInTrees }} trees!</b>
+          Number of pending donations this month:  <strong>{{ pendingDonations }}</strong>.
         </p>
       </div>
     </div>
