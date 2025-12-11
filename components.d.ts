@@ -20,11 +20,12 @@ declare module 'vue' {
     NewDonationDialog: typeof import('./src/components/NewDonationDialog.vue')['default']
     PastDonationList: typeof import('./src/components/PastDonationList.vue')['default']
     PendingDonationList: typeof import('./src/components/PendingDonationList.vue')['default']
+    ReportsCO2Chart: typeof import('./src/components/ReportsCO2Chart.vue')['default']
+    ReportsLineChart: typeof import('./src/components/ReportsLineChart.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
     Sidebar: typeof import('./src/components/Sidebar.vue')['default']
     StaffAcceptedDonations: typeof import('./src/components/StaffAcceptedDonations.vue')['default']
-    StaffDonationList: typeof import('./src/components/StaffDonationTab.vue')['default']
     StaffDonationTab: typeof import('./src/components/StaffDonationTab.vue')['default']
     StaffPendingDonations: typeof import('./src/components/StaffPendingDonations.vue')['default']
     UApp: typeof import('./node_modules/@nuxt/ui/dist/runtime/components/App.vue')['default']
@@ -52,6 +53,5 @@ declare module 'vue' {
     UTextarea: typeof import('./node_modules/@nuxt/ui/dist/runtime/components/Textarea.vue')['default']
     UTimeline: typeof import('./node_modules/@nuxt/ui/dist/runtime/components/Timeline.vue')['default']
     UTooltip: typeof import('./node_modules/@nuxt/ui/dist/runtime/components/Tooltip.vue')['default']
-    UUser: typeof import('./node_modules/@nuxt/ui/dist/runtime/components/User.vue')['default']
   }
 }
