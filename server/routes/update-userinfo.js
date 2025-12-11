@@ -2,13 +2,14 @@ import { Router } from "express";
 import bcrypt from "bcrypt";
 import prisma from "../utils/prisma.js";
 import { auth } from "../middleware/auth.js";
+import { createNotification } from "../utils/notificationHelper.js";
 
 const router = Router();
 
 router.put("/", auth(), async (req, res) => {
   try {
     const userIdFromToken = req.user?.id || req.user?.userId;
-    // user can only update their own profile unless they are an admin
+
     if (!userIdFromToken) {
       return res
         .status(401)
@@ -26,6 +27,7 @@ router.put("/", auth(), async (req, res) => {
 
     console.log(`Attempting profile update for User ID: ${userIdInt}`);
 
+    // Fetch current user data to compare changes
     const user = await prisma.user.findUnique({
       where: { userId: userIdInt },
     });
@@ -34,6 +36,7 @@ router.put("/", auth(), async (req, res) => {
       return res.status(404).json({ error: "User not found" });
     }
 
+    // --- GOOGLE AUTH RESTRICTIONS ---
     if (user.googleId) {
       if (email && email !== user.email) {
         return res.status(403).json({
@@ -69,6 +72,18 @@ router.put("/", auth(), async (req, res) => {
       profileURL: profileURL || user.profileURL,
     };
 
+    let changeType = "GENERAL";
+
+    if (newPassword) {
+      changeType = "PASSWORD";
+    } else if (email && email !== user.email) {
+      changeType = "EMAIL";
+    } else if (profileURL && profileURL !== user.profileURL) {
+      changeType = "PROFILE IMAGE";
+    } else if (username && username !== user.username) {
+      changeType = "USERNAME";
+    }
+    
     if (newPassword) {
       if (user.password) {
         if (!currentPassword) {
@@ -93,6 +108,54 @@ router.put("/", auth(), async (req, res) => {
     });
 
     console.log("Profile updated successfully for:", updatedUser.email);
+
+    switch (changeType) {
+      case "PASSWORD":
+        await createNotification(
+          prisma,
+          userIdInt,
+          "ACCOUNT_SECURITY",
+          "Your password was recently changed. If this wasn't you, please contact support."
+        );
+        break;
+
+      case "EMAIL":
+        await createNotification(
+          prisma,
+          userIdInt,
+          "ACCOUNT_SECURITY",
+          `Your email address has been updated to ${email}.`
+        );
+        break;
+
+      case "PROFILE IMAGE":
+        await createNotification(
+          prisma,
+          userIdInt,
+          "PROFILE_UPDATE",
+          "Your profile image has been updated."
+        );
+        break;
+
+      case "USERNAME":
+        await createNotification(
+          prisma,
+          userIdInt,
+          "PROFILE_UPDATE",
+          `Your username has been updated to ${username}.`
+        );
+        break;
+
+      case "GENERAL":
+      default:
+        await createNotification(
+          prisma,
+          userIdInt,
+          "PROFILE_UPDATE",
+          "Your profile details have been successfully updated."
+        );
+        break;
+    }
 
     const { password: _, ...safeUser } = updatedUser;
 

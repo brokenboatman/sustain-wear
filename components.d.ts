@@ -26,6 +26,7 @@ declare module 'vue' {
     RouterView: typeof import('vue-router')['RouterView']
     Sidebar: typeof import('./src/components/Sidebar.vue')['default']
     StaffAcceptedDonations: typeof import('./src/components/StaffAcceptedDonations.vue')['default']
+    StaffDonationCounts: typeof import('./src/components/StaffDonationCounts.vue')['default']
     StaffDonationTab: typeof import('./src/components/StaffDonationTab.vue')['default']
     StaffPendingDonations: typeof import('./src/components/StaffPendingDonations.vue')['default']
     UApp: typeof import('./node_modules/@nuxt/ui/dist/runtime/components/App.vue')['default']

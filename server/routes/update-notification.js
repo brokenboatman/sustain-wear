@@ -4,7 +4,7 @@ import { auth } from "../middleware/auth.js";
 
 const router = Router();
 
-router.patch("/", auth([1, 2, 3]), async (req, res) => {
+router.patch("/:id", auth([1, 2, 3]), async (req, res) => {
   try {
     const userId = req.user?.id;
     const notificationId = parseInt(req.params.id);
@@ -12,6 +12,7 @@ router.patch("/", auth([1, 2, 3]), async (req, res) => {
     if (isNaN(notificationId)) {
       return res.status(400).json({ error: "Invalid ID" });
     }
+
     const updated = await prisma.notifications.updateMany({
       where: {
         notificationId: notificationId,

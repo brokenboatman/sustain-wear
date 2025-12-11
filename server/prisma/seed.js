@@ -114,6 +114,7 @@ async function main() {
     "Activewear",
     "Swimwear",
     "Suits & Blazers",
+    "Sleepwear", // <--- ADD THIS
   ];
   await prisma.category.createMany({
     data: categories.map((c, index) => ({
@@ -122,6 +123,8 @@ async function main() {
     })),
     skipDuplicates: true,
   });
+
+  console.log("Categories seeded");
 
   // Materials
   const materialNames = [
@@ -153,7 +156,7 @@ async function main() {
   });
 
   // Sizes
-  const sizes = ["S", "M", "L", "XL", "XXL", "3XL", "4XL"];
+  const sizes = ["XS", "S", "M", "L", "XL", "XXL", "3XL", "4XL"];
   await prisma.size.createMany({
     data: sizes.map((s, index) => ({ size: s, sizeId: index + 1 })),
     skipDuplicates: true,
@@ -233,6 +236,9 @@ async function main() {
     { type: "SYSTEM_ALERT" }, // For system maintenance or important updates
     { type: "CHARITY_UPDATE" }, //update the user on the status of their item
     { type: "ACCOUNT_SECURITY" }, // For password changes, login from new device, etc.
+    {
+      type: "PROFILE_UPDATE",
+    },
   ];
 
   for (const n of notificationTypeData) {
@@ -318,9 +324,9 @@ async function main() {
       material: "Cotton",
       size: "M",
       weight: 0.84,
-      co2: 3.2
-  },
-  {
+      co2: 3.2,
+    },
+    {
       title: "Black Leggings",
       description: "Cozy and warm.",
       status: "Received at Charity",
@@ -331,9 +337,9 @@ async function main() {
       material: "Rayon",
       size: "M",
       weight: 0.13,
-      co2: 5.3
-  },
-  {
+      co2: 5.3,
+    },
+    {
       title: "Pyjama Set",
       description: "Cozy and warm.",
       status: "Received at Charity",
@@ -344,9 +350,9 @@ async function main() {
       material: "Polyester",
       size: "XL",
       weight: 1.38,
-      co2: 6.0
-  },
-  {
+      co2: 6.0,
+    },
+    {
       title: "Casual Sneakers",
       description: "Stylish and perfect for layering.",
       status: "Received at Charity",
@@ -357,9 +363,9 @@ async function main() {
       material: "Fleece",
       size: "XXL",
       weight: 1.71,
-      co2: 6.1
-  },
-  {
+      co2: 6.1,
+    },
+    {
       title: "Workout Top",
       description: "Heavy-duty for cold weather.",
       status: "Received at Charity",
@@ -370,9 +376,9 @@ async function main() {
       material: "Spandex",
       size: "S",
       weight: 2.0,
-      co2: 4.2
-  },
-  {
+      co2: 4.2,
+    },
+    {
       title: "Formal Blouse",
       description: "Cozy and warm.",
       status: "Received at Charity",
@@ -383,9 +389,9 @@ async function main() {
       material: "Cotton",
       size: "XS",
       weight: 1.8,
-      co2: 2.3
-  },
-  {
+      co2: 2.3,
+    },
+    {
       title: "Striped T-Shirt",
       description: "Lightweight material, quick-drying.",
       status: "Received at Charity",
@@ -396,9 +402,9 @@ async function main() {
       material: "Polyester",
       size: "XS",
       weight: 0.36,
-      co2: 6.5
-  },
-  {
+      co2: 6.5,
+    },
+    {
       title: "Black Leggings",
       description: "Cozy and warm.",
       status: "Received at Charity",
@@ -409,9 +415,9 @@ async function main() {
       material: "Nylon",
       size: "M",
       weight: 2.06,
-      co2: 0.9
-  },
-  {
+      co2: 0.9,
+    },
+    {
       title: "Grey Hoodie",
       description: "Waterproof and durable.",
       status: "Received at Charity",
@@ -422,9 +428,9 @@ async function main() {
       material: "Nylon",
       size: "L",
       weight: 0.47,
-      co2: 1.0
-  },
-  {
+      co2: 1.0,
+    },
+    {
       title: "Winter Coat",
       description: "Heavy-duty for cold weather.",
       status: "Received at Charity",
@@ -435,8 +441,8 @@ async function main() {
       material: "Polyester",
       size: "L",
       weight: 1.62,
-      co2: 7.0
-  },
+      co2: 7.0,
+    },
   ];
 
   for (const item of donationsData) {

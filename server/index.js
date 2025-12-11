@@ -18,6 +18,7 @@ import fetchNotifications from "./routes/fetch-notifications.js";
 import updateNotification from "./routes/update-notification.js";
 import fetchUsers from "./routes/fetch-users.js";
 import updateUsers from "./routes/update-users.js";
+import createUsers from "./routes/create-users.js";
 
 dotenv.config({ path: "../.env" });
 const app = express();
@@ -42,6 +43,7 @@ app.use("/api/fetch-notifications", fetchNotifications);
 app.use("/api/update-notification", updateNotification);
 app.use("/api/fetch-users", fetchUsers);
 app.use("/api/update-users", updateUsers);
+app.use("/api/create-users", createUsers);
 
 app.listen(3000, () => {
   console.log("Backend running on http://localhost:3000");
