@@ -25,4 +25,5 @@
 @theme {
   --font-sans: 'Nunito Sans', system-ui, sans-serif;
   --font-brand: 'Stack Sans Headline', system-ui, sans-serif;
+  --color-ai: #7056e5;
 }

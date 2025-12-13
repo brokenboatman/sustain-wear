@@ -12,12 +12,16 @@ import updateUserInfoRoutes from "./routes/update-userinfo.js";
 import fetchDonation from "./routes/fetch-donation.js";
 import updateDonation from "./routes/update-donation.js";
 import donationImageRouter from "./routes/donation-image.js";
-import deleteUser from "./routes/delete-user.js";
+import deleteOwnUser from "./routes/delete-own-user.js";
 import fetchDonationCount from "./routes/fetch-donationcount.js";
 import fetchNotifications from "./routes/fetch-notifications.js";
 import updateNotification from "./routes/update-notification.js";
 import fetchUsers from "./routes/fetch-users.js";
 import updateUsers from "./routes/update-users.js";
+import createUsers from "./routes/create-users.js";
+import deleteUsers from "./routes/delete-users.js";
+import genImageDescription from "./routes/gen-image-description.js";
+import genSelectOptions from "./routes/gen-select-options.js";
 
 dotenv.config({ path: "../.env" });
 const app = express();
@@ -36,12 +40,16 @@ app.use("/api/update-userinfo", updateUserInfoRoutes);
 app.use("/api/fetch-donation", fetchDonation);
 app.use("/api/update-donation", updateDonation);
 app.use("/api/donation-image", donationImageRouter);
-app.use("/api/delete-user", deleteUser);
+app.use("/api/delete-own-user", deleteOwnUser);
 app.use("/api/fetch-donationcount", fetchDonationCount);
 app.use("/api/fetch-notifications", fetchNotifications);
 app.use("/api/update-notification", updateNotification);
 app.use("/api/fetch-users", fetchUsers);
 app.use("/api/update-users", updateUsers);
+app.use("/api/create-users", createUsers);
+app.use("/api/delete-users", deleteUsers);
+app.use("/api/gen-image-description", genImageDescription);
+app.use("/api/gen-select-options", genSelectOptions);
 
 app.listen(3000, () => {
   console.log("Backend running on http://localhost:3000");

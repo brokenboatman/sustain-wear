@@ -59,7 +59,7 @@ async function updateDonation(donationId: number, newStatus: number) {
 </script>
 
 <template>
-  <div class="flex-1 flex-direction-column text-default max-h-100 overflow-y-auto">
+  <div class="flex-1 flex-direction-column text-default overflow-y-auto">
     <div v-if="loading" class="text-center p-4">Loading...</div>
     <div v-else-if="error" class="text-red-500 text-center p-4">
       {{ error }}

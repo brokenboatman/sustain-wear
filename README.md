@@ -32,6 +32,12 @@ CLOUDINARY_CLOUD_NAME=dtckq9bj4
 CLOUDINARY_API_KEY=452996932715446
 CLOUDINARY_API_SECRET=UpwnhGtAPW9r9kQT6E-B5KFaOzU
 
+# Google GenAI API
+
+Obtain a Gemini API key from Google AI Studio and add it to your env as follows:
+
+GEMINI_API_KEY="API_KEY_GOES_HERE"
+
 Installation & Setup
 
 1. Install Dependencies
