@@ -29,6 +29,7 @@ declare module 'vue' {
     StaffDonationCounts: typeof import('./src/components/StaffDonationCounts.vue')['default']
     StaffDonationTab: typeof import('./src/components/StaffDonationTab.vue')['default']
     StaffPendingDonations: typeof import('./src/components/StaffPendingDonations.vue')['default']
+    UAlert: typeof import('./node_modules/@nuxt/ui/dist/runtime/components/Alert.vue')['default']
     UApp: typeof import('./node_modules/@nuxt/ui/dist/runtime/components/App.vue')['default']
     UAuthForm: typeof import('./node_modules/@nuxt/ui/dist/runtime/components/AuthForm.vue')['default']
     UAvatar: typeof import('./node_modules/@nuxt/ui/dist/runtime/components/Avatar.vue')['default']

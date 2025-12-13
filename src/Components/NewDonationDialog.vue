@@ -7,6 +7,13 @@ const pending = ref(true);
 const toast = useToast();
 const emit = defineEmits(["donation-added"])
 
+const aiSuggestions = ref({
+  categoryId: null,
+  colourId: null,
+  materialId: null,
+  genderId: null,
+})
+
 async function loadOptions() {
   pending.value = true;
   try {
@@ -18,6 +25,7 @@ async function loadOptions() {
 
     const data = await res.json();
     options.value = data;
+    await console.log("Loaded donation options:", options.value);
   } catch (error) {
     console.error("Failed to load donation options:", error);
     toast.add({
@@ -30,6 +38,52 @@ async function loadOptions() {
   }
 }
 
+async function genSelectOptions() {
+  try {
+    const token = localStorage.getItem("token");
+    const res = await fetch("/api/gen-select-options", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        ...(token && { Authorization: `Bearer ${token}` }),
+      },
+      body: JSON.stringify({
+        description: state.description,
+        options: options.value,
+      }),
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      throw new Error(data.error || "Failed to generate select options");
+    }
+
+    if (data.selection) {
+      aiSuggestions.value = data.selection;
+      // Pre-fill select fields with AI suggestions
+      // state.category = aiSuggestions.value.categoryId || state.category;
+      // state.colour = aiSuggestions.value.colourId || state.colour;
+      // state.material = aiSuggestions.value.materialId || state.material;
+      // state.gender = aiSuggestions.value.genderId || state.gender;
+    };
+
+    toast.add({
+      title: "AI Suggestions Generated",
+      description: "AI has suggested options for your donation.",
+      color: "success",
+    });
+
+    console.log("Generated select options:", data);
+  } catch (e) {
+    toast.add({
+      title: "Error Generating Options",
+      description: e.message || "An error occurred while generating options.",
+      color: "error",
+    });
+  }
+}
+
 onMounted(() => {
   loadOptions();
 });
@@ -39,6 +93,8 @@ const categoryOptions = computed(
     options.value?.categories.map((c) => ({
       label: c.category,
       value: c.categoryId,
+      class: c.categoryId === aiSuggestions.value.categoryId ? "font-bold border rounded-lg border-2 border-[var(--color-ai)]" : undefined,
+      icon: c.categoryId === aiSuggestions.value.categoryId ? "i-lucide-sparkles" : undefined,
     })) || []
 );
 const colourOptions = computed(
@@ -46,6 +102,8 @@ const colourOptions = computed(
     options.value?.colours.map((c) => ({
       label: c.colour,
       value: c.colourId,
+      class: c.colourId === aiSuggestions.value.colourId ? "font-bold border rounded-lg border-2 border-[var(--color-ai)]" : undefined,
+      icon: c.colourId === aiSuggestions.value.colourId ? "i-lucide-sparkles" : undefined,
     })) || []
 );
 const materialOptions = computed(
@@ -53,6 +111,8 @@ const materialOptions = computed(
     options.value?.materials.map((m) => ({
       label: m.material,
       value: m.materialId,
+      class: m.materialId === aiSuggestions.value.materialId ? "font-bold border rounded-lg border-2 border-[var(--color-ai)]" : undefined,
+      icon: m.materialId === aiSuggestions.value.materialId ? "i-lucide-sparkles" : undefined,
     })) || []
 );
 const conditionOptions = computed(
@@ -67,12 +127,18 @@ const genderOptions = computed(
     options.value?.genders.map((g) => ({
       label: g.gender,
       value: g.genderId,
+      class: g.genderId === aiSuggestions.value.genderId ? "font-bold border rounded-lg border-2 border-[var(--color-ai)]" : undefined,
+      icon: g.genderId === aiSuggestions.value.genderId ? "i-lucide-sparkles" : undefined,
     })) || []
 );
 const sizeOptions = computed(
   () =>
-    options.value?.sizes.map((s) => ({ label: s.size, value: s.sizeId })) || []
+    options.value?.sizes.map((s) => ({ 
+      label: s.size, 
+      value: s.sizeId, 
+    })) || []
 );
+
 
 const isOpen = ref(false);
 const fileInput = ref(null);
@@ -145,6 +211,56 @@ function closeModal() {
     condition: null,
     gender: null,
   });
+}
+
+const genLoading = ref(false);
+
+async function generateDescription() {
+  if (images.value.length === 0 || (images.value.length === 1 && images.value[0] === "ADD_BUTTON")) {
+    toast.add({
+      title: "No images available",
+      description: "Please add at least one image to generate a description.",
+      color: "error",
+    });
+    return;
+  }
+
+  genLoading.value = true;
+
+  const imageToDescribe = images.value[0] === "ADD_BUTTON" ? images.value[1] : images.value[0];
+
+  try {
+    const token = localStorage.getItem("token");
+
+    const res = await fetch("/api/gen-image-description", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        ...(token && { Authorization: `Bearer ${token}` }),
+      },
+      body: JSON.stringify({ image: imageToDescribe }),
+    });
+
+    const json = await res.json();
+
+    if (!res.ok) {
+      throw new Error(json.error || "Failed to generate description");
+    }
+    genLoading.value = false;
+    state.description = json.description;
+    toast.add({
+      title: "Description Generated",
+      description: "A description has been generated based on the image.",
+      color: "success",
+    });
+    genSelectOptions();
+  } catch (e) {
+    toast.add({
+      title: "Error:",
+      description: e.message,
+      color: "error",
+    });
+  }
 }
 
 async function onSubmit({ data: formData }) {
@@ -326,9 +442,28 @@ images.value.push("ADD_BUTTON");
           <UFormField label="Title" name="title" required>
             <UInput v-model="state.title" class="w-full" />
           </UFormField>
-
+          <UAlert
+            title="About AI Assistance"
+            description="By clicking the generate button, you're agreeing to let AI analyze your first uploaded image to help fill in the form."
+            icon="i-lucide-info"
+            color="neutral"
+            variant="subtle"
+          >
+          </UAlert>
           <UFormField label="Description" name="description">
-            <UTextarea v-model="state.description" :rows="2" class="w-full" />
+            <UTextarea :loading="genLoading" :disabled="genLoading" v-model="state.description" :rows="2" class="w-full" autoresize />
+            <UButton
+              v-if="!state.description || state.description.length < 20"
+              :disabled="genLoading || images.length === 1"
+              size="md"
+              color="neutral"
+              variant="outline"
+              icon="i-lucide-wand-2"
+              class="absolute top-2 right-2"
+              @click="generateDescription"
+            >
+              Generate
+            </UButton>
           </UFormField>
 
           <div class="flex flex-col md:flex-row gap-2">
@@ -351,6 +486,11 @@ images.value.push("ADD_BUTTON");
                 option-attribute="label"
                 value-attribute="value"
                 class="w-full min-w-[120px]"
+                :ui="{
+                  content: 'min-w-full w-auto',
+                  itemLeadingIcon: 'text-[var(--color-ai)]'
+                }"
+
               />
             </UFormField>
             <UFormField label="Gender" name="gender" required>
@@ -362,6 +502,10 @@ images.value.push("ADD_BUTTON");
                 option-attribute="label"
                 value-attribute="value"
                 class="w-full min-w-[100px]"
+                :ui="{
+                  content: 'min-w-full w-auto',
+                  itemLeadingIcon: 'text-[var(--color-ai)]'
+                }"
               />
             </UFormField>
           </div>
@@ -388,6 +532,10 @@ images.value.push("ADD_BUTTON");
                 option-attribute="label"
                 value-attribute="value"
                 class="w-full min-w-[120px]"
+                :ui="{
+                  content: 'min-w-full w-auto',
+                  itemLeadingIcon: 'text-[var(--color-ai)]'
+                }"
               />
             </UFormField>
             <UFormField label="Material" name="material" required>
@@ -399,6 +547,10 @@ images.value.push("ADD_BUTTON");
                 option-attribute="label"
                 value-attribute="value"
                 class="w-full min-w-[120px]"
+                :ui="{
+                  content: 'min-w-full w-auto',
+                  itemLeadingIcon: 'text-[var(--color-ai)]'
+                }"
               />
             </UFormField>
           </div>

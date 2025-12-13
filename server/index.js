@@ -20,6 +20,8 @@ import fetchUsers from "./routes/fetch-users.js";
 import updateUsers from "./routes/update-users.js";
 import createUsers from "./routes/create-users.js";
 import deleteUsers from "./routes/delete-users.js";
+import genImageDescription from "./routes/gen-image-description.js";
+import genSelectOptions from "./routes/gen-select-options.js";
 
 dotenv.config({ path: "../.env" });
 const app = express();
@@ -46,6 +48,8 @@ app.use("/api/fetch-users", fetchUsers);
 app.use("/api/update-users", updateUsers);
 app.use("/api/create-users", createUsers);
 app.use("/api/delete-users", deleteUsers);
+app.use("/api/gen-image-description", genImageDescription);
+app.use("/api/gen-select-options", genSelectOptions);
 
 app.listen(3000, () => {
   console.log("Backend running on http://localhost:3000");
