@@ -21,6 +21,7 @@ declare module 'vue' {
     PastDonationList: typeof import('./src/components/PastDonationList.vue')['default']
     PendingDonationList: typeof import('./src/components/PendingDonationList.vue')['default']
     ReportsCO2Chart: typeof import('./src/components/ReportsCO2Chart.vue')['default']
+    ReportsDonationChart: typeof import('./src/components/ReportsDonationChart.vue')['default']
     ReportsLineChart: typeof import('./src/components/ReportsLineChart.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
