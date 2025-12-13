@@ -358,6 +358,8 @@ function removeImage(index) {
   });
 }
 
+const isFullscreenModal = computed(() => window.innerWidth < 640);
+
 images.value.push("ADD_BUTTON");
 </script>
 
@@ -373,7 +375,11 @@ images.value.push("ADD_BUTTON");
     New donation
   </UButton>
 
-  <UModal v-model:open="isOpen" title="Add a Donation">
+  <UModal 
+  v-model:open="isOpen" 
+  title="Add a Donation"
+  :fullscreen="isFullscreenModal"
+  >
     <template #body>
       <p id="donation-description" class="sr-only">
         Use this form to add details, photos, and categories for the item you
@@ -487,7 +493,7 @@ images.value.push("ADD_BUTTON");
                 value-attribute="value"
                 class="w-full min-w-[120px]"
                 :ui="{
-                  content: 'min-w-full w-auto',
+                  content: 'md:min-w-full md:w-auto',
                   itemLeadingIcon: 'text-[var(--color-ai)]'
                 }"
 
@@ -503,7 +509,7 @@ images.value.push("ADD_BUTTON");
                 value-attribute="value"
                 class="w-full min-w-[100px]"
                 :ui="{
-                  content: 'min-w-full w-auto',
+                  content: 'md:min-w-full md:w-auto',
                   itemLeadingIcon: 'text-[var(--color-ai)]'
                 }"
               />
@@ -533,7 +539,7 @@ images.value.push("ADD_BUTTON");
                 value-attribute="value"
                 class="w-full min-w-[120px]"
                 :ui="{
-                  content: 'min-w-full w-auto',
+                  content: 'md:min-w-full md:w-auto',
                   itemLeadingIcon: 'text-[var(--color-ai)]'
                 }"
               />
@@ -548,7 +554,7 @@ images.value.push("ADD_BUTTON");
                 value-attribute="value"
                 class="w-full min-w-[120px]"
                 :ui="{
-                  content: 'min-w-full w-auto',
+                  content: 'md:min-w-full md:w-auto',
                   itemLeadingIcon: 'text-[var(--color-ai)]'
                 }"
               />

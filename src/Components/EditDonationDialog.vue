@@ -319,6 +319,8 @@ function removeImage(index) {
   });
 }
 
+const isFullscreenModal = computed(() => window.innerWidth < 640);
+
 </script>
 
 <template>
@@ -333,7 +335,7 @@ function removeImage(index) {
     Edit
   </UButton>
 
-  <UModal v-model:open="isOpen" title="Add a Donation">
+  <UModal v-model:open="isOpen" title="Add a Donation" :fullscreen="isFullscreenModal">
     <template #body>
       <p id="donation-description" class="sr-only">
         Use this form to add details, photos, and categories for the item you

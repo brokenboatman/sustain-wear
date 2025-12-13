@@ -362,7 +362,7 @@ onMounted(() => {
             <template #username-cell="{ row }">
               <div v-if="!row.original?.isAddButton">
                 <UFormField :name="'users.' + row.index + '.username'">
-                  <UInput v-model="row.original.username" placeholder="Username" class="w-full" variant="subtle"
+                  <UInput v-model="row.original.username" placeholder="Username" class="min-w-[160px] md:w-full" variant="subtle"
                     @input="row.original.isEdited = true" />
                 </UFormField>
               </div>
@@ -370,7 +370,7 @@ onMounted(() => {
             <template #email-cell="{ row }">
               <div v-if="!row.original?.isAddButton">
                 <UFormField :name="'users.' + row.index + '.email'">
-                  <UInput v-model="row.original.email" placeholder="Email" class="w-full" variant="subtle"
+                  <UInput v-model="row.original.email" placeholder="Email" class="min-w-[200px] md:w-full" variant="subtle"
                     @input="row.original.isEdited = true" />
                 </UFormField>
               </div>
@@ -387,7 +387,7 @@ onMounted(() => {
               <div v-if="!row.original?.isAddButton">
                 <UFormField :name="'users.' + row.index + '.password'">
                   <UInput v-model="row.original.password" type="password" placeholder="Enter new password"
-                    class="w-full" variant="outline" @input="row.original.isEdited = true" />
+                    class="min-w-[152px] md:w-full" variant="outline" @input="row.original.isEdited = true" />
                 </UFormField>
               </div>
             </template>
