@@ -130,7 +130,13 @@ onUnmounted(() => {
       </a>
 
       <div class="flex items-center justify-end">
-        <UDropdownMenu :items="items as any" :ui="{ content: 'w-110' }">
+        <UDropdownMenu 
+        :items="items as any" 
+        :ui="{ content: 'w-screen max-w-[calc(100vw-2rem)] sm:w-96' }"
+        :content="{
+          collisionPadding: 16
+        }"
+        >
           <div class="relative">
             <UButton
               icon="line-md:bell"

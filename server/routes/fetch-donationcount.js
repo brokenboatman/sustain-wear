@@ -19,7 +19,7 @@ router.get("/", auth([1]), async (req, res) => {
       return res.status(400).json({ error: "Invalid User ID format" });
     }
 
-    console.log("Fetching stats for userId:", userIdInt);
+    // console.log("Fetching stats for userId:", userIdInt);
 
     const totalDonations = await prisma.donation.count({
       where: {

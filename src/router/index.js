@@ -11,6 +11,8 @@ import MyDonationsView from "@/views/MyDonationsView.vue";
 import UserManagementView from "@/views/UserManagementView.vue";
 import DonationsView from "@/views/DonationsView.vue";
 import ReportsView from "@/views/ReportsView.vue";
+import ForgotPassword from "@/components/ForgotPassword.vue";
+import ResetPassword from "@/components/ResetPassword.vue";
 
 const routes = [
   {
@@ -82,6 +84,16 @@ const routes = [
     name: "google-callback",
     component: GoogleCallbackView,
   },
+  {
+    path: "/forgot-password",
+    name: "forgot-password",
+    component: ForgotPassword,
+  },
+  {
+    path: "/ResetPassword",
+    name: "ResetPassword",
+    component: ResetPassword,
+  },
 ];
 
 // const routes = [
@@ -132,7 +144,7 @@ const router = createRouter({
 
 router.beforeEach((to, from, next) => {
   const token = localStorage.getItem("token");
-  if(to.meta.requiredRoles) {
+  if (to.meta.requiredRoles) {
     const roleId = parseInt(localStorage.getItem("roleId"));
     if (!to.meta.requiredRoles.includes(roleId)) {
       next("/unauthorized");

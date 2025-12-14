@@ -174,21 +174,21 @@ const cards = [
       :default-value="userMilestones"
       :items="items"
       :ui="{
-        item: 'even:flex-row-reverse even:-translate-x-[calc(100%-40px)] even:text-right',
+        item: 'md:even:flex-row-reverse md:even:-translate-x-[calc(100%-40px)] md:even:text-right',
       }"
-      class="w-70 float-right mx-15 translate-x-[calc(50%-1rem)]"
+      class="md:w-70 md:float-right mx-16 md:translate-x-[calc(50%-1rem)]"
     />
   </div>
 
   <USeparator icon="lucide:medal" />
 
-  <div class="px-5 py-15 animate-slide-in">
+  <div class="px-8 py-8 animate-slide-in">
     <UPageGrid>
       <template v-for="(card, index) in cards" :key="index">
         <UPageCard
           v-if="donations >= card.requiredDonations"
           v-bind="card"
-          class="flex flex-col items-center justify-center text-center gap-4 p-6 transition-all duration-500"
+          class="flex flex-col items-center justify-center text-center gap-4 p-2 transition-all duration-500"
         >
           <div class="flex flex-col items-center justify-center">
             <img

@@ -3,6 +3,7 @@ import { PrismaClient } from "@prisma/client";
 import jwt from "jsonwebtoken";
 import cloudinary from "cloudinary";
 import { createNotification } from "../utils/notificationHelper.js";
+import sharp from "sharp";
 
 const prisma = new PrismaClient();
 const router = Router();
@@ -14,6 +15,26 @@ cloudinary.config({
   api_key: process.env.CLOUDINARY_API_KEY,
   api_secret: process.env.CLOUDINARY_API_SECRET,
 });
+
+const compressBase64Image = async (base64String, quality = 80) => {
+  try {
+    const base64Data = base64String.replace(/^data:image\/\w+;base64,/, '');
+    const buffer = Buffer.from(base64Data, 'base64');
+    
+    const compressedBuffer = await sharp(buffer)
+      .resize(1920, 1920, {
+        fit: 'inside',
+        withoutEnlargement: true
+      })
+      .jpeg({ quality: quality })
+      .toBuffer();
+    
+    return `data:image/jpeg;base64,${compressedBuffer.toString('base64')}`;
+  } catch (error) {
+    console.error('Image compression failed:', error);
+    return base64String;
+  }
+};
 
 const CO2_SAVING_PER_KG = 9.0;
 
@@ -46,14 +67,14 @@ const getCategoryWeight = (categoryName) => {
 };
 
 const simulateLogisticsCycle = async (donationId, userId, donationTitle) => {
-  console.log(`Starting simulation for Donation ${donationId}`);
+  // console.log(`Starting simulation for Donation ${donationId}`);
   try {
     await new Promise((resolve) => setTimeout(resolve, 15000));
     await prisma.donation.update({
       where: { donationId: donationId },
       data: { statusId: 2 },
     });
-    console.log(`Donation ${donationId} moved to 'In transit'`);
+    // console.log(`Donation ${donationId} moved to 'In transit'`);
 
     await createNotification(
       prisma,
@@ -67,7 +88,7 @@ const simulateLogisticsCycle = async (donationId, userId, donationTitle) => {
       where: { donationId: donationId },
       data: { statusId: 3 },
     });
-    console.log(`Donation ${donationId} moved to 'Received at Charity'`);
+    // console.log(`Donation ${donationId} moved to 'Received at Charity'`);
 
     await createNotification(
       prisma,
@@ -128,7 +149,8 @@ router.post("/", async (req, res) => {
 
     for (const imgStr of imagePayloads) {
       if (imgStr.startsWith("data:")) {
-        const p = cloudinary.uploader.upload(imgStr, {
+        const compressedImg = await compressBase64Image(imgStr, 80);
+        const p = cloudinary.uploader.upload(compressedImg, {
           folder: "donations",
           resource_type: "image",
         });

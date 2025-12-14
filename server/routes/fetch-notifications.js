@@ -17,7 +17,7 @@ router.get("/", auth([1, 2, 3]), async (req, res) => {
     if (isNaN(userIdInt))
       return res.status(400).json({ error: "Invalid User ID format" });
 
-    console.log("Searching for userId:", userIdInt, "Type:", typeof userIdInt);
+    // console.log("Searching for userId:", userIdInt, "Type:", typeof userIdInt);
 
     const notifications = await prisma.notifications.findMany({
       where: {
@@ -29,7 +29,7 @@ router.get("/", auth([1, 2, 3]), async (req, res) => {
       },
     });
 
-    console.log("Found notifications:", notifications);
+    // console.log("Found notifications:", notifications);
 
     res.json({ notifications, meta: { count: notifications.length } });
   } catch (e) {

@@ -19,12 +19,16 @@ model User {
   roleId     Int
   charityId  Int?
   profileURL String?
+  date DateTime @default(now())
+
+  resetToken       String? //this is used for the password reset
+  resetTokenExpiry DateTime?
 
   // --- Relations ---
   role          Role            @relation(fields: [roleId], references: [roleId])
   charity       Charity?        @relation(fields: [charityId], references: [charityId])
   donations     Donation[]
-  notifications Notifications[] // Add this so you can do: prisma.user.find({ include: { notifications: true } })
+  notifications Notifications[] 
 }
 
 model Role {

@@ -103,7 +103,7 @@ async function deleteProfile() {
   loading.value = true;
   try {
     const token = localStorage.getItem("token");
-    const res = await fetch("/api/delete-user", {
+    const res = await fetch("/api/delete-own-user", {
       method: "DELETE",
       headers: { Authorization: `Bearer ${token}` },
     });
