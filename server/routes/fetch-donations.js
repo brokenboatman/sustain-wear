@@ -17,7 +17,7 @@ router.get("/", auth([1, 2, 3]), async (req, res) => {
     if (isNaN(userIdInt))
       return res.status(400).json({ error: "Invalid User ID format" });
 
-    console.log("Searching for userId:", userIdInt, "Type:", typeof userIdInt);
+    // console.log("Searching for userId:", userIdInt, "Type:", typeof userIdInt);
 
     const donations = await prisma.donation.findMany({
       where: {
@@ -32,7 +32,7 @@ router.get("/", auth([1, 2, 3]), async (req, res) => {
       },
     });
 
-    console.log("Found donations:", donations);
+    // console.log("Found donations:", donations);
 
     res.json({ donations, meta: { count: donations.length } });
   } catch (e) {
