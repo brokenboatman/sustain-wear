@@ -57,7 +57,7 @@ const exportPdf = async () => {
   const margin = 10;
   let first = true;
 
-  // Helper to draw one page: title, description, small data summary, then image
+ 
   const drawPage = (title: string, description: string, dataArr: number[] | null, imgData: string | null) => {
     if (!first) doc.addPage();
     first = false;
@@ -67,19 +67,17 @@ const exportPdf = async () => {
     doc.setFont(undefined as any, 'bold');
     doc.text(title, margin, 20);
 
-    // Description (wrap)
+    // Description
     doc.setFontSize(11);
     doc.setFont(undefined as any, 'normal');
     const descLines = doc.splitTextToSize(description, pdfWidth - margin * 2);
     doc.text(descLines, margin, 30);
 
-    // Data summary (total + monthly list)
     if (dataArr && dataArr.length) {
       const total = dataArr.reduce((a, b) => a + Number(b || 0), 0);
       doc.setFontSize(12);
       doc.text(`Total (selected year): ${total}`, margin, 30 + descLines.length * 6 + 6);
 
-      // Monthly numbers as small text block
       const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
       const monthlyText = months.map((m, i) => `${m}: ${dataArr[i] ?? 0}`).join('  ');
       const monthlyLines = doc.splitTextToSize(monthlyText, pdfWidth - margin * 2);
@@ -93,7 +91,6 @@ const exportPdf = async () => {
       const imgWidthMm = pdfWidth - margin * 2;
       const imgHeightMm = (imgProps.height * imgWidthMm) / imgProps.width;
 
-      // place image after approx 60mm from top to allow title/desc
       const yPos = 30 + (description ? doc.splitTextToSize(description, pdfWidth - margin * 2).length * 6 : 0) + 30;
       const availableHeight = pageHeight - yPos - margin;
       const drawHeight = imgHeightMm > availableHeight ? availableHeight : imgHeightMm;
@@ -101,7 +98,7 @@ const exportPdf = async () => {
     }
   };
 
-  // Prepare metadata and descriptions
+ 
   const co2Export = co2.value?.exportImage?.();
   const donationExport = donation.value?.exportImage?.();
 
