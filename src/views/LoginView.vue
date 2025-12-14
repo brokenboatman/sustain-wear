@@ -39,13 +39,6 @@ const providers = [
   },
 ];
 
-const links = [
-  {
-    label: "Don't have an account?",
-    to: "/register",
-  },
-];
-
 const schema = z.object({
   email: z.email("Invalid email"),
   password: z
@@ -115,6 +108,16 @@ async function onSubmit(payload: FormSubmitEvent<Schema>) {
           class="font-semibold text-primary ml-1"
         >
           Sign up
+        </ULink>
+      </div>
+      <div class="text-center text-sm text-muted">
+        Cant remember your password?
+        <ULink
+          to="/forgot-password"
+          variant="link"
+          class="font-semibold text-primary ml-1"
+        >
+          Reset Password
         </ULink>
       </div>
     </UPageCard>
