@@ -18,7 +18,7 @@ router.get("/", auth([2, 3]), async (req, res) => {
       },
     });
 
-    console.log("Found donations:", donations);
+    // console.log("Found donations:", donations);
 
     res.json({ donations, meta: { count: donations.length } });
   } catch (e) {

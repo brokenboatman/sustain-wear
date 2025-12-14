@@ -35,8 +35,8 @@ router.patch("/", auth([2,3]), async (req, res) => {
         return res.status(404).json({ error: "Donation not found" });
     }
     
-    console.log("Found donation:", donation);
-    console.log("Updating donation:", donationId, "to status:", req.body.statusId);
+    // console.log("Found donation:", donation);
+    // console.log("Updating donation:", donationId, "to status:", req.body.statusId);
 
     res.json({ donation });
   } catch (e) {

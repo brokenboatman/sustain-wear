@@ -214,6 +214,7 @@ function closeModal() {
 }
 
 const genLoading = ref(false);
+const submitLoading = ref(false);
 
 async function generateDescription() {
   if (images.value.length === 0 || (images.value.length === 1 && images.value[0] === "ADD_BUTTON")) {
@@ -246,7 +247,6 @@ async function generateDescription() {
     if (!res.ok) {
       throw new Error(json.error || "Failed to generate description");
     }
-    genLoading.value = false;
     state.description = json.description;
     toast.add({
       title: "Description Generated",
@@ -260,6 +260,8 @@ async function generateDescription() {
       description: e.message,
       color: "error",
     });
+  } finally {
+    genLoading.value = false;
   }
 }
 
@@ -268,6 +270,7 @@ async function onSubmit({ data: formData }) {
   const payload = { ...formData, images: imageRefs }; // Sends Array
 
   try {
+    submitLoading.value = true;
     const token = localStorage.getItem("token");
 
     const res = await fetch("/api/add-donation", {
@@ -301,6 +304,7 @@ async function onSubmit({ data: formData }) {
     });
   } finally {
     closeModal();
+    submitLoading.value = false;
   }
 }
 
@@ -580,8 +584,8 @@ images.value.push("ADD_BUTTON");
               icon="i-lucide-check"
               type="submit"
               color="primary"
-              :loading="pending"
-              :disabled="pending"
+              :loading="submitLoading"
+              :disabled="submitLoading"
             >
               Confirm Donation
             </UButton>
