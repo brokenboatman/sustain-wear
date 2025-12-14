@@ -129,6 +129,25 @@ function close() {
       </div>
 
       <div v-else class="p-4 space-y-4">
+        <UAlert
+          title="Shipping Status"
+          :description="state.status"
+          :icon="
+            state.status === 'In transit' ? 'lucide:truck' :
+            state.status === 'Received at Charity' ? 'lucide:warehouse' :
+            state.status === 'On its way' ? 'lucide:package' :
+            'lucide:info'
+          "
+          :color="
+            state.status === 'Received at Charity' ? 'success' :
+            state.status === 'In transit' ? 'primary' :
+            state.status === 'On its way' ? 'neutral' :
+            'neutral'
+          "
+          variant="soft"
+          class="mb-4"
+        />
+        
         <UCarousel
           v-if="images.length > 0"
           arrows
@@ -139,9 +158,6 @@ function close() {
         >
           <img :src="item" class="w-80 h-80 object-cover rounded-lg mx-auto" />
         </UCarousel>
-        <div v-else class="text-center p-4 bg-gray-50 rounded-lg text-gray-500">
-          No image available
-        </div>
 
         <div class="space-y-3">
           <UFormField label="Title">
@@ -158,38 +174,83 @@ function close() {
             />
           </UFormField>
 
-          <div class="flex gap-2">
-            <UFormField label="Status" class="flex-1">
+          <div class="flex flex-col md:flex-row gap-2">
+            <UFormField label="Quantity" name="quantity" class="flex-0">
               <UInput
-                v-model="state.status"
+                v-model.number="state.quantity"
+                type="number"
+                min="1"
+                class="w-full min-w-20"
                 disabled
-                class="w-full font-bold"
               />
             </UFormField>
-            <UFormField label="Quantity" class="w-20">
-              <UInput v-model="state.quantity" disabled />
+            <UFormField label="Category" name="category">
+              <USelect
+                v-model="state.category"
+                placeholder="Select Category"
+                option-attribute="label"
+                value-attribute="value"
+                class="w-full min-w-[120px]"
+                disabled
+              />
+            </UFormField>
+            <UFormField label="Gender" name="gender">
+              <USelect
+                v-model="state.gender"
+                placeholder="Select Gender"
+                option-attribute="label"
+                value-attribute="value"
+                class="w-full min-w-[100px]"
+                disabled
+              />
             </UFormField>
           </div>
 
-          <div class="grid grid-cols-2 gap-2">
-            <UFormField label="Category"
-              ><UInput v-model="state.category" disabled
-            /></UFormField>
-            <UFormField label="Gender"
-              ><UInput v-model="state.gender" disabled
-            /></UFormField>
-            <UFormField label="Size"
-              ><UInput v-model="state.size" disabled
-            /></UFormField>
-            <UFormField label="Colour"
-              ><UInput v-model="state.colour" disabled
-            /></UFormField>
-            <UFormField label="Material"
-              ><UInput v-model="state.material" disabled
-            /></UFormField>
-            <UFormField label="Condition"
-              ><UInput v-model="state.condition" disabled
-            /></UFormField>
+          <div class="flex flex-col md:flex-row gap-2">
+            <UFormField label="Size" name="size" class="flex-0">
+              <USelect
+                v-model="state.size"
+                placeholder="Select Size"
+                option-attribute="label"
+                value-attribute="value"
+                class="w-full min-w-[60px]"
+                disabled
+              />
+            </UFormField>
+
+            <UFormField label="Colour" name="colour">
+              <USelect
+                v-model="state.colour"
+                placeholder="Select Colour"
+                option-attribute="label"
+                value-attribute="value"
+                class="w-full min-w-[120px]"
+                disabled
+              />
+            </UFormField>
+            <UFormField label="Material" name="material">
+              <USelect
+                v-model="state.material"
+                placeholder="Select Material"
+                option-attribute="label"
+                value-attribute="value"
+                class="w-full min-w-[120px]"
+                disabled
+              />
+            </UFormField>
+          </div>
+
+          <div class="flex flex-col md:flex-row gap-2">
+            <UFormField label="Condition" name="condition">
+              <USelect
+                v-model="state.condition"
+                placeholder="Select Condition"
+                option-attribute="label"
+                value-attribute="value"
+                class="w-full min-w-[130px]"
+                disabled
+              />
+            </UFormField>
           </div>
         </div>
       </div>
