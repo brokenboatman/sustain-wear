@@ -44,18 +44,12 @@ async function onSubmit(event: FormSubmitEvent<z.infer<typeof schema>>) {
 </script>
 
 <template>
-  <div
-    class="flex min-h-screen items-center justify-center bg-gray-50 dark:bg-gray-950 p-4"
-  >
+  <div class="flex flex-col items-center justify-center gap-4 p-4">
     <UCard class="w-full max-w-sm shadow-xl">
       <template #header>
         <div class="text-center">
-          <h3 class="text-xl font-bold text-gray-900 dark:text-white">
-            Forgot Password?
-          </h3>
-          <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
-            Enter your email to receive a reset link
-          </p>
+          <h3 class="text-xl font-bold">Forgot Password?</h3>
+          <p class="mt-1 text-sm">Enter your email to receive a reset link</p>
         </div>
       </template>
 
