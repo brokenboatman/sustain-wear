@@ -5,14 +5,14 @@ import * as z from "zod";
 const options = ref(null);
 const pending = ref(true);
 const toast = useToast();
-const emit = defineEmits(["donation-added"])
+const emit = defineEmits(["donation-added"]);
 
 const aiSuggestions = ref({
   categoryId: null,
   colourId: null,
   materialId: null,
   genderId: null,
-})
+});
 
 async function loadOptions() {
   pending.value = true;
@@ -25,7 +25,6 @@ async function loadOptions() {
 
     const data = await res.json();
     options.value = data;
-    await console.log("Loaded donation options:", options.value);
   } catch (error) {
     console.error("Failed to load donation options:", error);
     toast.add({
@@ -66,7 +65,7 @@ async function genSelectOptions() {
       // state.colour = aiSuggestions.value.colourId || state.colour;
       // state.material = aiSuggestions.value.materialId || state.material;
       // state.gender = aiSuggestions.value.genderId || state.gender;
-    };
+    }
 
     toast.add({
       title: "AI Suggestions Generated",
@@ -74,7 +73,7 @@ async function genSelectOptions() {
       color: "success",
     });
 
-    console.log("Generated select options:", data);
+    //console.log("Generated select options:", data);
   } catch (e) {
     toast.add({
       title: "Error Generating Options",
@@ -93,8 +92,14 @@ const categoryOptions = computed(
     options.value?.categories.map((c) => ({
       label: c.category,
       value: c.categoryId,
-      class: c.categoryId === aiSuggestions.value.categoryId ? "font-bold border rounded-lg border-2 border-[var(--color-ai)]" : undefined,
-      icon: c.categoryId === aiSuggestions.value.categoryId ? "i-lucide-sparkles" : undefined,
+      class:
+        c.categoryId === aiSuggestions.value.categoryId
+          ? "font-bold border rounded-lg border-2 border-[var(--color-ai)]"
+          : undefined,
+      icon:
+        c.categoryId === aiSuggestions.value.categoryId
+          ? "i-lucide-sparkles"
+          : undefined,
     })) || []
 );
 const colourOptions = computed(
@@ -102,8 +107,14 @@ const colourOptions = computed(
     options.value?.colours.map((c) => ({
       label: c.colour,
       value: c.colourId,
-      class: c.colourId === aiSuggestions.value.colourId ? "font-bold border rounded-lg border-2 border-[var(--color-ai)]" : undefined,
-      icon: c.colourId === aiSuggestions.value.colourId ? "i-lucide-sparkles" : undefined,
+      class:
+        c.colourId === aiSuggestions.value.colourId
+          ? "font-bold border rounded-lg border-2 border-[var(--color-ai)]"
+          : undefined,
+      icon:
+        c.colourId === aiSuggestions.value.colourId
+          ? "i-lucide-sparkles"
+          : undefined,
     })) || []
 );
 const materialOptions = computed(
@@ -111,8 +122,14 @@ const materialOptions = computed(
     options.value?.materials.map((m) => ({
       label: m.material,
       value: m.materialId,
-      class: m.materialId === aiSuggestions.value.materialId ? "font-bold border rounded-lg border-2 border-[var(--color-ai)]" : undefined,
-      icon: m.materialId === aiSuggestions.value.materialId ? "i-lucide-sparkles" : undefined,
+      class:
+        m.materialId === aiSuggestions.value.materialId
+          ? "font-bold border rounded-lg border-2 border-[var(--color-ai)]"
+          : undefined,
+      icon:
+        m.materialId === aiSuggestions.value.materialId
+          ? "i-lucide-sparkles"
+          : undefined,
     })) || []
 );
 const conditionOptions = computed(
@@ -127,18 +144,23 @@ const genderOptions = computed(
     options.value?.genders.map((g) => ({
       label: g.gender,
       value: g.genderId,
-      class: g.genderId === aiSuggestions.value.genderId ? "font-bold border rounded-lg border-2 border-[var(--color-ai)]" : undefined,
-      icon: g.genderId === aiSuggestions.value.genderId ? "i-lucide-sparkles" : undefined,
+      class:
+        g.genderId === aiSuggestions.value.genderId
+          ? "font-bold border rounded-lg border-2 border-[var(--color-ai)]"
+          : undefined,
+      icon:
+        g.genderId === aiSuggestions.value.genderId
+          ? "i-lucide-sparkles"
+          : undefined,
     })) || []
 );
 const sizeOptions = computed(
   () =>
-    options.value?.sizes.map((s) => ({ 
-      label: s.size, 
-      value: s.sizeId, 
+    options.value?.sizes.map((s) => ({
+      label: s.size,
+      value: s.sizeId,
     })) || []
 );
-
 
 const isOpen = ref(false);
 const fileInput = ref(null);
@@ -217,7 +239,10 @@ const genLoading = ref(false);
 const submitLoading = ref(false);
 
 async function generateDescription() {
-  if (images.value.length === 0 || (images.value.length === 1 && images.value[0] === "ADD_BUTTON")) {
+  if (
+    images.value.length === 0 ||
+    (images.value.length === 1 && images.value[0] === "ADD_BUTTON")
+  ) {
     toast.add({
       title: "No images available",
       description: "Please add at least one image to generate a description.",
@@ -228,7 +253,8 @@ async function generateDescription() {
 
   genLoading.value = true;
 
-  const imageToDescribe = images.value[0] === "ADD_BUTTON" ? images.value[1] : images.value[0];
+  const imageToDescribe =
+    images.value[0] === "ADD_BUTTON" ? images.value[1] : images.value[0];
 
   try {
     const token = localStorage.getItem("token");
@@ -295,7 +321,7 @@ async function onSubmit({ data: formData }) {
     });
 
     // tells parent element the donation was added
-    emit("donation-added")
+    emit("donation-added");
   } catch (e) {
     toast.add({
       title: "Error:",
@@ -379,10 +405,10 @@ images.value.push("ADD_BUTTON");
     New donation
   </UButton>
 
-  <UModal 
-  v-model:open="isOpen" 
-  title="Add a Donation"
-  :fullscreen="isFullscreenModal"
+  <UModal
+    v-model:open="isOpen"
+    title="Add a Donation"
+    :fullscreen="isFullscreenModal"
   >
     <template #body>
       <p id="donation-description" class="sr-only">
@@ -461,7 +487,14 @@ images.value.push("ADD_BUTTON");
           >
           </UAlert>
           <UFormField label="Description" name="description">
-            <UTextarea :loading="genLoading" :disabled="genLoading" v-model="state.description" :rows="2" class="w-full" autoresize />
+            <UTextarea
+              :loading="genLoading"
+              :disabled="genLoading"
+              v-model="state.description"
+              :rows="2"
+              class="w-full"
+              autoresize
+            />
             <UButton
               v-if="!state.description || state.description.length < 20"
               :disabled="genLoading || images.length === 1"
@@ -477,7 +510,12 @@ images.value.push("ADD_BUTTON");
           </UFormField>
 
           <div class="flex flex-col md:flex-row gap-2">
-            <UFormField label="Quantity" name="quantity" class="flex-0" required>
+            <UFormField
+              label="Quantity"
+              name="quantity"
+              class="flex-0"
+              required
+            >
               <UInput
                 v-model.number="state.quantity"
                 type="number"
@@ -498,9 +536,8 @@ images.value.push("ADD_BUTTON");
                 class="w-full min-w-[120px]"
                 :ui="{
                   content: 'md:min-w-full md:w-auto',
-                  itemLeadingIcon: 'text-[var(--color-ai)]'
+                  itemLeadingIcon: 'text-[var(--color-ai)]',
                 }"
-
               />
             </UFormField>
             <UFormField label="Gender" name="gender" required>
@@ -514,7 +551,7 @@ images.value.push("ADD_BUTTON");
                 class="w-full min-w-[100px]"
                 :ui="{
                   content: 'md:min-w-full md:w-auto',
-                  itemLeadingIcon: 'text-[var(--color-ai)]'
+                  itemLeadingIcon: 'text-[var(--color-ai)]',
                 }"
               />
             </UFormField>
@@ -544,7 +581,7 @@ images.value.push("ADD_BUTTON");
                 class="w-full min-w-[120px]"
                 :ui="{
                   content: 'md:min-w-full md:w-auto',
-                  itemLeadingIcon: 'text-[var(--color-ai)]'
+                  itemLeadingIcon: 'text-[var(--color-ai)]',
                 }"
               />
             </UFormField>
@@ -559,7 +596,7 @@ images.value.push("ADD_BUTTON");
                 class="w-full min-w-[120px]"
                 :ui="{
                   content: 'md:min-w-full md:w-auto',
-                  itemLeadingIcon: 'text-[var(--color-ai)]'
+                  itemLeadingIcon: 'text-[var(--color-ai)]',
                 }"
               />
             </UFormField>

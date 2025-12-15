@@ -8,7 +8,7 @@ router.get("/", auth([3]), async (req, res) => {
     try {
         const users = await prisma.user.findMany();
 
-        console.log("Found users:", users);
+        //console.log("Found users:", users);
 
         res.json({ users, meta: { count: users.length } });
     } catch (e) {
