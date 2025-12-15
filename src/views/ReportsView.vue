@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { ref } from "vue";
 import ReportsCO2Chart from "@/components/ReportsCO2Chart.vue";
-import ReportsDonationChart from "@/Components/ReportsDonationChart.vue";
+import ReportsDonationChart from "@/components/ReportsDonationChart.vue";
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
 
@@ -12,7 +12,7 @@ const exportPdf = async () => {
   const now = new Date();
   const filename = `reports-${now.toISOString().slice(0,10)}.pdf`;
   const doc = new jsPDF('p','mm','a4');
-  // Try using chart image exports first (Chart.js toBase64Image via component expose)
+  // Try using chart image exports first
   const pages: string[] = [];
 
   try {
