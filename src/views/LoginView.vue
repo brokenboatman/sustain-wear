@@ -111,7 +111,7 @@ async function onSubmit(payload: FormSubmitEvent<Schema>) {
         </ULink>
       </div>
       <div class="text-center text-sm text-muted">
-        Cant remember your password?
+        Can't remember your password?
         <ULink
           to="/forgot-password"
           variant="link"

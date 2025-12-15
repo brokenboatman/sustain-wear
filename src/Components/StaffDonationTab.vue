@@ -78,19 +78,17 @@ const pendingDonations = computed(() =>
 
 const acceptedDonations = computed(() =>
   data.value.filter((d) => d.status === "Accepted")
-)
+);
 
-const pendingCount = computed(() => 
-  data.value.filter((d) => d.status !== "Accepted").length
-)
+const pendingCount = computed(
+  () => data.value.filter((d) => d.status !== "Accepted").length
+);
 
-const acceptedCount = computed(() =>
-  data.value.filter((d) => d.status === "Accepted").length
-)
+const acceptedCount = computed(
+  () => data.value.filter((d) => d.status === "Accepted").length
+);
 
-const totalCount = computed(() =>
-  data.value.length
-)
+const totalCount = computed(() => data.value.length);
 
 const items = ref<TabsItem[]>([
   {
@@ -112,15 +110,15 @@ const items = ref<TabsItem[]>([
   <div class="flex flex-wrap justify-center gap-x-4 text-2xl w-full">
     <UCard class="w-full flex flex-col p-2 mb-4 md:w-min" variant="subtle">
       <p>Pending Donations</p>
-      <p class="text-4xl font-[700]">{{ pendingCount }}</p>
+      <p class="text-4xl font-bold">{{ pendingCount }}</p>
     </UCard>
     <UCard class="w-full flex flex-col p-2 mb-4 md:w-min" variant="subtle">
       <p>Accepted Donations</p>
-      <p class="text-4xl font-[700]">{{ acceptedCount }}</p>
+      <p class="text-4xl font-bold]">{{ acceptedCount }}</p>
     </UCard>
     <UCard class="w-full flex flex-col p-2 mb-4 md:w-min" variant="subtle">
       <p>Total Donations</p>
-      <p class="text-4xl font-[700]">{{ totalCount }}</p>
+      <p class="text-4xl font-bold">{{ totalCount }}</p>
     </UCard>
   </div>
   <UTabs :items="items" class="w-full" color="neutral" size="xl">

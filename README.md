@@ -158,7 +158,7 @@ Donor,SuperDonor@sustainwear.com,SuperPassword123
 Charity Staff,SuperStaff@sustainwear.com,SuperPassword123
 Administrator,SuperAdmin@sustainwear.com,SuperPassword123
 
-TroubleshootingPostgreSQL
+Troubleshooting PostgreSQL
 
 Sequence Error
 
