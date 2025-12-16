@@ -122,9 +122,18 @@ async function fetchDonations(): Promise<void> {
   }
 }
 
+// reloads bar chart and expose export helper
+function exportImage() {
+  // return base64 image of the chart and the raw data array
+  const img = barRef.value?.chart?.toBase64Image?.() ?? null;
+  const data = chartData.value.datasets[0].data;
+  return { img, data };
+}
+
 // reloads bar chart
 defineExpose({
   reloadChart: fetchDonations,
+  exportImage,
 });
 
 onMounted(() => {

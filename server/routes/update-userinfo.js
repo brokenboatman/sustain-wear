@@ -25,7 +25,7 @@ router.put("/", auth(), async (req, res) => {
     const { username, email, currentPassword, newPassword, profileURL } =
       req.body;
 
-    console.log(`Attempting profile update for User ID: ${userIdInt}`);
+    //console.log(`Attempting profile update for User ID: ${userIdInt}`);
 
     // Fetch current user data to compare changes
     const user = await prisma.user.findUnique({
@@ -107,7 +107,7 @@ router.put("/", auth(), async (req, res) => {
       data: updateData,
     });
 
-    console.log("Profile updated successfully for:", updatedUser.email);
+    //console.log("Profile updated successfully for:", updatedUser.email);
 
     switch (changeType) {
       case "PASSWORD":

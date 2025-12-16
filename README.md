@@ -1,71 +1,171 @@
-Sustain WearGroup 14 Applied Software Engineering Assessment
+Sustain Wear - Group 14 Applied Software Engineering Assessment
 
 Sustain Wear is a web application focused on sustainable clothing donation and distribution. This repository contains the source code for both the client-side interface and the server-side logic.
 
-Prerequisites: before beginning the installation, ensure you have the following installed on your local machine: Node.js (Latest LTS version recommended) PostgreSQL (Ensure the service is running and you have access to a superuser account)
+Prerequisites
 
-Configuration: Create a .env file in the root directory of the project. Populate it with the following environment variables.
+Before beginning the installation, ensure you have the following installed on your local machine:Node.js (Latest LTS version recommended)PostgreSQL (Ensure the service is running and you have access to a superuser account)
 
-Note: Ensure that BACKEND_SERVER_URL and FRONTEND_SERVER_URL do not contain trailing slashes.Bash# Database Configuration
+Configuration
 
-# Replace 'PASSWORDFROMYOURPOSTGRESSQLSERVER' with your actual Postgres password
+To run this project locally, you must set up the environment variables.
 
-DATABASE_URL="postgresql://postgres:PASSWORDFROMYOURPOSTGRESSQLSERVER@localhost:5432/sustain-wear"
+Create a file named .env in the root directory of the project.
+Copy the contents below and replace the placeholders (values starting with YOUR\_) with your own credentials.
+
+Note: Ensure that BACKEND_SERVER_URL and FRONTEND_SERVER_URL do not contain trailing slashes.
+
+# Replace 'YOUR_DB_PASSWORD' with your actual Postgres password
+
+DATABASE_URL="postgresql://postgres:YOUR_DB_PASSWORD@localhost:5432/sustain-wear"
 
 # Authentication Secrets
 
-JWT_SECRET="key"
+# You can generate a random string for this
 
-# OAuth Configuration
+JWT_SECRET="YOUR_SECURE_RANDOM_STRING"
 
-GOOGLE_CLIENT_ID="334970749720-aia1uo57j1b6i24m92s23dc3mgdmpjv5.apps.googleusercontent.com"
-GOOGLE_CLIENT_SECRET="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"
+# Google OAuth Configuration
+
+# See instructions below to obtain these
+
+GOOGLE_CLIENT_ID="YOUR_GOOGLE_CLIENT_ID"
+GOOGLE_CLIENT_SECRET="YOUR_GOOGLE_CLIENT_SECRET"
 
 # Server URLs
 
 BACKEND_SERVER_URL="http://localhost:3000"
 FRONTEND_SERVER_URL="http://localhost:5173"
 
-# Cloudinary Virtual Images
+# Cloudinary Configuration (For Image Uploads)
 
-CLOUDINARY_CLOUD_NAME=dtckq9bj4
-CLOUDINARY_API_KEY=452996932715446
-CLOUDINARY_API_SECRET=UpwnhGtAPW9r9kQT6E-B5KFaOzU
+# See instructions below to obtain these
+
+CLOUDINARY_CLOUD_NAME="YOUR_CLOUD_NAME"
+CLOUDINARY_API_KEY="YOUR_API_KEY"
+CLOUDINARY_API_SECRET="YOUR_API_SECRET"
 
 # Google GenAI API
 
-Obtain a Gemini API key from Google AI Studio and add it to your env as follows:
+# Obtain from Google AI Studio
 
-GEMINI_API_KEY="API_KEY_GOES_HERE"
+GEMINI_API_KEY="YOUR_GEMINI_API_KEY"
+
+# Nodemailer Setup (Gmail App Password)
+
+EMAIL_USER="YOUR_GMAIL_ADDRESS"
+EMAIL_PASS="YOUR_APP_PASSWORD"
+
+How to Obtain API Keys1.
+
+1. Google OAuth (Client ID & Secret)
+
+To allow users to log in with Google:
+
+Go to the Google Cloud Console.
+
+Create a new project.
+
+Navigate to APIs & Services > Credentials.
+
+Click Create Credentials -> OAuth Client ID.
+
+Application Type: Web Application.
+
+Authorized JavaScript Origins: http://localhost:5173
+
+Authorized Redirect URIs: http://localhost:3000/auth/google/callback.
+
+Copy the Client ID and Client Secret into your .env file.
+
+2. Cloudinary (Image Hosting)
+
+Sign up for a free account at Cloudinary.
+
+Go to your Dashboard.
+
+Copy the Cloud Name, API Key, and API Secret into your .env file.
+
+3. Google Gemini (AI Features)
+
+Go to Google AI Studio.
+
+Click Get API Key.
+
+Copy the key into your .env file.
+
+4. Nodemailer (Email Features)
+
+Go to your Google Account App Passwords.
+
+Create a new app-specific password (custom name: "SustainWear").
+
+Copy the 16-character password (e.g., xxxx xxxx xxxx xxxx) into EMAIL_PASS in your .env file.
+
+In the end the .env file should be set as:
+
+DATABASE_URL=""
+GOOGLE_CLIENT_ID=""
+GOOGLE_CLIENT_SECRET=""
+BACKEND_SERVER_URL="http://localhost:3000"
+FRONTEND_SERVER_URL="http://localhost:5173"
+JWT_SECRET=""
+CLOUDINARY_CLOUD_NAME=""
+CLOUDINARY_API_KEY=""
+CLOUDINARY_API_SECRET=""
+GEMINI_API_KEY=""
+EMAIL_USER=""
+EMAIL_PASS=""
 
 Installation & Setup
 
 1. Install Dependencies
-   npm install
+
+npm install
+
 2. Database Setup & Backend Initialization
-   cd server
-   npx prisma migrate dev
-   npx prisma db seed
+
+cd server
+
+npx prisma migrate dev
+
+npx prisma db seed
+
 3. Running the Application
-   cd server
-   node index.js
-   cd ..
-   npm run dev
 
-The application will be accessible at http://localhost:5173.
+You will need two terminals open
 
-User Credentials:
+Terminal 1 (Backend):
 
-Donor SuperDonor@sustainwear.com SuperPassword123
+cd server
 
-Charity Staff SuperStaff@sustainwear.com SuperPassword123
+node index.js
 
-Administrator SuperAdmin@sustainwear.com SuperPassword123
+Terminal 2 (Frontend):
 
-# PostgreSQL known error with prisma
+npm run dev
 
-If you encounter an error when trying to login or register go into pgAdmin4 (PostgreSQL IDE) and run:
+The application will be accessible at http://localhost:5173
 
-SELECT setval(pg_get_serial_sequence('"User"', 'userId'), 4, false);
+User Credentials (Seed Data)
 
-This resets the count which was causing the error.
+The database seed provides the following accounts for testing:
+
+Role
+
+Role,Email,Password
+Donor,SuperDonor@sustainwear.com,SuperPassword123
+Charity Staff,SuperStaff@sustainwear.com,SuperPassword123
+Administrator,SuperAdmin@sustainwear.com,SuperPassword123
+
+Troubleshooting PostgreSQL
+
+Sequence Error
+
+If you encounter an error when trying to login or register, it is likely due to the primary key sequence being out of sync.
+
+Open pgAdmin4 (or your preferred SQL tool).
+
+Run the following query:SQLSELECT setval(pg_get_serial_sequence('"User"', 'userId'), 4, false);
+
+his resets the ID counter to accommodate the seeded users.

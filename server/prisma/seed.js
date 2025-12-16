@@ -70,6 +70,11 @@ async function main() {
     "Orange",
     "Gold",
     "Silver",
+    "Cream",
+    "Navy",
+    "Turquoise",
+    "Maroon",
+    "Olive",
   ];
   await prisma.colour.createMany({
     // Maps index 0 -> ID 1, index 1 -> ID 2, etc.
@@ -169,14 +174,14 @@ async function main() {
   const hashedPassword = await bcrypt.hash("SuperPassword123", 10);
 
   // SuperDonor
-  const superDonor = await prisma.user.upsert({
+  await prisma.user.upsert({
     where: { email: "SuperDonor@sustainwear.com" },
     update: {
       password: hashedPassword,
-      userId: 1, // Ensure ID matches on update
+      userId: 1,
     },
     create: {
-      userId: 1, // Hardcoded ID
+      userId: 1,
       email: "SuperDonor@sustainwear.com",
       username: "SuperDonor",
       password: hashedPassword,
@@ -192,7 +197,7 @@ async function main() {
       userId: 2,
     },
     create: {
-      userId: 2, // Hardcoded ID
+      userId: 2,
       email: "SuperStaff@sustainwear.com",
       username: "SuperStaff",
       password: hashedPassword,
@@ -208,7 +213,7 @@ async function main() {
       userId: 3,
     },
     create: {
-      userId: 3, // Hardcoded ID
+      userId: 3,
       email: "SuperAdmin@sustainwear.com",
       username: "SuperAdmin",
       password: hashedPassword,
@@ -217,7 +222,7 @@ async function main() {
   });
 
   // Create Charity
-  const charity1 = await prisma.charity.upsert({
+  await prisma.charity.upsert({
     where: { charityId: 1 },
     update: {},
     create: {
@@ -255,56 +260,59 @@ async function main() {
   console.log("Notification seeding finished.");
 
   const today = new Date();
+
   const lastMonth = new Date(today);
   lastMonth.setMonth(today.getMonth() - 1);
+
+  const twoMonthsAgo = new Date(today);
+  twoMonthsAgo.setMonth(today.getMonth() - 2);
+
+  const threeMonthsAgo = new Date(today);
+  threeMonthsAgo.setMonth(today.getMonth() - 3);
+
+  const fiveMonthsAgo = new Date(today);
+  fiveMonthsAgo.setMonth(today.getMonth() - 5);
+
+  const eightMonthsAgo = new Date(today);
+  eightMonthsAgo.setMonth(today.getMonth() - 8);
 
   const donationsData = [
     {
       title: "Vintage Denim Jacket",
       description: "A classic 90s denim jacket in great condition.",
-      status: "On its way",
-      colour: "Blue",
-      condition: "Good",
-      gender: "Unisex",
-      category: "Outerwear",
-      material: "Denim",
-      size: "L",
-      weight: 0.8,
-      co2: 2.5,
-      date: lastMonth,
-    },
-    {
-      title: "Vintage Denim Jacket",
-      description: "A classic 90s denim jacket in great condition.",
-      status: "Accepted",
-      colour: "Blue",
-      condition: "Good",
-      gender: "Unisex",
-      category: "Outerwear",
-      material: "Denim",
-      size: "L",
-      weight: 0.8,
-      co2: 2.5,
-      date: lastMonth,
-    },
-    {
-      title: "Summer Floral Dress",
-      description: "Lightweight dress, never worn with tags.",
       status: "Received at Charity",
-      colour: "Multi-colour",
-      condition: "New with Tags",
-      gender: "Womens",
-      category: "Dresses",
-      material: "Cotton",
-      size: "M",
-      weight: 0.3,
-      co2: 1.1,
-      date: lastMonth,
+      colour: "Blue",
+      condition: "Good",
+      gender: "Unisex",
+      category: "Outerwear",
+      material: "Denim",
+      size: "L",
+      weight: 0.8,
+      co2: 2.5,
+      date: eightMonthsAgo,
+      photoUrl:
+        "https://res.cloudinary.com/dtckq9bj4/image/upload/v1765792325/o8hfrzrqfcwb7l3pii9h.jpg",
+    },
+    {
+      title: "Men's Pyjama Set",
+      description: "Cozy and warm.",
+      status: "Received at Charity",
+      colour: "Black",
+      condition: "Good",
+      gender: "Mens",
+      category: "Sleepwear",
+      material: "Polyester",
+      size: "XL",
+      weight: 1.38,
+      co2: 6.0,
+      date: fiveMonthsAgo,
+      photoUrl:
+        "https://res.cloudinary.com/dtckq9bj4/image/upload/v1765792382/xy6mwglqhym7aymodljx.jpg",
     },
     {
       title: "Leather Hiking Boots",
       description: "Sturdy boots, worn for one season.",
-      status: "Accepted",
+      status: "In transit",
       colour: "Brown",
       condition: "Fair",
       gender: "Mens",
@@ -313,12 +321,15 @@ async function main() {
       size: "XL",
       weight: 1.2,
       co2: 5.0,
+      date: threeMonthsAgo,
+      photoUrl:
+        "https://res.cloudinary.com/dtckq9bj4/image/upload/v1765792534/lzzb0yh9nvva5eukneak.jpg",
     },
     {
       title: "Wool Scarf",
       description: "Warm winter scarf.",
       status: "In transit",
-      colour: "Red",
+      colour: "Cream",
       condition: "Like New",
       gender: "Unisex",
       category: "Accessories",
@@ -326,136 +337,41 @@ async function main() {
       size: "M",
       weight: 0.2,
       co2: 0.5,
+      date: twoMonthsAgo,
+      photoUrl:
+        "https://res.cloudinary.com/dtckq9bj4/image/upload/v1765792255/ey5refgoctzhqebeorme.jpg",
     },
     {
       title: "Black Leggings",
       description: "Brand new, great for exercise.",
-      status: "Received at Charity",
-      colour: "Yellow",
+      status: "On its way",
+      colour: "Black",
       condition: "Like New",
-      gender: "Unisex",
-      category: "Accessories",
-      material: "Cotton",
+      gender: "Womens",
+      category: "Activewear",
+      material: "Spandex",
       size: "M",
       weight: 0.84,
       co2: 3.2,
+      date: lastMonth,
+      photoUrl:
+        "https://res.cloudinary.com/dtckq9bj4/image/upload/v1765792509/hua8j8i8erwdxs3n3mye.jpg",
     },
     {
-      title: "Black Leggings",
+      title: "Yellow Knit Sweater",
       description: "Cozy and warm.",
-      status: "Received at Charity",
+      status: "On its way",
       colour: "Yellow",
       condition: "Good",
       gender: "Unisex",
       category: "Tops",
-      material: "Rayon",
+      material: "Wool",
       size: "M",
-      weight: 0.13,
+      weight: 0.45,
       co2: 5.3,
-    },
-    {
-      title: "Pyjama Set",
-      description: "Cozy and warm.",
-      status: "Received at Charity",
-      colour: "Black",
-      condition: "Good",
-      gender: "Mens",
-      category: "Tops",
-      material: "Polyester",
-      size: "XL",
-      weight: 1.38,
-      co2: 6.0,
-    },
-    {
-      title: "Casual Sneakers",
-      description: "Stylish and perfect for layering.",
-      status: "Received at Charity",
-      colour: "Purple",
-      condition: "Like New",
-      gender: "Unisex",
-      category: "Accessories",
-      material: "Fleece",
-      size: "XXL",
-      weight: 1.71,
-      co2: 6.1,
-    },
-    {
-      title: "Workout Top",
-      description: "Heavy-duty for cold weather.",
-      status: "Received at Charity",
-      colour: "Yellow",
-      condition: "New with Tags",
-      gender: "Unisex",
-      category: "Outerwear",
-      material: "Spandex",
-      size: "S",
-      weight: 2.0,
-      co2: 4.2,
-    },
-    {
-      title: "Formal Blouse",
-      description: "Cozy and warm.",
-      status: "Received at Charity",
-      colour: "Beige",
-      condition: "New with Tags",
-      gender: "Mens",
-      category: "Sleepwear",
-      material: "Cotton",
-      size: "XS",
-      weight: 1.8,
-      co2: 2.3,
-    },
-    {
-      title: "Striped T-Shirt",
-      description: "Lightweight material, quick-drying.",
-      status: "Received at Charity",
-      colour: "Black",
-      condition: "Fair",
-      gender: "Mens",
-      category: "Accessories",
-      material: "Polyester",
-      size: "XS",
-      weight: 0.36,
-      co2: 6.5,
-    },
-    {
-      title: "Black Leggings",
-      description: "Cozy and warm.",
-      status: "Received at Charity",
-      colour: "Beige",
-      condition: "Like New",
-      gender: "Unisex",
-      category: "Tops",
-      material: "Nylon",
-      size: "M",
-      weight: 2.06,
-      co2: 0.9,
-    },
-    {
-      title: "Grey Hoodie",
-      description: "Waterproof and durable.",
-      status: "Received at Charity",
-      colour: "Orange",
-      condition: "Like New",
-      gender: "Mens",
-      category: "Tops",
-      material: "Nylon",
-      size: "L",
-      weight: 0.47,
-      co2: 1.0,
-    },
-    {
-      title: "Winter Coat",
-      description: "Heavy-duty for cold weather.",
-      status: "Received at Charity",
-      colour: "Purple",
-      condition: "New with Tags",
-      gender: "Unisex",
-      category: "Sleepwear",
-      material: "Polyester",
-      size: "L",
-      weight: 1.62,
-      co2: 7.0,
+      date: today,
+      photoUrl:
+        "https://res.cloudinary.com/dtckq9bj4/image/upload/v1765792466/nfvuy36fzpjjmachhz1m.jpg",
     },
   ];
 
@@ -466,6 +382,8 @@ async function main() {
         description: item.description,
         weight: item.weight,
         co2: item.co2,
+        photoUrl: item.photoUrl,
+        date: item.date ? item.date : undefined,
         user: { connect: { userId: 1 } },
         charity: { connect: { charityId: 1 } },
         status: { connect: { status: item.status } },

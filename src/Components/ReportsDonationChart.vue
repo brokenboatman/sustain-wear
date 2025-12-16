@@ -122,9 +122,16 @@ async function fetchDonations(): Promise<void> {
   }
 }
 
+function exportImage() {
+  const img = barRef.value?.chart?.toBase64Image?.() ?? null;
+  const data = chartData.value.datasets[0].data;
+  return { img, data };
+}
+
 // reloads bar chart
 defineExpose({
   reloadChart: fetchDonations,
+  exportImage,
 });
 
 onMounted(() => {
@@ -175,10 +182,10 @@ const acceptedDonations = computed(() => {
           This month the charity recived {{ donationAmountMonth }} donations.
         </p>
         <p>
-          Number of accepted donations this month:  <strong>{{ acceptedDonations }}</strong>.
+          Number of accepted donations :  <strong>{{ acceptedDonations }}</strong>
         </p>
         <p>
-          Number of pending donations this month:  <strong>{{ pendingDonations }}</strong>.
+          Number of pending donations :  <strong>{{ pendingDonations }}</strong>
         </p>
       </div>
     </div>

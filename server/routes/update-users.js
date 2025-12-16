@@ -57,7 +57,7 @@ router.put("/", auth([3]), async (req, res) => {
             data: updateData,
         });
     }   
-    console.log("Users updated successfully");
+    //console.log("Users updated successfully");
     res.json({ message: "Users updated successfully" });
   } catch (e) {
     console.error("Error updating users:", e);

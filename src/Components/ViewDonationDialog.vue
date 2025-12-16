@@ -90,6 +90,7 @@ async function fetchDonation(id: string) {
 }
 
 watch(
+  // Watch for dialog open changes
   () => props.open,
   (isOpen) => {
     if (isOpen && props.donationId) {
@@ -133,21 +134,27 @@ function close() {
           title="Shipping Status"
           :description="state.status"
           :icon="
-            state.status === 'In transit' ? 'lucide:truck' :
-            state.status === 'Received at Charity' ? 'lucide:warehouse' :
-            state.status === 'On its way' ? 'lucide:package' :
-            'lucide:info'
+            state.status === 'In transit'
+              ? 'lucide:truck'
+              : state.status === 'Received at Charity'
+              ? 'lucide:warehouse'
+              : state.status === 'On its way'
+              ? 'lucide:package'
+              : 'lucide:info'
           "
           :color="
-            state.status === 'Received at Charity' ? 'success' :
-            state.status === 'In transit' ? 'primary' :
-            state.status === 'On its way' ? 'neutral' :
-            'neutral'
+            state.status === 'Received at Charity'
+              ? 'success'
+              : state.status === 'In transit'
+              ? 'primary'
+              : state.status === 'On its way'
+              ? 'neutral'
+              : 'neutral'
           "
           variant="soft"
           class="mb-4"
         />
-        
+
         <UCarousel
           v-if="images.length > 0"
           arrows
