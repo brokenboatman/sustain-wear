@@ -184,13 +184,21 @@ async function handleFetchDonation(donationId: number): Promise<void> {
       state.colour = donation.colourId || null;
       state.material = donation.materialId || null;
       state.condition = donation.conditionId || null;
-      
-      images.value = [];
+
+      const uniqueImages = new Set<string>();
+
       if (donation.photoUrl) {
-        images.value.push(donation.photoUrl);
+        uniqueImages.add(donation.photoUrl);
       }
 
-      images.value.push("ADD_BUTTON");
+      const d = donation as any;
+      if (d.images && Array.isArray(d.images)) {
+        d.images.forEach((img: any) => {
+          if (img.url) uniqueImages.add(img.url);
+        });
+      }
+      // convert back to array and add the UI button
+      images.value = [...Array.from(uniqueImages), "ADD_BUTTON"];
 
       isOpen.value = true;
     } else {
@@ -203,8 +211,8 @@ async function handleFetchDonation(donationId: number): Promise<void> {
 
 async function updateDonation(donationId: number, formData: any) {
   const token = localStorage.getItem("token");
-  
-  const imagesToUpload = images.value.filter(img => img !== "ADD_BUTTON");
+
+  const imagesToUpload = images.value.filter((img) => img !== "ADD_BUTTON");
 
   const payload = {
     photoUrl: imagesToUpload[0] || null,
@@ -240,7 +248,7 @@ async function updateDonation(donationId: number, formData: any) {
       description: "Donation updated successfully.",
       color: "success",
     });
-    
+
     closeModal();
   } catch (e: any) {
     toast.add({
@@ -273,7 +281,15 @@ function processImageFile(file) {
   if (file && file.type.startsWith("image/")) {
     const reader = new FileReader();
     reader.onload = (e) => {
-      images.value.splice(images.value.length - 1, 0, e.target?.result as string);
+      // use spread syntax to trigger reactivity
+      const updatedImages = [...images.value];
+      updatedImages.splice(
+        updatedImages.length - 1,
+        0,
+        e.target?.result as string
+      );
+      images.value = updatedImages;
+
       toast.add({ title: "Image added", color: "success" });
     };
     reader.readAsDataURL(file);
@@ -285,6 +301,8 @@ function processImageFile(file) {
 function handleImageUpload(event) {
   const file = event.target.files[0];
   processImageFile(file);
+  // reset input so the same file can be selected again if needed
+  if (fileInput.value) fileInput.value.value = "";
 }
 
 function handleDragOver(event) {
@@ -312,7 +330,11 @@ function triggerFileUpload() {
 }
 
 function removeImage(index) {
-  images.value.splice(index, 1);
+  // create a new array copy to trigger reactivity
+  const updatedImages = [...images.value];
+  updatedImages.splice(index, 1);
+  images.value = updatedImages;
+
   toast.add({
     title: "Image removed",
     color: "success",
@@ -320,7 +342,6 @@ function removeImage(index) {
 }
 
 const isFullscreenModal = computed(() => window.innerWidth < 640);
-
 </script>
 
 <template>
@@ -335,7 +356,11 @@ const isFullscreenModal = computed(() => window.innerWidth < 640);
     Edit
   </UButton>
 
-  <UModal v-model:open="isOpen" title="Add a Donation" :fullscreen="isFullscreenModal">
+  <UModal
+    v-model:open="isOpen"
+    title="Add a Donation"
+    :fullscreen="isFullscreenModal"
+  >
     <template #body>
       <p id="donation-description" class="sr-only">
         Use this form to add details, photos, and categories for the item you
@@ -405,11 +430,21 @@ const isFullscreenModal = computed(() => window.innerWidth < 640);
           </UFormField>
 
           <UFormField label="Description" name="description">
-            <UTextarea v-model="state.description" :rows="2" class="w-full" autoresize />
+            <UTextarea
+              v-model="state.description"
+              :rows="2"
+              class="w-full"
+              autoresize
+            />
           </UFormField>
 
           <div class="flex flex-col md:flex-row gap-2">
-            <UFormField label="Quantity" name="quantity" class="flex-0" required>
+            <UFormField
+              label="Quantity"
+              name="quantity"
+              class="flex-0"
+              required
+            >
               <UInput
                 v-model.number="state.quantity"
                 type="number"

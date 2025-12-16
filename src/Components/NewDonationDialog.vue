@@ -65,7 +65,7 @@ async function genSelectOptions() {
       state.colour = aiSuggestions.value.colourId || state.colour;
       state.material = aiSuggestions.value.materialId || state.material;
       state.gender = aiSuggestions.value.genderId || state.gender;
-    };
+    }
 
     toast.add({
       title: "AI Suggestions Generated",
@@ -342,7 +342,11 @@ function processImageFile(file) {
   if (file && file.type.startsWith("image/")) {
     const reader = new FileReader();
     reader.onload = (e) => {
-      images.value.splice(images.value.length - 1, 0, e.target.result);
+      // create a new array copy to force the Carousel component to react as it was static before
+      const updatedImages = [...images.value];
+      updatedImages.splice(updatedImages.length - 1, 0, e.target.result);
+      images.value = updatedImages;
+
       toast.add({ title: "Image added", color: "success" });
     };
     reader.readAsDataURL(file);
@@ -354,6 +358,9 @@ function processImageFile(file) {
 function handleImageUpload(event) {
   const file = event.target.files[0];
   processImageFile(file);
+
+  // reset the input value to allow uploading the same file again if needed
+  if (fileInput.value) fileInput.value.value = "";
 }
 
 function handleDragOver(event) {
@@ -381,7 +388,10 @@ function triggerFileUpload() {
 }
 
 function removeImage(index) {
-  images.value.splice(index, 1);
+  const updatedImages = [...images.value]; // create a new array copy
+  updatedImages.splice(index, 1);
+  images.value = updatedImages;
+
   toast.add({
     title: "Image removed",
     color: "success",
