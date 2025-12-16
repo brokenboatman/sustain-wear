@@ -61,7 +61,7 @@ async function fetchDonations(): Promise<void> {
 
   try {
     const token = localStorage.getItem("token");
-    const res = await fetch(`http://localhost:3000/api/staff-donations/`, {
+    const res = await fetch('/api/staff-donations/', {
       headers: token ? { Authorization: `Bearer ${token}` } : undefined,
     });
 

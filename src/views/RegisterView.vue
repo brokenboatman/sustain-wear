@@ -43,7 +43,7 @@ const providers = [
     icon: "i-mdi-google",
     class: "cursor-pointer",
     onClick: () => {
-      window.location.href = "http://localhost:3000/api/auth/google";
+      window.location.href = "/api/auth/google";
     },
   },
 ];

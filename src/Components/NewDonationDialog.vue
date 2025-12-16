@@ -62,10 +62,10 @@ async function genSelectOptions() {
     if (data.selection) {
       aiSuggestions.value = data.selection;
       // Pre-fill select fields with AI suggestions
-      // state.category = aiSuggestions.value.categoryId || state.category;
-      // state.colour = aiSuggestions.value.colourId || state.colour;
-      // state.material = aiSuggestions.value.materialId || state.material;
-      // state.gender = aiSuggestions.value.genderId || state.gender;
+      state.category = aiSuggestions.value.categoryId || state.category;
+      state.colour = aiSuggestions.value.colourId || state.colour;
+      state.material = aiSuggestions.value.materialId || state.material;
+      state.gender = aiSuggestions.value.genderId || state.gender;
     };
 
     toast.add({
