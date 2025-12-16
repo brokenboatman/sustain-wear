@@ -98,7 +98,7 @@ async function updateDonation(donationId: number, newStatus: number) {
               color="error"
               variant="solid"
               size="xl"
-              class="w-[100px] justify-center"
+              class="w-[100px] justify-center cursor-pointer"
               @click="updateDonation(donation.donationId, 3)">
               <UIcon name="i-lucide-undo" class="w-6 h-6" />
               Revert

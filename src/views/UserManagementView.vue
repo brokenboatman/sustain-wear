@@ -394,21 +394,21 @@ onMounted(() => {
             <template #delete-add-user-cell="{ row }">
               <div v-if="!row.original?.isAddButton" class="text-right">
                 <UButton variant="ghost" size="md"
-                  class="justify-center rounded-full p-2 border border-muted text-muted hover:bg-error/75 hover:text-inverted hover:border-error transition-colors duration-200"
+                  class="cursor-pointer justify-center rounded-full p-2 border border-muted text-muted hover:bg-error/75 hover:text-inverted hover:border-error transition-colors duration-200"
                   @click="openDeleteModal(row.original.userId)">
                   <UIcon name="i-lucide-trash" class="w-5 h-5" />
                 </UButton>
               </div>
               <div v-else>
                 <div class="flex flex-row justify-end">
-                  <UButton @click="createUser" class="text-center justify-center" color="neutral" variant="solid"
+                  <UButton @click="createUser" class="text-center justify-center cursor-pointer" color="neutral" variant="solid"
                     icon="i-lucide-plus">Add User</UButton>
                 </div>
               </div>
             </template>
             <template #delete-add-user-header>
               <div class="flex flex-row justify-end">
-                <UButton type="submit" class="text-center justify-center" color="success" variant="solid"
+                <UButton type="submit" class="text-center justify-center cursor-pointer" color="success" variant="solid"
                   icon="i-lucide-save">Save</UButton>
               </div>
             </template>

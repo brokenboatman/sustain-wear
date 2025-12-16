@@ -329,7 +329,7 @@ const isFullscreenModal = computed(() => window.innerWidth < 640);
     variant="solid"
     size="xl"
     @click="handleFetchDonation(props.donationId!)"
-    class="w-[100px] justify-center"
+    class="w-[100px] justify-center cursor-pointer"
   >
     <UIcon name="i-lucide-edit" class="w-6 h-6" />
     Edit
@@ -405,7 +405,7 @@ const isFullscreenModal = computed(() => window.innerWidth < 640);
           </UFormField>
 
           <UFormField label="Description" name="description">
-            <UTextarea v-model="state.description" :rows="2" class="w-full" />
+            <UTextarea v-model="state.description" :rows="2" class="w-full" autoresize />
           </UFormField>
 
           <div class="flex flex-col md:flex-row gap-2">
@@ -498,6 +498,7 @@ const isFullscreenModal = computed(() => window.innerWidth < 640);
               icon="i-lucide-check"
               type="submit"
               color="primary"
+              class="cursor-pointer"
               :loading="pending"
               :disabled="pending"
             >

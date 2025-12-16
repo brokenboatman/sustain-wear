@@ -373,7 +373,7 @@ images.value.push("ADD_BUTTON");
     variant="solid"
     size="xl"
     @click="isOpen = true"
-    class="w-full justify-center mb-4"
+    class="w-full justify-center mb-4 cursor-pointer"
   >
     <UIcon name="i-lucide-plus" class="w-6 h-6" />
     New donation

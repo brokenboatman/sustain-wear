@@ -36,7 +36,7 @@ function openViewModal(id: string) {
       v-else
       class="flex flex-col gap-y-2 border border-muted p-2 rounded-xl mb-2"
     >
-      <div v-if="donations.length === 0" class="text-center p-4 text-muted">
+      <div v-if="donations.length === 0" class="flex flex-col justify-center text-center p-4 text-muted h-20">
         No past donations
       </div>
       <div

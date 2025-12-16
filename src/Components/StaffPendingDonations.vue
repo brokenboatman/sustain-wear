@@ -81,7 +81,7 @@ async function updateDonation(donationId: number, newStatus: number) {
            <p class="text-left w-full font-bold px-2">{{ donation.name }}</p>
          </div>
         <div class="text-left flex items-center w-4/10 gap-x-4 justify-end">
-          <UButton icon="lucide:check" color="success" class="text-lg" @click="updateDonation(donation.donationId, 4)">Accept</UButton>
+          <UButton icon="lucide:check" color="success" class="text-lg cursor-pointer" @click="updateDonation(donation.donationId, 4)">Accept</UButton>
           <EditDonationDialog :donationId="donation.donationId" />
         </div>
         

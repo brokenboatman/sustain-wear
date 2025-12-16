@@ -261,6 +261,7 @@ onMounted(() => {
               color="primary"
               variant="solid"
               size="xl"
+              class="cursor-pointer"
               :loading="loading"
             >
               Save Changes
@@ -270,9 +271,9 @@ onMounted(() => {
               color="error"
               variant="solid"
               size="xl"
+              class="ml-4 cursor-pointer"
               :loading="loading"
               @click="deleteProfile"
-              class="ml-4"
             >
               Delete Profile
             </UButton>
