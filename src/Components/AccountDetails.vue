@@ -8,7 +8,7 @@ const updateProfileSchema = z
   .object({
     username: z
       .string()
-      .min(3, "Username must be at least 3 characters")
+      .min(6, "Username must be at least 6 characters")
       .max(100, "Username must be less than 100 characters"),
     email: z.email("Invalid email address"),
     avatar: z.string().min(1, "Please select an avatar"),

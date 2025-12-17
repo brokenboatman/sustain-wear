@@ -244,6 +244,9 @@ async function main() {
     {
       type: "PROFILE_UPDATE",
     },
+    {
+      type: "DONATION_UPDATE",
+    },
   ];
 
   for (const n of notificationTypeData) {

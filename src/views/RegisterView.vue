@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import * as z from "zod";
-import type { FormSubmitEvent, AuthFormField } from "@nuxt/ui";
+import type { FormSubmitEvent, FormErrorEvent, AuthFormField } from "@nuxt/ui";
 import { useRouter } from "vue-router";
 
 const toast = useToast();
@@ -57,22 +57,38 @@ const links = [
 
 const schema = z
   .object({
-    email: z.email("Invalid email"),
+    email: z.string().email("Invalid email"),
     password: z
-      .string("Password is required")
+      .string()
       .min(8, "Must be at least 8 characters")
       .max(100, "Password must be less than 100 characters"),
     username: z
-      .string("Username is required")
+      .string()
       .min(3, "Must be at least 3 characters")
       .max(100, "Username must be less than 100 characters"),
-    "repeat password": z.string("Please repeat your password"),
+    "repeat password": z.string(),
   })
   .refine((data) => data.password === data["repeat password"], {
     message: "Passwords do not match",
+    path: ["repeat password"], // attach error to specific field
   });
 
 type Schema = z.output<typeof schema>;
+
+// new function to handle validation errors
+function onError(event: FormErrorEvent) {
+  const isPasswordMismatch = event.errors.some(
+    (error) => error.message === "Passwords do not match"
+  );
+
+  if (isPasswordMismatch) {
+    toast.add({
+      title: "Validation Error",
+      description: "Your passwords do not match.",
+      color: "red",
+    });
+  }
+}
 
 async function onSubmit(payload: FormSubmitEvent<Schema>) {
   try {
@@ -119,6 +135,7 @@ async function onSubmit(payload: FormSubmitEvent<Schema>) {
         :links="links"
         :submit="{ label: 'Register', class: 'cursor-pointer' }"
         @submit="onSubmit"
+        @error="onError"
       />
       <div class="text-center text-sm text-muted">
         Already have an account?

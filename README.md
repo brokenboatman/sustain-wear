@@ -164,8 +164,22 @@ Sequence Error
 
 If you encounter an error when trying to login or register, it is likely due to the primary key sequence being out of sync.
 
+# ERROR START
+
+PrismaClientKnownRequestError:
+Invalid `prisma.user.create()` invocation:
+
+Unique constraint failed on the fields: (`userId`)
+at ei.handleRequestError (E:\University\Year 2\Applied Software Engineering\Assesment\sustain-wear\node_modules\@prisma\client\runtime\library.js:121:7268)
+at ei.handleAndLogRequestError (E:\University\Year 2\Applied Software Engineering\Assesment\sustain-wear\node_modules\@prisma\client\runtime\library.js:121:6593)
+at ei.request (E:\University\Year 2\Applied Software Engineering\Assesment\sustain-wear\node_modules\@prisma\client\runtime\library.js:121:6300)
+at async a (E:\University\Year 2\Applied Software Engineering\Assesment\sustain-wear\node_modules\@prisma\client\runtime\library.js:130:9551)
+at async Strategy.\_verify (file:///E:/University/Year%202/Applied%20Software%20Engineering/Assesment/sustain-wear/server/routes/auth.js:54:16)
+
+# ERROR END
+
 Open pgAdmin4 (or your preferred SQL tool).
 
-Run the following query:SQLSELECT setval(pg_get_serial_sequence('"User"', 'userId'), 4, false);
+Run the following query: SELECT setval(pg_get_serial_sequence('"User"', 'userId'), 4, false);
 
 his resets the ID counter to accommodate the seeded users.
